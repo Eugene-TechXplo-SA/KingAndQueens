@@ -95,12 +95,24 @@ authRouter.post("/signup", async (c) => {
   if (!supabaseUser) return c.json({ error: "Signup failed" }, 422);
 
   try {
-    await db.users.create({
-      supabase_user_id: supabaseUser.id,
-      email: normalizedEmail,
-      status: "ACTIVE",
-      kyc_status: "NONE",
-    });
+    const { data: newUser, error: insertError } = await supabase
+      .from("users")
+      .insert({
+        email: normalizedEmail,
+        password_hash: "",
+        status: "ACTIVE",
+        kyc_status: "NONE",
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      if (isUniqueViolation(insertError)) {
+        return c.json({ error: "Email exists" }, 409);
+      }
+      console.error("[auth/signup] failed to create user profile", insertError);
+      return c.json({ error: "Failed to create user profile" }, 500);
+    }
   } catch (error) {
     if (isMissingDatabaseConfig(error)) {
       return c.json(
@@ -146,44 +158,48 @@ authRouter.post("/login", async (c) => {
   let user = null;
 
   try {
-    user = await db.users.findUnique({
-      where: { supabase_user_id: authUser.id },
-    });
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("*")
+      .eq("email", normalizedEmail)
+      .single();
 
-    if (!user) {
-      user = await db.users.findUnique({ where: { email: normalizedEmail } });
+    if (userError && userError.code !== "PGRST116") {
+      console.error("[auth/login] failed to fetch user", userError);
+      return c.json({ error: "Failed to load user profile" }, 500);
     }
 
-    if (!user) {
-      try {
-        user = await db.users.create({
-          supabase_user_id: authUser.id,
-          email: authUser.email ?? normalizedEmail,
+    if (!userData) {
+      const { data: newUser, error: insertError } = await supabase
+        .from("users")
+        .insert({
+          email: normalizedEmail,
+          password_hash: "",
           status: "ACTIVE",
           kyc_status: "NONE",
-        });
-      } catch (createError) {
-        if (isUniqueViolation(createError)) {
-          user = await db.users.findUnique({
-            where: { email: normalizedEmail },
-          });
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        if (isUniqueViolation(insertError)) {
+          const { data: existingUser } = await supabase
+            .from("users")
+            .select("*")
+            .eq("email", normalizedEmail)
+            .single();
+          user = existingUser;
         } else {
-          console.error(
-            "[auth/login] failed to resolve user profile",
-            createError,
-          );
-          return c.json({ error: "Failed to load user profile" }, 500);
+          console.error("[auth/login] failed to create user profile", insertError);
+          return c.json({ error: "Failed to create user profile" }, 500);
         }
+      } else {
+        user = newUser;
       }
+    } else {
+      user = userData;
     }
   } catch (profileError) {
-    if (isMissingDatabaseConfig(profileError)) {
-      return c.json(
-        { error: "Server misconfigured: DATABASE_URL is missing" },
-        500,
-      );
-    }
-
     console.error("[auth/login] unexpected profile lookup error", profileError);
     return c.json({ error: "User profile service unavailable" }, 500);
   }
