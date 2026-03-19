@@ -1,7 +1,12 @@
 "use client";
 
-import { notFound } from "next/navigation";
+import AppLayout from "../AppLayout";
+import WithdrawalsView from "../../src/components/views/WithdrawalsView";
 
 export default function WithdrawalsPage() {
-  notFound();
+  return (
+    <AppLayout activeView="withdrawals">
+      <WithdrawalsView isActive={true} />
+    </AppLayout>
+  );
 }
