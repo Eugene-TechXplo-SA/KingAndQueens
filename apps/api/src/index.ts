@@ -11,7 +11,8 @@ const app = new Hono<AppBindings>();
 
 app.onError((err, c) => {
   console.error("[api] unhandled error", err);
-  return c.json({ error: "Internal server error" }, 500);
+  console.error("[api] error stack", err.stack);
+  return c.json({ error: "Internal server error", details: err.message }, 500);
 });
 
 app.notFound((c) => c.json({ error: "Not found" }, 404));

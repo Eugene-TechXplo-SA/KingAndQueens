@@ -1,6 +1,5 @@
 import { Hono } from "hono";
-import { supabase } from "../lib/supabase";
-import { db } from "../lib/db";
+import { supabase, supabaseAdmin } from "../lib/supabase";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -70,7 +69,9 @@ const mapSignupError = (
 
 // Signup
 authRouter.post("/signup", async (c) => {
-  const { email, password } = await c.req.json();
+  console.log("[auth/signup] starting signup request");
+  const { email, password} = await c.req.json();
+  console.log("[auth/signup] email:", email);
   const normalizedEmail = String(email ?? "")
     .trim()
     .toLowerCase();
@@ -79,11 +80,16 @@ authRouter.post("/signup", async (c) => {
     return c.json({ error: "Email and password are required" }, 400);
   }
 
+  console.log("[auth/signup] calling supabase.auth.signUp");
+
   const { data, error } = await supabase.auth.signUp({
     email: normalizedEmail,
     password,
   });
+  console.log("[auth/signup] signUp complete", {hasData: !!data, hasError: !!error});
+
   if (error) {
+    console.error("[auth/signup] auth error:", error);
     const signupError = mapSignupError(
       error.message,
       (error as { status?: number }).status,
@@ -92,40 +98,29 @@ authRouter.post("/signup", async (c) => {
   }
 
   const supabaseUser = data.user;
-  if (!supabaseUser) return c.json({ error: "Signup failed" }, 422);
+  if (!supabaseUser) {
+    console.error("[auth/signup] no user in response");
+    return c.json({ error: "Signup failed" }, 422);
+  }
 
-  try {
-    const { data: newUser, error: insertError } = await supabase
-      .from("users")
-      .insert({
-        email: normalizedEmail,
-        password_hash: "",
-        status: "ACTIVE",
-        kyc_status: "NONE",
-      })
-      .select()
-      .single();
+  console.log("[auth/signup] inserting user profile for", supabaseUser.id);
+  const { data: newUser, error: insertError } = await supabaseAdmin
+    .from("users")
+    .insert({
+      email: normalizedEmail,
+      password_hash: "",
+      status: "ACTIVE",
+      kyc_status: "NONE",
+      auth_user_id: supabaseUser.id,
+    })
+    .select()
+    .single();
 
-    if (insertError) {
-      if (isUniqueViolation(insertError)) {
-        return c.json({ error: "Email exists" }, 409);
-      }
-      console.error("[auth/signup] failed to create user profile", insertError);
-      return c.json({ error: "Failed to create user profile" }, 500);
-    }
-  } catch (error) {
-    if (isMissingDatabaseConfig(error)) {
-      return c.json(
-        { error: "Server misconfigured: DATABASE_URL is missing" },
-        500,
-      );
-    }
-
-    if (isUniqueViolation(error)) {
+  if (insertError) {
+    console.error("[auth/signup] failed to create user profile", insertError);
+    if (insertError.code === "23505") {
       return c.json({ error: "Email exists" }, 409);
     }
-
-    console.error("[auth/signup] failed to create user profile", error);
     return c.json({ error: "Failed to create user profile" }, 500);
   }
 
@@ -158,7 +153,7 @@ authRouter.post("/login", async (c) => {
   let user = null;
 
   try {
-    const { data: userData, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabaseAdmin
       .from("users")
       .select("*")
       .eq("email", normalizedEmail)
@@ -170,20 +165,21 @@ authRouter.post("/login", async (c) => {
     }
 
     if (!userData) {
-      const { data: newUser, error: insertError } = await supabase
+      const { data: newUser, error: insertError } = await supabaseAdmin
         .from("users")
         .insert({
           email: normalizedEmail,
           password_hash: "",
           status: "ACTIVE",
           kyc_status: "NONE",
+          auth_user_id: authUser.id,
         })
         .select()
         .single();
 
       if (insertError) {
         if (isUniqueViolation(insertError)) {
-          const { data: existingUser } = await supabase
+          const { data: existingUser } = await supabaseAdmin
             .from("users")
             .select("*")
             .eq("email", normalizedEmail)
