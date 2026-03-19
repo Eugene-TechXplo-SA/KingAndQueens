@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KING and QUEEN - ロイヤリティ・トークンプラットフォーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ===== Custom Properties ===== */
+    :root {
+      --brand: #CC151A;
+      --brand-dark: #A01115;
+      --black: #1A1A1A;
+      --white: #FFFFFF;
+      --gray-bg: #F5F5F5;
+      --gray-text: #666666;
+      --gray-border: #E0E0E0;
+      --font-ja: 'Noto Sans JP', sans-serif;
+      --font-en: 'Montserrat', sans-serif;
+      --max-w: 740px;
+    }
+
+    /* ===== Reset ===== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-ja);
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    /* ===== Utility ===== */
+    .inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .header .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+
+    .header-logo {
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: 0.02em;
+      color: var(--black);
+    }
+
+    .header-logo span {
+      color: var(--brand);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 20px;
+      border-radius: 24px;
+      border: 1.5px solid var(--brand);
+      color: var(--brand);
+      font-size: 13px;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: var(--brand);
+      color: var(--white);
+    }
+
+    .btn-fill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 20px;
+      border-radius: 24px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      border: 1.5px solid var(--brand);
+      transition: background 0.2s;
+    }
+
+    .btn-fill:hover {
+      background: var(--brand-dark);
+      border-color: var(--brand-dark);
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      position: relative;
+      background: var(--black);
+      overflow: hidden;
+      padding: 100px 20px 80px;
+      text-align: center;
+    }
+
+    .hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: var(--max-w);
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 4px;
+      margin-bottom: 28px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero h1 {
+      color: var(--white);
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .hero h1 {
+        font-size: 24px;
+      }
+    }
+
+    /* ===== About ===== */
+    .about {
+      padding: 80px 20px;
+    }
+
+    .about .inner {
+      text-align: center;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 900;
+      margin-bottom: 40px;
+    }
+
+    .section-title .logo-inline {
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 20px;
+    }
+
+    .section-title .logo-inline span {
+      color: var(--brand);
+    }
+
+    .about-cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+
+    .about-card {
+      width: 160px;
+      height: 200px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: var(--white);
+      font-family: var(--font-en);
+      font-weight: 500;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-card--king {
+      background: linear-gradient(135deg, #1A237E, #3949AB);
+    }
+
+    .about-card--queen {
+      background: linear-gradient(135deg, #B71C1C, #E53935);
+    }
+
+    .about-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+    }
+
+    .about-card-label {
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+      font-size: 13px;
+      font-weight: 700;
+      z-index: 1;
+      letter-spacing: 0.06em;
+    }
+
+    .about-text {
+      text-align: left;
+      font-size: 14px;
+      line-height: 2;
+      color: #444;
+      margin-bottom: 36px;
+    }
+
+    .about-text p + p {
+      margin-top: 16px;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 36px;
+      border-radius: 30px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .btn-cta:hover {
+      background: var(--brand-dark);
+    }
+
+    /* ===== Steps ===== */
+    .steps {
+      background: var(--gray-bg);
+      padding: 80px 20px;
+    }
+
+    .steps .section-title {
+      margin-bottom: 48px;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: var(--white);
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .step-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+
+    .step-icon--register {
+      background: #FFF3E0;
+      color: #E65100;
+    }
+
+    .step-icon--account {
+      background: #E3F2FD;
+      color: #1565C0;
+    }
+
+    .step-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .step-card p {
+      font-size: 13px;
+      color: var(--gray-text);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .btn-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 24px;
+      border-radius: 24px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .btn-step:hover {
+      background: var(--brand-dark);
+    }
+
+    /* ===== FAQ ===== */
+    .faq {
+      padding: 80px 20px;
+    }
+
+    .faq .section-title {
+      margin-bottom: 40px;
+    }
+
+    .faq-list {
+      list-style: none;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .faq-item:first-child {
+      border-top: 1px solid var(--gray-border);
+    }
+
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: left;
+      color: var(--black);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover {
+      color: var(--brand);
+    }
+
+    .faq-question i {
+      font-size: 14px;
+      color: var(--gray-text);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+
+    .faq-item.is-open .faq-question i {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .faq-answer-inner {
+      padding: 0 0 20px;
+      font-size: 14px;
+      line-height: 2;
+      color: var(--gray-text);
+    }
+
+    .faq-item.is-open .faq-answer {
+      max-height: 300px;
+    }
+
+    /* ===== Partners ===== */
+    .partners {
+      padding: 60px 20px;
+      background: var(--gray-bg);
+    }
+
+    .partners-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      flex-wrap: wrap;
+    }
+
+    .partner-logo {
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 18px;
+      color: #999;
+      letter-spacing: 0.02em;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .partner-logo:hover {
+      opacity: 1;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 48px 20px 32px;
+    }
+
+    .footer .inner {
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 18px;
+      margin-bottom: 28px;
+      letter-spacing: 0.02em;
+    }
+
+    .footer-logo span {
+      color: var(--brand);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: #AAAAAA;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .footer-social a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      color: #AAAAAA;
+      font-size: 15px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .footer-social a:hover {
+      background: var(--brand);
+      color: var(--white);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: #666;
+      font-family: var(--font-en);
+    }
+
+    /* ===== Auth Modal ===== */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-overlay.is-open {
+      display: flex;
+    }
+
+    .auth-modal {
+      background: var(--white);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 32px 32px;
+      position: relative;
+      animation: authFadeIn 0.25s ease;
+    }
+
+    @keyframes authFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #999;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .auth-close:hover {
+      background: var(--gray-bg);
+      color: var(--black);
+    }
+
+    .auth-modal-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-modal-logo i {
+      font-size: 36px;
+      color: var(--brand);
+    }
+
+    .auth-modal-logo h2 {
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 20px;
+      margin-top: 10px;
+      color: var(--black);
+    }
+
+    .auth-modal-logo h2 em {
+      color: var(--brand);
+      font-style: normal;
+    }
+
+    .auth-modal-logo p {
+      color: #888;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--gray-border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #999;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .auth-tab.active {
+      color: var(--brand);
+      border-bottom-color: var(--brand);
+    }
+
+    .auth-field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+
+    .auth-field-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .auth-input {
+      width: 100%;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: var(--font-ja);
+      background: #FAFAFA;
+      color: var(--black);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: var(--brand);
+    }
+
+    .auth-input::placeholder {
+      color: #bbb;
+    }
+
+    .auth-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+
+    .auth-submit:hover {
+      background: var(--brand-dark);
+    }
+
+    .auth-check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+
+    .auth-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .auth-checkbox.checked {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: var(--white);
+    }
+
+    .auth-check-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .auth-check-text a {
+      color: var(--brand);
+      font-weight: 700;
+    }
+
+    .auth-link-row {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brand);
+      cursor: pointer;
+    }
+
+    .auth-link-row:hover {
+      text-decoration: underline;
+    }
+
+    /* Auth screens (login, signup, forgot, reset-sent) */
+    .auth-screen {
+      display: none;
+    }
+
+    .auth-screen.active {
+      display: block;
+    }
+
+    .auth-sent-icon {
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+
+    .auth-sent-icon i {
+      font-size: 48px;
+      color: var(--brand);
+    }
+
+    .auth-sent-title {
+      text-align: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--black);
+      margin-top: 16px;
+    }
+
+    .auth-sent-desc {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      font-weight: 700;
+      margin-top: 10px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="inner">
+      <div class="header-logo"><span>KING</span> and <span>QUEEN</span></div>
+      <div class="header-actions">
+        <a href="#" class="btn-outline">ログイン</a>
+        <a href="#" class="btn-fill">新規登録</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <canvas class="hero-canvas" id="heroCanvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">&copy; Yext認定サービス</div>
+      <h1>まだトークン獲得無しで<br>FXやってるの？</h1>
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="about">
+    <div class="inner">
+      <h2 class="section-title">
+        <span class="logo-inline"><span>KING</span> and <span>QUEEN</span></span>って、なに？
+      </h2>
+
+      <div class="about-cards">
+        <div class="about-card about-card--king">
+          <i class="fas fa-crown"></i>
+          <div class="about-card-label">KING</div>
+        </div>
+        <div class="about-card about-card--queen">
+          <i class="fas fa-crown"></i>
+          <div class="about-card-label">QUEEN</div>
+        </div>
+      </div>
+
+      <div class="about-text">
+        <p>KING and QUEENは、海外FX取引を行うユーザーに対して独自のロイヤリティトークンを付与する、次世代のリワードプラットフォームです。</p>
+        <p>お客様が対象の海外FXブローカーで取引を行うたびに、取引量に応じたトークンが自動的に付与されます。獲得したトークンは将来的に様々な特典と交換することが可能です。</p>
+        <p>面倒な手続きは一切不要。会員登録と口座連携だけで、いつもの取引がそのままリワードに変わります。</p>
+      </div>
+
+      <a href="#" class="btn-cta">登録無料はこちら <span>&rarr;</span></a>
+    </div>
+  </section>
+
+  <!-- ===== Steps ===== -->
+  <section class="steps">
+    <div class="inner">
+      <h2 class="section-title">サービス開始までの流れ</h2>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon step-icon--register">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h3>King and Queen会員登録</h3>
+          <p>まずはKING and QUEENの会員登録を行います。メールアドレスと基本情報を入力するだけで簡単に完了します。</p>
+          <a href="#" class="btn-step">会員登録はこちら <span>&rarr;</span></a>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon step-icon--account">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>海外FX口座開設</h3>
+          <p>対象の海外FXブローカーで口座を開設し、KING and QUEENと連携します。既にお持ちの口座もご利用いただけます。</p>
+          <a href="#" class="btn-step">ログインはこちら <span>&rarr;</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq">
+    <div class="inner">
+      <h2 class="section-title">よくある質問</h2>
+
+      <ul class="faq-list">
+        <li class="faq-item">
+          <button class="faq-question">
+            キングクイーンとはなんですか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">KING and QUEENは、海外FX取引を行うユーザーに独自のロイヤリティトークンを付与するリワードプラットフォームです。対象のブローカーで取引を行うだけで、自動的にトークンが貯まります。</div>
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question">
+            キングアンドクイーントークンとはなんですか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">キングアンドクイーントークンは、KING and QUEENプラットフォームで付与される独自のデジタルトークンです。取引量に応じて付与され、将来的に様々な特典やサービスと交換することができます。</div>
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question">
+            トークンはいつ受け取ることになりますか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">トークンは対象の海外FXブローカーで取引を行った後、取引量に応じて自動的に付与されます。付与のタイミングはブローカーからの取引データ連携後となります。</div>
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question">
+            口座開設するのは何ですか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">KING and QUEENと提携している海外FXブローカーの取引口座を開設していただきます。この口座での取引がトークン付与の対象となります。既にお持ちの口座を連携することも可能です。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Partners ===== -->
+  <section class="partners">
+    <div class="inner">
+      <div class="partners-logos">
+        <div class="partner-logo">exness</div>
+        <div class="partner-logo">Fireblocks</div>
+        <div class="partner-logo">IZAKA-YA</div>
+        <div class="partner-logo">H&amp;W Sisters</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="inner">
+      <div class="footer-logo"><span>KING</span> and <span>QUEEN</span></div>
+
+      <div class="footer-links">
+        <a href="#">会社概要</a>
+        <a href="#">お問い合わせフォーム</a>
+        <a href="#">プライバシーポリシー</a>
+        <a href="#">利用規約</a>
+      </div>
+
+      <div class="footer-social">
+        <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+        <a href="#" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+        <a href="#" aria-label="Youtube"><i class="fab fa-youtube"></i></a>
+      </div>
+
+      <div class="footer-copy">&copy; KING and QUEEN. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- ===== Auth Modal ===== -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="authClose"><i class="fas fa-times"></i></button>
+
+      <div class="auth-modal-logo">
+        <i class="fas fa-chess-king"></i>
+        <h2><em>KING</em> and <em>QUEEN</em></h2>
+        <p id="authSubtitle">アカウントにサインイン</p>
+      </div>
+
+      <!-- Login Screen -->
+      <div class="auth-screen active" id="screenLogin">
+        <div class="auth-tabs">
+          <div class="auth-tab active" data-target="login">ログイン</div>
+          <div class="auth-tab" data-target="signup">アカウントを作成</div>
+        </div>
+        <div class="auth-field-label">メールアドレス</div>
+        <input class="auth-input" type="email" placeholder="mail@example.com">
+        <div class="auth-field-label">パスワード</div>
+        <input class="auth-input" type="password" placeholder="••••••••">
+        <button class="auth-submit" id="doLogin">ログイン</button>
+        <div class="auth-link-row" id="goForgot">パスワードをお忘れの方</div>
+      </div>
+
+      <!-- Signup Screen -->
+      <div class="auth-screen" id="screenSignup">
+        <div class="auth-tabs">
+          <div class="auth-tab" data-target="login">ログイン</div>
+          <div class="auth-tab active" data-target="signup">アカウントを作成</div>
+        </div>
+        <div class="auth-field-label">メールアドレス</div>
+        <input class="auth-input" type="email" placeholder="mail@example.com">
+        <div class="auth-field-label">パスワード</div>
+        <input class="auth-input" type="password" placeholder="••••••••">
+        <div class="auth-field-label">パスワード（確認）</div>
+        <input class="auth-input" type="password" placeholder="••••••••">
+        <div class="auth-check-row" id="authAgree">
+          <div class="auth-checkbox" id="authCheckbox"></div>
+          <span class="auth-check-text"><a href="#">利用規約</a>・<a href="#">プライバシーポリシー</a>に同意する</span>
+        </div>
+        <button class="auth-submit" id="doSignup">アカウントを作成</button>
+        <div class="auth-link-row" id="goLoginFromSignup">既にアカウントをお持ちの方はこちら</div>
+      </div>
+
+      <!-- Forgot Password Screen -->
+      <div class="auth-screen" id="screenForgot">
+        <div class="auth-field-label">登録メールアドレス</div>
+        <input class="auth-input" type="email" placeholder="mail@example.com">
+        <button class="auth-submit" id="sendReset">リセットメールを送信</button>
+        <div class="auth-link-row" id="goLoginFromForgot">ログインに戻る</div>
+      </div>
+
+      <!-- Reset Sent Screen -->
+      <div class="auth-screen" id="screenResetSent">
+        <div class="auth-sent-icon"><i class="fas fa-envelope-open-text"></i></div>
+        <div class="auth-sent-title">リセットメールを送信しました</div>
+        <div class="auth-sent-desc">メールをご確認ください。<br>メール内のリンクからパスワードを再設定してください。</div>
+        <button class="auth-submit" id="goLoginFromReset">ログインへ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Scripts ===== -->
+  <script>
+    /* --- FAQ Accordion --- */
+    document.querySelectorAll('.faq-question').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('.faq-item');
+        var isOpen = item.classList.contains('is-open');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(function (el) {
+          el.classList.remove('is-open');
+        });
+
+        // Toggle current
+        if (!isOpen) {
+          item.classList.add('is-open');
+        }
+      });
+    });
+
+    /* --- Auth Modal Navigation --- */
+    (function () {
+      var overlay = document.getElementById('authOverlay');
+      var subtitle = document.getElementById('authSubtitle');
+      var screens = {
+        login: document.getElementById('screenLogin'),
+        signup: document.getElementById('screenSignup'),
+        forgot: document.getElementById('screenForgot'),
+        resetSent: document.getElementById('screenResetSent')
+      };
+
+      var subtitles = {
+        login: 'アカウントにサインイン',
+        signup: '新規アカウント作成',
+        forgot: 'パスワードをお忘れの方',
+        resetSent: 'パスワードをお忘れの方'
+      };
+
+      function showScreen(name) {
+        Object.keys(screens).forEach(function (k) {
+          screens[k].classList.toggle('active', k === name);
+        });
+        subtitle.textContent = subtitles[name];
+      }
+
+      function openAuth(name) {
+        showScreen(name);
+        overlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeAuth() {
+        overlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      // Header buttons
+      document.querySelector('.header-actions .btn-outline').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('login');
+      });
+      document.querySelector('.header-actions .btn-fill').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('signup');
+      });
+
+      // CTA buttons in body
+      document.querySelector('.about .btn-cta').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('signup');
+      });
+
+      // Steps buttons
+      var stepBtns = document.querySelectorAll('.btn-step');
+      stepBtns[0].addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('signup');
+      });
+      stepBtns[1].addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('login');
+      });
+
+      // Close
+      document.getElementById('authClose').addEventListener('click', closeAuth);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeAuth();
+      });
+
+      // Tab switching
+      document.querySelectorAll('.auth-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          showScreen(tab.dataset.target);
+        });
+      });
+
+      // Links
+      document.getElementById('goForgot').addEventListener('click', function () {
+        showScreen('forgot');
+      });
+      document.getElementById('goLoginFromSignup').addEventListener('click', function () {
+        showScreen('login');
+      });
+      document.getElementById('goLoginFromForgot').addEventListener('click', function () {
+        showScreen('login');
+      });
+      document.getElementById('sendReset').addEventListener('click', function () {
+        showScreen('resetSent');
+      });
+      document.getElementById('goLoginFromReset').addEventListener('click', function () {
+        showScreen('login');
+      });
+
+      // Checkbox toggle
+      document.getElementById('authAgree').addEventListener('click', function () {
+        var cb = document.getElementById('authCheckbox');
+        cb.classList.toggle('checked');
+        if (cb.classList.contains('checked')) {
+          cb.innerHTML = '<i class="fas fa-check" style="font-size:12px"></i>';
+        } else {
+          cb.innerHTML = '';
+        }
+      });
+
+      // Login / Signup → navigate to user app
+      document.getElementById('doLogin').addEventListener('click', function () {
+        window.location.href = 'index.html?app';
+      });
+      document.getElementById('doSignup').addEventListener('click', function () {
+        window.location.href = 'index.html?app';
+      });
+
+      // ESC key
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAuth();
+      });
+    })();
+
+    /* --- Hero Particle Canvas --- */
+    (function () {
+      var canvas = document.getElementById('heroCanvas');
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var particles = [];
+      var count = 60;
+
+      function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }
+
+      function init() {
+        resize();
+        particles = [];
+        for (var i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.5 + 0.5,
+            dx: (Math.random() - 0.5) * 0.4,
+            dy: (Math.random() - 0.5) * 0.4,
+            alpha: Math.random() * 0.5 + 0.2
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,' + p.alpha + ')';
+          ctx.fill();
+
+          p.x += p.dx;
+          p.y += p.dy;
+
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+        }
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', resize);
+      init();
+      draw();
+    })();
+  </script>
+</body>
+</html>

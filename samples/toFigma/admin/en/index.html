@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KING and QUEEN Admin - Figma Export (All Screens + Modals) [EN]</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+:root{
+  --r: 12px;
+  --r2: 16px;
+
+  /* Brand (match @user) */
+  --brand:#C62828;
+  --brand-700:#B71C1C;
+  --brand-50:#FEF2F2;
+  --gold: var(--brand);
+
+  --ok:#15803d;
+  --warn:#b45309;
+  --err:#b91c1c;
+  --neu:#6b7280;
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: "Noto Sans JP", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+  /* Light (default) */
+  --bg: #F3F4F6;     /* gray-100 */
+  --panel:#ffffff;
+  --card:#ffffff;
+  --text:#1F2937;    /* gray-800 */
+  --muted:#6B7280;   /* gray-500 */
+  --line:#E5E7EB;    /* gray-200 */
+
+  --shadow: 0 1px 2px rgba(15,23,42,.06);
+  --shadow2: 0 10px 15px rgba(15,23,42,.06);
+  --focus: 0 0 0 3px rgba(198,40,40,.25);
+
+  --thead-bg:#F9FAFB; /* gray-50 */
+  --table-bg:#ffffff;
+}
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--text);
+    background: var(--bg);
+  }
+
+  .gold{color:var(--brand)}
+  .muted{color:var(--muted)}
+  .ok-text{color:var(--ok)}
+  .err-text{color:var(--err)}
+  .code{font-family:var(--mono); font-size:.92em; color: rgba(31,41,55,.75)}
+
+  .app{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height:100vh;
+    background: var(--bg);
+  }
+
+  /* ===== LOGIN OVERLAY ===== */
+  .login-overlay{
+    position:fixed; inset:0; z-index:100;
+    display:grid; place-items:center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding:18px;
+  }
+  .login-overlay.is-hidden{ display:none; }
+  .login-card{
+    width:min(420px, 100%);
+    border-radius: var(--r2);
+    background: #ffffff;
+    box-shadow: 0 25px 50px rgba(0,0,0,.25);
+    overflow:hidden;
+  }
+  .login-brand{
+    text-align:center;
+    padding:36px 24px 24px;
+    background: var(--brand);
+    color:#fff;
+  }
+  .login-brand-icon{
+    font-size:2.5rem;
+    margin-bottom:12px;
+    display:block;
+  }
+  .login-brand-title{
+    font-weight:900;
+    font-size:1.6rem;
+    letter-spacing:.04em;
+  }
+  .login-brand-title .gold{ color:#FFD54F; }
+  .login-brand-sub{
+    margin-top:4px;
+    font-size:.9rem;
+    opacity:.85;
+  }
+  .login-form{
+    padding:28px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .login-error{
+    text-align:center;
+    color:var(--err);
+    font-size:.9rem;
+    padding:8px;
+    border-radius:8px;
+    background:#FEF2F2;
+    border:1px solid #FECACA;
+  }
+
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:0;
+    background: var(--panel);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    box-shadow: var(--shadow);
+  }
+
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:16px 16px 14px;
+    border-bottom:1px solid rgba(229,231,235,.7);
+    background: var(--panel);
+  }
+  .brand-icon{
+    font-size:1.75rem;
+    color: var(--brand);
+  }
+  .brand-title{font-weight:800; letter-spacing:.03em}
+  .brand-sub{color:var(--muted); font-size:.9rem; margin-top:2px}
+
+  .nav{display:flex; flex-direction:column; gap:6px}
+  .nav-section{
+    margin:10px 10px 4px;
+    color:var(--muted);
+    font-size:.8rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .nav-item{
+    width:100%;
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px;
+    border-radius: 10px;
+    border:1px solid transparent;
+    background:transparent;
+    color: #4B5563;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .nav-item .material-icons{font-size:20px; color: currentColor}
+  .nav-item:hover{
+    background: #F9FAFB;
+    color: #111827;
+  }
+  .nav-item:focus{outline:none; box-shadow: var(--focus)}
+  .nav-item.is-active{
+    background: var(--brand-50);
+    color: var(--brand);
+    border-right: 4px solid var(--brand);
+    font-weight: 700;
+    border-radius: 0;
+  }
+  .badge{
+    margin-left:auto;
+    min-width:22px;
+    height:20px;
+    padding:0 8px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background: #F3F4F6;
+    border:1px solid #E5E7EB;
+    font-size:.78rem;
+    color:#374151;
+  }
+
+  .sidebar-footer{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:14px 16px 16px;
+    border-top:1px solid rgba(229,231,235,.7);
+    background: #F9FAFB;
+  }
+  .chip{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    background: #ffffff;
+    border:1px solid #E5E7EB;
+  }
+  .chip-k{color:var(--muted); font-size:.9rem}
+  .chip-v{font-weight:700}
+
+  .main{display:flex; flex-direction:column; min-width:0}
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:14px 24px;
+    background: #ffffff;
+    border-bottom:1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .topbar-left{display:flex; align-items:center; gap:12px}
+  .topbar-right{display:flex; align-items:center; gap:8px}
+  #pageTitle{margin:0; font-size:1.1rem}
+  .crumb{color:var(--muted); font-size:.9rem; margin-top:2px}
+  .notification-btn{
+    position:relative;
+    color: var(--muted);
+  }
+  .notification-btn:hover{color: var(--brand)}
+  .notification-btn .fa-bell{font-size:1.25rem}
+  .notification-dot{
+    display:none;
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:8px;
+    height:8px;
+    background: var(--err);
+    border-radius:50%;
+  }
+  .notification-dot.has-notice{display:block}
+
+  .search{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid #E5E7EB;
+    background: #F9FAFB;
+    border-radius: 999px;
+    padding:8px 10px;
+    min-width: 360px;
+  }
+  .search input{
+    width:100%;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--text);
+  }
+  .search .material-icons{font-size:20px; color:#9CA3AF}
+
+  .icon-btn{
+    border:none;
+    background:transparent;
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    width:34px;height:34px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .icon-btn:hover{background: rgba(17,24,39,.06)}
+  .icon-btn:focus{outline:none; box-shadow: var(--focus)}
+
+  .only-mobile{display:none}
+
+  .content{padding:18px; display:block}
+  .footer{padding:12px 18px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem}
+
+  .grid{display:grid; gap:14px}
+  .grid.cards{grid-template-columns: repeat(4, minmax(0,1fr))}
+  .grid.two{grid-template-columns: repeat(2, minmax(0,1fr))}
+  .grid.three{grid-template-columns: repeat(3, minmax(0,1fr))}
+  .grid-span-2{grid-column:1/-1}
+  .chart-wrap{min-height:220px; position:relative}
+
+  .card, .panel{
+    border-radius: var(--r2);
+    border:1px solid rgba(229,231,235,.7);
+    background: #ffffff;
+    box-shadow: var(--shadow);
+  }
+  .card{padding:14px}
+  .card-h{color:var(--muted); font-size:.95rem}
+  .card-v{font-size:2rem; font-weight:900; margin-top:6px}
+  .card-s{color:var(--muted); margin-top:6px; font-size:.9rem}
+
+  .panel-h{
+    padding:14px 14px 10px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-title{font-weight:900}
+  .panel-sub{color:var(--muted); font-size:.92rem; margin-top:4px}
+  .panel-b{padding:14px}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 12px;
+    border-radius: 10px;
+    border:1px solid var(--brand);
+    background: var(--brand);
+    color:#ffffff;
+    cursor:pointer;
+    transition:.15s ease;
+    font-weight:700;
+  }
+  .btn:hover{transform: translateY(-1px); background: var(--brand-700); border-color: var(--brand-700)}
+  .btn:focus{outline:none; box-shadow: var(--focus)}
+  .btn.ghost{
+    border:1px solid #D1D5DB;
+    background: #ffffff;
+    color: #374151;
+  }
+  .btn.ghost:hover{background: #F9FAFB}
+  .w100{width:100%; justify-content:center}
+  .btn.small{padding:6px 10px; font-size:.9rem}
+
+  .toolbar{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    gap:12px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .field{display:flex; flex-direction:column; gap:6px; min-width: 200px}
+  .field label{color:var(--muted); font-size:.85rem}
+  .field input, .field select, .field textarea{
+    padding:10px 12px;
+    border-radius: 10px;
+    border:1px solid #D1D5DB;
+    background: #ffffff;
+    color: #111827;
+    outline:none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{box-shadow: var(--focus); border-color: rgba(198,40,40,.45)}
+  .hint{color:var(--muted); font-size:.9rem}
+
+  .table-wrap{
+    border:1px solid #E5E7EB;
+    border-radius: var(--r2);
+    overflow:hidden;
+    background: var(--table-bg);
+  }
+  .table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:.92rem;
+  }
+  .table thead th{
+    position:sticky; top:0;
+    background: var(--thead-bg);
+    border-bottom:1px solid #E5E7EB;
+    padding:12px 12px;
+    text-align:left;
+    color:#4B5563;
+    font-weight: 700;
+  }
+  .table tbody td{
+    padding:12px 12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  .table tbody tr:hover{background: #F9FAFB}
+  .table .right{text-align:right}
+
+  .pill{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:6px 10px;
+    border-radius: 999px;
+    border:1px solid #E5E7EB;
+    background: #F3F4F6;
+    font-size:.78rem;
+    font-weight:800;
+  }
+  .pill.ok{border-color: #BBF7D0; background: #DCFCE7; color: var(--ok)}
+  .pill.warn{border-color: #FDE68A; background: #FEF3C7; color: var(--warn)}
+  .pill.err{border-color: #FECACA; background: #FEE2E2; color: var(--err)}
+  .pill.neu{border-color: #E5E7EB; background: #F3F4F6; color: var(--neu)}
+  .pill.info{border-color: #BFDBFE; background: #DBEAFE; color: #1D4ED8}
+
+  .kv-row{
+    display:flex; justify-content:space-between; gap:10px;
+    padding:10px 12px;
+    border-radius: 12px;
+    border:1px solid #E5E7EB;
+    background: #F9FAFB;
+    margin-bottom:10px;
+  }
+  .kv-k{color:var(--muted)}
+  .kv-v{font-weight:900}
+
+  .flow-steps{margin:0; padding-left:18px; color:var(--muted)}
+  .flow-steps li{margin:10px 0}
+  .flow-steps li.done{color:rgba(49,208,123,.95)}
+  .flow-steps li.active{color: rgba(198,40,40,.95)}
+
+  .notice{
+    display:flex; gap:10px;
+    padding:12px;
+    border-radius: var(--r2);
+    border:1px solid #DBEAFE;
+    background: #EFF6FF;
+    margin-bottom:12px;
+  }
+  .notice.subtle{border-color: #E5E7EB; background: #F9FAFB}
+  .notice.err{border-color: #FECACA; background: #FEF2F2}
+  .notice-title{font-weight:900}
+  .notice-body{color:var(--muted); font-size:.92rem; margin-top:2px}
+
+  .stat{
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    border-radius: var(--r2);
+    padding:12px;
+  }
+  .stat-k{color:var(--muted); font-size:.85rem}
+  .stat-v{font-weight:900; margin-top:6px}
+
+  .logbox{
+    margin-top:12px;
+    border-radius: var(--r2);
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    padding:10px 12px;
+  }
+
+  /* CSV import */
+  .import-grid{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap:14px;
+    margin-bottom: 12px;
+  }
+  .import-drop{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    border-radius: var(--r2);
+    border: 2px dashed #E5E7EB;
+    background: #ffffff;
+    cursor:pointer;
+    transition: .15s ease;
+    outline: none;
+  }
+  .import-drop:hover{ background:#F9FAFB; }
+  .import-drop:focus{ box-shadow: var(--focus); }
+  .import-drop.is-dragover{
+    border-color: rgba(198,40,40,.45);
+    background: rgba(198,40,40,.04);
+  }
+  .import-drop-ic{
+    width:44px;height:44px;
+    border-radius: 12px;
+    background: #F3F4F6;
+    display:grid;
+    place-items:center;
+    color: #6B7280;
+  }
+  .import-drop-title{ font-weight:900; }
+  .import-drop-sub{ color: var(--muted); font-size:.92rem; margin-top:2px; }
+  .import-side{ display:flex; flex-direction:column; gap:10px; }
+  .import-meta{
+    border:1px solid #E5E7EB;
+    background:#ffffff;
+    border-radius: 12px;
+    padding:10px 12px;
+  }
+  .import-stats{ margin-top: 10px; }
+  .errorbox{
+    border:1px solid #FECACA;
+    background:#FEF2F2;
+    border-radius: var(--r2);
+    padding:12px;
+    margin: 10px 0;
+  }
+  .errorbox-title{ font-weight:900; color:#991B1B; }
+  .errorbox-list{ margin:8px 0 0; padding-left: 18px; color:#7F1D1D; }
+  .logbox summary{cursor:pointer; color:var(--muted); font-weight:800}
+  .logbox pre{margin:10px 0 0; white-space:pre-wrap; color: rgba(15,23,42,.86)}
+
+  .empty{
+    padding:18px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  .view.is-hidden{display:none}
+  .is-hidden{display:none !important}
+
+  .account-slide{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .account-slide.is-open{
+    max-height: 220px;
+  }
+  .account-panel{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:10px 0 0;
+  }
+  .account-chip{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#ffffff;
+    border:1px solid #E5E7EB;
+  }
+  .account-chip .chip-k{color:var(--muted); font-size:.9rem}
+  .account-chip .chip-v{font-weight:700}
+  .withdrawal-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .withdrawal-btns{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .accounts-cell .account-item{
+    display:block;
+    margin:4px 0;
+    font-size:.9rem;
+  }
+
+  .modal{
+    position:fixed; inset:0; z-index:30;
+    display:grid; place-items:center;
+    background: rgba(0,0,0,.55);
+    padding:18px;
+  }
+  .modal.is-hidden{display:none}
+  .modal-card{
+    width:min(720px, 100%);
+    max-height: 90vh;
+    border-radius: var(--r2);
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .modal-h, .modal-f{
+    padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .modal-f{border-bottom:none; border-top:1px solid var(--line)}
+  .modal-b{padding:14px; overflow-y:auto; flex:1}
+  .modal-title{font-weight:900}
+
+  /* ===== DRAWER ===== */
+  .drawer-overlay{
+    position:fixed; inset:0; z-index:35;
+    background: rgba(0,0,0,.45);
+    transition: opacity .2s;
+  }
+  .drawer-overlay.is-hidden{ display:none; }
+  .drawer{
+    position:fixed;
+    top:0; right:0; bottom:0;
+    width:min(560px, 90vw);
+    z-index:36;
+    background: #ffffff;
+    border-left:1px solid var(--line);
+    box-shadow: -10px 0 30px rgba(0,0,0,.12);
+    display:flex;
+    flex-direction:column;
+    transform: translateX(0);
+    transition: transform .25s ease;
+  }
+  .drawer.is-hidden{
+    transform: translateX(100%);
+    pointer-events:none;
+  }
+  .drawer-h{
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .drawer-title{font-weight:900; font-size:1.05rem}
+  .drawer-b{
+    padding:16px;
+    overflow-y:auto;
+    flex:1;
+  }
+  .drawer-f{
+    padding:12px 16px;
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .drawer-section{
+    margin-bottom:16px;
+  }
+  .drawer-section-title{
+    font-weight:800;
+    font-size:.9rem;
+    color:var(--muted);
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+
+  /* ===== TAB BAR ===== */
+  .tab-bar{
+    display:flex;
+    gap:0;
+    border-bottom:2px solid var(--line);
+    margin-bottom:14px;
+  }
+  .tab-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 16px;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-2px;
+    font-weight:700;
+    transition:.15s ease;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.is-active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+  }
+  .tab-btn .material-icons{ font-size:18px; }
+  .tab-btn .badge{ margin-left:4px; }
+  .tab-panel.is-hidden{ display:none; }
+
+  /* ===== PAGINATION ===== */
+  .pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 0;
+  }
+  .pagination .btn{
+    padding:6px 12px;
+    font-size:.88rem;
+  }
+  .pagination .page-info{
+    color:var(--muted);
+    font-size:.9rem;
+    font-weight:700;
+  }
+
+  .toasts{
+    position:fixed; right:16px; bottom:16px; z-index:40;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .toast{
+    width:min(360px, calc(100vw - 32px));
+    border-radius: 16px;
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    padding:12px 12px;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .toast .t-title{font-weight:900}
+  .toast .t-body{color:var(--muted); font-size:.9rem; margin-top:2px}
+  .toast.ok{border-color: rgba(49,208,123,.22)}
+  .toast.err{border-color: rgba(255,90,107,.22)}
+  .toast.warn{border-color: rgba(255,204,102,.22)}
+
+  .overlay{
+    position:fixed; inset:0; z-index:20;
+    background: rgba(0,0,0,.55);
+  }
+
+  /* Rate pulse animation */
+  @keyframes ratePulse {
+    0% { opacity: 1; }
+    30% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+  .rate-pulse {
+    animation: ratePulse 0.6s ease-in-out;
+  }
+
+  .rate-card { border-left: 4px solid var(--brand); }
+  .rate-card .card-v { font-size: 1.5rem; letter-spacing: -.02em; }
+
+  .rate-card-panel { border-left: 4px solid var(--brand); }
+
+  .btn.danger {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn.danger:hover { background: #b91c1c; border-color: #b91c1c; }
+  .btn.danger:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn.warn-btn {
+    background: #F59E0B;
+    border-color: #F59E0B;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn.warn-btn:hover { background: #D97706; border-color: #D97706; }
+
+  .total-row td { border-top: 2px solid var(--line); background: var(--panel); }
+
+  .rate-pulse-cell { font-weight: 700; color: var(--brand); }
+
+  /* CSS Dropzone */
+  .csv-dropzone {
+    border: 2px dashed var(--line);
+    border-radius: var(--r2);
+    padding: 48px 32px;
+    text-align: center;
+    background: var(--bg);
+    transition: border-color .25s, background .25s, box-shadow .25s, transform .2s;
+    cursor: pointer;
+  }
+  .csv-dropzone:hover,
+  .csv-dropzone.is-dragover {
+    border-color: var(--brand);
+    background: rgba(198, 40, 40, .03);
+    box-shadow: 0 0 0 4px rgba(198, 40, 40, .08);
+  }
+  .csv-dropzone.is-dragover {
+    transform: scale(1.01);
+    background: rgba(198, 40, 40, .06);
+    border-style: solid;
+  }
+  .csv-dropzone-icon-area {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(198, 40, 40, .06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    transition: background .25s, transform .25s;
+  }
+  .csv-dropzone:hover .csv-dropzone-icon-area,
+  .csv-dropzone.is-dragover .csv-dropzone-icon-area {
+    background: rgba(198, 40, 40, .12);
+    transform: scale(1.08);
+  }
+  .csv-dropzone-icon {
+    font-size: 2.2rem;
+    color: var(--brand);
+    opacity: .55;
+    display: block;
+    transition: opacity .25s, transform .25s;
+  }
+  .csv-dropzone:hover .csv-dropzone-icon,
+  .csv-dropzone.is-dragover .csv-dropzone-icon {
+    opacity: .9;
+    transform: translateY(-2px);
+  }
+  .csv-dropzone-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .csv-dropzone-sub {
+    font-size: .88rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .csv-dropzone-or {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+    position: relative;
+    display: inline-block;
+    padding: 0 12px;
+  }
+  .csv-dropzone-or::before,
+  .csv-dropzone-or::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: var(--line);
+  }
+  .csv-dropzone-or::before { right: 100%; }
+  .csv-dropzone-or::after { left: 100%; }
+  .csv-dropzone-formats {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .csv-format-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-size: .78rem;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: .02em;
+  }
+  .csv-dropzone-hint {
+    font-size: .8rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+  .csv-dropzone .btn {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* Form grid */
+  .form-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:14px;
+  }
+  @media (max-width:600px){
+    .form-grid{ grid-template-columns: 1fr; }
+  }
+
+  /* Toggle switch */
+  .toggle-switch{
+    position:relative;
+    display:inline-block;
+    width:44px; height:24px;
+  }
+  .toggle-switch input{
+    opacity:0; width:0; height:0;
+  }
+  .toggle-slider{
+    position:absolute; cursor:pointer;
+    top:0; left:0; right:0; bottom:0;
+    background:#D1D5DB;
+    border-radius:24px;
+    transition:.2s;
+  }
+  .toggle-slider:before{
+    content:"";
+    position:absolute;
+    height:18px; width:18px;
+    left:3px; bottom:3px;
+    background:#fff;
+    border-radius:50%;
+    transition:.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider{
+    background:var(--brand);
+  }
+  .toggle-switch input:checked + .toggle-slider:before{
+    transform:translateX(20px);
+  }
+
+  /* === Figma Export Mode (body.figma-export scope) === */
+  body.figma-export .login-overlay { display: none !important; }
+  body.figma-export .modal, body.figma-export .drawer, body.figma-export .drawer-overlay, body.figma-export .overlay { display: none !important; }
+  body.figma-export .topbar, body.figma-export .footer { display: none !important; }
+  body.figma-export .toasts { display: none !important; }
+  body.figma-export .view.is-hidden { display: block !important; }
+  body.figma-export .view { display: block !important; }
+  body.figma-export .sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  body.figma-export .app {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+  body.figma-export .main { margin-left: 0 !important; }
+  body.figma-export .content { max-width: 1400px; margin: 0 auto; }
+
+  /* Labels */
+  body.figma-export .figma-label {
+    background: #C62828;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "Noto Sans JP", sans-serif;
+    border-radius: 12px 12px 0 0;
+    margin-top: 60px;
+  }
+  body.figma-export .figma-label:first-of-type { margin-top: 20px; }
+
+  /* View border */
+  body.figma-export .figma-label + .view {
+    border: 3px solid #C62828;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    margin-bottom: 20px;
+    padding: 24px;
+    background: #F9FAFB;
+  }
+
+  /* Sidebar label */
+  body.figma-export .figma-sidebar-label {
+    background: #C62828;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "Noto Sans JP", sans-serif;
+    border-radius: 12px 12px 0 0;
+    margin: 20px 0 0;
+  }
+  body.figma-export .figma-sidebar-label + .sidebar {
+    border: 3px solid #C62828 !important;
+    border-top: none !important;
+    border-radius: 0 0 12px 12px !important;
+  }
+
+  /* Page title */
+  body.figma-export .figma-page-title {
+    text-align: center;
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin: 40px 24px 20px;
+    color: #1F2937;
+  }
+
+  /* Login standalone section */
+  body.figma-export .figma-login-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  body.figma-export .figma-login-section .login-overlay {
+    display: grid !important;
+    position: relative !important;
+    min-height: 500px;
+    border: 3px solid #C62828;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  /* Modal sections for Figma export */
+  body.figma-export .figma-modal-section {
+    background: #F9FAFB;
+    border: 3px solid #C62828;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  body.figma-export .figma-modal-section .modal-card {
+    border: 1px solid #E5E7EB;
+    border-radius: var(--r2);
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  </style>
+</head>
+<body>
+  <script>
+    const ADMIN_SAMPLE_BASE = '../../../admin/';
+
+    const VIEW_LABELS = {
+      'view-dashboard': 'Dashboard',
+      'view-approvalTasks': 'Approval Tasks',
+      'view-scraper': 'CSV Import & Ledger Sync',
+      'view-users': 'User Management',
+      'view-ledger': 'Token Ledger',
+      'view-announcements': 'Announcements',
+      'view-settings': 'Master Settings',
+    };
+
+    fetch(ADMIN_SAMPLE_BASE + 'sample.html')
+      .then(r => r.text())
+      .then(html => {
+        document.body.innerHTML = html;
+        document.body.classList.add('figma-export');
+
+        // Insert page title
+        const title = document.createElement('div');
+        title.className = 'figma-page-title';
+        title.textContent = 'KING and QUEEN Admin Console - All Screens';
+        document.body.insertBefore(title, document.body.firstChild);
+
+        // Load sample.js
+        const s = document.createElement('script');
+        s.src = ADMIN_SAMPLE_BASE + 'sample.js';
+        s.onload = () => {
+          setTimeout(() => {
+            injectLabels();
+            showBothApprovalTabs();
+            cloneLoginSection();
+            buildModalSections();
+            // Apply English translations after all content is rendered
+            setTimeout(applyAdminTranslations, 200);
+          }, 800);
+        };
+        document.body.appendChild(s);
+      });
+
+    function injectLabels() {
+      // Label before sidebar
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar && !sidebar.previousElementSibling?.classList?.contains('figma-sidebar-label')) {
+        const label = document.createElement('div');
+        label.className = 'figma-sidebar-label';
+        label.textContent = 'Sidebar Navigation';
+        sidebar.parentNode.insertBefore(label, sidebar);
+      }
+
+      // Labels before each view
+      document.querySelectorAll('.view').forEach(view => {
+        if (view.previousElementSibling?.classList?.contains('figma-label')) return;
+        const label = document.createElement('div');
+        label.className = 'figma-label';
+        label.textContent = VIEW_LABELS[view.id] || view.id;
+        view.parentNode.insertBefore(label, view);
+      });
+    }
+
+    function showBothApprovalTabs() {
+      // Show both tab panels (account linking and withdrawal requests)
+      const hiddenPanels = document.querySelectorAll('#view-approvalTasks .tab-panel.is-hidden');
+      hiddenPanels.forEach(p => p.classList.remove('is-hidden'));
+
+      // Mark both tab buttons as active
+      const tabBtns = document.querySelectorAll('#approvalTabBar .tab-btn');
+      tabBtns.forEach(btn => btn.classList.add('is-active'));
+    }
+
+    function cloneLoginSection() {
+      const loginOverlay = document.querySelector('.login-overlay');
+      if (!loginOverlay) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'figma-login-section';
+
+      const label = document.createElement('div');
+      label.className = 'figma-label';
+      label.textContent = 'Login Screen';
+      label.style.marginTop = '60px';
+
+      const clone = loginOverlay.cloneNode(true);
+      clone.classList.remove('is-hidden');
+      clone.id = 'loginOverlayClone';
+      // Remove any error message hidden state for display
+      const errEl = clone.querySelector('.login-error');
+      if (errEl) errEl.classList.remove('is-hidden');
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(clone);
+      document.body.appendChild(wrapper);
+    }
+
+    // --- Helpers ---
+    function pill(status) {
+      const map = { APPROVED: 'ok', PENDING: 'warn', REJECTED: 'err', ACTIVE: 'ok', BANNED: 'err', PROCESSING: 'info', COMPLETED: 'ok', FAILED: 'err' };
+      return '<span class="pill ' + (map[status] || 'neu') + '">' + status + '</span>';
+    }
+
+    function pillKycStatus(status) {
+      const map = { APPROVED: 'ok', PENDING: 'warn', REJECTED: 'err', NOT_SUBMITTED: 'neu' };
+      const labels = { APPROVED: 'Approved', PENDING: 'Reviewing', REJECTED: 'Rejected', NOT_SUBMITTED: 'Not Submitted' };
+      return '<span class="pill ' + (map[status] || 'neu') + '">' + (labels[status] || status || '-') + '</span>';
+    }
+
+    function pillWithdrawalStatus(status) {
+      const map = { PENDING: 'warn', APPROVED: 'ok', PROCESSING: 'info', COMPLETED: 'ok', FAILED: 'err', CANCELLED: 'neu' };
+      const labels = { PENDING: 'Pending', APPROVED: 'Approved', PROCESSING: 'Processing', COMPLETED: 'Completed', FAILED: 'Failed', CANCELLED: 'Cancelled' };
+      return '<span class="pill ' + (map[status] || 'neu') + '">' + (labels[status] || status) + '</span>';
+    }
+
+    function money(n) {
+      return Number(n || 0).toLocaleString();
+    }
+
+    function formatAssetBalancePills(balObj) {
+      if (!balObj || typeof balObj !== 'object') return '<span class="pill neu" style="font-size:.75rem; padding:4px 8px">KQ: <b>0</b></span>';
+      return Object.entries(balObj)
+        .map(function(e) {
+          var k = e[0], v = e[1];
+          return '<span class="pill neu" style="font-size:.75rem; padding:4px 8px">' + k + ': <b>' + (typeof v === 'number' && v < 1 && v > 0 ? v.toFixed(4) : money(v)) + '</b></span>';
+        })
+        .join(' ');
+    }
+
+    function modalSection(title, bodyHTML, footerHTML) {
+      return '<div class="figma-label" style="margin-top:60px">Modal: ' + title + '</div>' +
+        '<div class="figma-modal-section">' +
+          '<div class="modal-card" style="position:relative; max-width:720px; margin:0 auto;">' +
+            '<div class="modal-h">' +
+              '<div class="modal-title">' + title + '</div>' +
+              '<button class="icon-btn" type="button"><span class="material-icons">close</span></button>' +
+            '</div>' +
+            '<div class="modal-b">' + bodyHTML + '</div>' +
+            '<div class="modal-f">' + footerHTML + '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function buildModalSections() {
+      var raw = localStorage.getItem('kq_admin_mock_v06');
+      var state = raw ? JSON.parse(raw) : {};
+      var users = state.users || [];
+      var applications = state.applications || [];
+      var withdrawals = state.withdrawals || [];
+      var ranks = state.ranks || { GOLD: { name: 'Gold', multi: 2.0 }, SILVER: { name: 'Silver', multi: 1.5 }, MEMBER: { name: 'Member', multi: 1.0 } };
+
+      // Use first user as sample
+      var u = users[0] || { id: 'U001', wallet: '0x9a...1b2c', email: 'user001@example.com', rank: 'GOLD', kycStatus: 'APPROVED', balance: { KQ: 12000, BTC: 0.05, ETH: 0.8, USDT: 500, USDC: 300, XRP: 200, JPYR: 8000, JPYC: 5000, IZAKAYA: 150 }, status: 'ACTIVE' };
+
+      // Find a PENDING application or use first
+      var pendingApp = applications.find(function(a) { return a.status === 'PENDING'; });
+      var app = pendingApp || applications[0] || { id: 'A015', date: new Date().toISOString(), userId: 'U001', broker: 'FXGT', accountNo: '14151617', status: 'PENDING' };
+      var appUser = users.find(function(x) { return x.id === app.userId; }) || u;
+
+      // Find a PENDING withdrawal or use first
+      var pendingW = withdrawals.find(function(w) { return w.status === 'PENDING'; });
+      var w = pendingW || withdrawals[0] || { id: 'W001', date: new Date().toISOString(), userId: 'U001', asset: 'KQ', amount: 1500, to: '0x9a...1b2c', status: 'PENDING', txHash: '' };
+      var wUser = users.find(function(x) { return x.id === w.userId; }) || u;
+
+      var html = '';
+
+      // 1. Account Linking Approval Modal
+      html += modalSection(
+        'Account Application Actions: ' + app.id,
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">Application Date</span><span class="kv-v">' + new Date(app.date).toLocaleString() + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">User</span><span class="kv-v">' + (appUser.id || app.userId) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Wallet</span><span class="kv-v code">' + (appUser.wallet || '-') + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Broker</span><span class="kv-v">' + app.broker + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Account Number</span><span class="kv-v code">' + app.accountNo + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Status</span><span class="kv-v">' + pill(app.status) + '</span></div>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.9rem">Please select approve or reject</p>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<div style="display:flex; gap:8px">' +
+          '<button class="btn" type="button">Approve</button>' +
+          '<button class="btn ghost" type="button">Reject</button>' +
+        '</div>'
+      );
+
+      // 2. Rejection Reason
+      html += modalSection(
+        'Enter Rejection Reason',
+        '<div class="field">' +
+          '<label>Reason (Required)</label>' +
+          '<input type="text" placeholder="e.g.: Invalid account number..." value="">' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Reject</button>'
+      );
+
+      // 3. Withdrawal Actions Modal
+      html += modalSection(
+        'Withdrawal Actions: ' + w.id,
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">User ID</span><span class="kv-v">' + (wUser.id || w.userId) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Email</span><span class="kv-v code">' + (wUser.email || '-') + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">KYC</span><span class="kv-v">' + pillKycStatus(wUser.kycStatus) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Wallet Address</span><span class="kv-v code">' + (w.to || wUser.wallet || '-') + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Held Balance</span><span class="kv-v">' + formatAssetBalancePills(wUser.balance) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Withdrawal Amount</span><span class="kv-v"><b>' + money(w.amount) + '</b> ' + w.asset + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Transfer Status</span><span class="kv-v">' + pillWithdrawalStatus(w.status) + '</span></div>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.9rem">State transition: PENDING \u2192 Approved \u2192 Processing \u2192 Completed/Failed</p>',
+        '<button class="btn ghost" type="button">Close</button>' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
+          '<button class="btn ghost" type="button">Edit</button>' +
+          '<button class="btn" type="button">Approve</button>' +
+        '</div>'
+      );
+
+      // 4. Announcement Create Form
+      html += modalSection(
+        'Create Announcement',
+        '<div class="form-grid">' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Title</label>' +
+            '<input type="text" placeholder="e.g.: Maintenance Notice" value="">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Body</label>' +
+            '<textarea rows="5" style="padding:10px 12px;border-radius:10px;border:1px solid #D1D5DB;background:#ffffff;color:#111827;outline:none;width:100%;resize:vertical;font-family:var(--sans)"></textarea>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Category</label>' +
+            '<select>' +
+              '<option value="UPDATE">Update</option>' +
+              '<option value="MAINTENANCE">Maintenance</option>' +
+              '<option value="CAMPAIGN">Campaign</option>' +
+              '<option value="OTHER">Other</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Priority</label>' +
+            '<select>' +
+              '<option value="HIGH">High</option>' +
+              '<option value="NORMAL" selected>Normal</option>' +
+              '<option value="LOW">Low</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Status</label>' +
+            '<select>' +
+              '<option value="DRAFT" selected>Draft</option>' +
+              '<option value="SCHEDULED">Scheduled</option>' +
+              '<option value="PUBLISHED">Published</option>' +
+              '<option value="ARCHIVED">Archived</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Scheduled Publish Date</label>' +
+            '<input type="datetime-local" value="">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn ghost" type="button">Save as Draft</button>' +
+        '<button class="btn ghost" type="button">Schedule</button>' +
+        '<button class="btn" type="button">Publish</button>'
+      );
+
+      // 5. Add Broker Form
+      html += modalSection(
+        'Add Partner FX Broker',
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>Code (Identifier)</label>' +
+            '<input type="text" placeholder="\u4F8B: XM, EXNESS" value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Name</label>' +
+            '<input type="text" placeholder="\u4F8B: XM Trading" value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Display Name</label>' +
+            '<input type="text" placeholder="\u4F8B: XM" value="">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Affiliate URL</label>' +
+            '<input type="text" placeholder="https://..." value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Maintenance Flag</label>' +
+            '<select>' +
+              '<option value="false" selected>Active</option>' +
+              '<option value="true">Under Maintenance (Rewards Paused)</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Active Flag</label>' +
+            '<select>' +
+              '<option value="true" selected>Active</option>' +
+              '<option value="false">Inactive</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Reward Rate %</label>' +
+            '<input type="number" min="0" max="100" step="1" value="30">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>CSV Format</label>' +
+            '<select>' +
+              '<option value="BIGBOSS">BIGBOSS</option>' +
+              '<option value="XM">XM</option>' +
+              '<option value="FXGT">FXGT</option>' +
+              '<option value="EXNESS">EXNESS</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Account Types</label>' +
+            '<input type="text" placeholder="\u4F8B: Standard" value="Standard">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>IB Currency</label>' +
+            '<select>' +
+              '<option value="USD" selected>USD</option>' +
+              '<option value="JPY">JPY</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Fee Rate %</label>' +
+            '<input type="number" min="0" max="100" step="0.1" value="0">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Campaign Multiplier Override</label>' +
+            '<input type="number" min="0" step="0.1" value="1.0">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Add</button>'
+      );
+
+      // 6. Campaign Add Form
+      html += modalSection(
+        'Add Campaign',
+        '<div class="form-grid">' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Name</label>' +
+            '<input type="text" placeholder="e.g.: Spring Campaign" value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Type</label>' +
+            '<select>' +
+              '<option value="PERIOD">Time-Limited</option>' +
+              '<option value="PER_USER">Per User</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Multiplier</label>' +
+            '<input type="number" step="0.1" min="1" value="1.5">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Start Date</label>' +
+            '<input type="date">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>End Date</label>' +
+            '<input type="date">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Add</button>'
+      );
+
+      // 7. User Actions Modal
+      html += modalSection(
+        'User Actions: ' + u.id,
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">Wallet</span><span class="kv-v code">' + u.wallet + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Rank</span><span class="kv-v">' + u.rank + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Balance</span><span class="kv-v">' + formatAssetBalancePills(u.balance) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Status</span><span class="kv-v">' + pill(u.status || 'ACTIVE') + '</span></div>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.9rem">Please select an action</p>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
+          '<button class="btn ghost" type="button">Edit</button>' +
+          '<button class="btn ghost" type="button">Force Withdrawal (BAN)</button>' +
+          '<button class="btn ghost" type="button">Confiscate Tokens</button>' +
+        '</div>'
+      );
+
+      // 8. Ban User Confirmation
+      html += modalSection(
+        'Force Withdrawal (BAN)',
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">User</span><span class="kv-v">' + u.id + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Email</span><span class="kv-v code">' + (u.email || '-') + '</span></div>' +
+        '</div>' +
+        '<div class="notice err" style="margin-bottom:14px">' +
+          '<span class="material-icons" aria-hidden="true">warning</span>' +
+          '<div><div class="notice-body">This action cannot be undone. The user will lose access to the platform.</div></div>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>BAN Reason (Required)</label>' +
+          '<input type="text" placeholder="e.g.: Suspected fraudulent use">' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn danger" type="button">Execute BAN</button>'
+      );
+
+      // 9. Token Confiscation Form
+      html += modalSection(
+        'Confiscate Tokens',
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">User</span><span class="kv-v">' + u.id + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Current Balance</span><span class="kv-v">' + formatAssetBalancePills(u.balance) + '</span></div>' +
+        '</div>' +
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>Asset to Confiscate</label>' +
+            '<select>' +
+              '<option value="ALL">All Assets</option>' +
+              '<option value="KQ">KQ (Balance: ' + money((u.balance || {}).KQ || 12000) + ')</option>' +
+              '<option value="BTC">BTC (Balance: ' + ((u.balance || {}).BTC || 0.05) + ')</option>' +
+              '<option value="ETH">ETH (Balance: ' + ((u.balance || {}).ETH || 0.8) + ')</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Confiscation Amount (Empty = Full)</label>' +
+            '<input type="number" step="any" min="0" placeholder="Leave blank for full amount">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Confiscation Reason (Required)</label>' +
+            '<input type="text" placeholder="e.g.: Terms of service violation">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn danger" type="button">Execute Confiscation</button>'
+      );
+
+      // 10. Delta Adjustment Form
+      html += modalSection(
+        'Delta Adjustment (Append-Only)',
+        '<div class="notice subtle" style="margin-bottom:14px">' +
+          '<span class="material-icons" aria-hidden="true">info</span>' +
+          '<div>' +
+            '<div class="notice-body">The ledger is append-only. This operation adds a new entry. Existing entries are not modified.</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>User</label>' +
+            '<input type="text" value="' + u.id + '" readonly>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Asset</label>' +
+            '<select>' +
+              '<option value="KQ" selected>KQ</option>' +
+              '<option value="BTC">BTC</option>' +
+              '<option value="ETH">ETH</option>' +
+              '<option value="USDT">USDT</option>' +
+              '<option value="XRP">XRP</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Adjustment (Positive=Add, Negative=Subtract)</label>' +
+            '<input type="number" step="1" value="0" placeholder="\u4F8B: -500">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Reason (Required)</label>' +
+            '<input type="text" placeholder="e.g.: Correction of calculation error">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Apply</button>'
+      );
+
+      // 11. User Edit Form
+      var rankOptions = Object.keys(ranks).map(function(k) {
+        return '<option value="' + k + '"' + (u.rank === k ? ' selected' : '') + '>' + (ranks[k].name || k) + ' (x' + (ranks[k].multi || 1) + ')</option>';
+      }).join('');
+
+      var balanceFields = Object.entries(u.balance || { KQ: 12000, BTC: 0.05, ETH: 0.8, USDT: 500, USDC: 300, XRP: 200, JPYR: 8000, JPYC: 5000, IZAKAYA: 150 }).map(function(e) {
+        return '<div style="display:flex; align-items:center; gap:4px">' +
+          '<span class="pill neu" style="font-size:.78rem; padding:4px 8px">' + e[0] + '</span>' +
+          '<input type="number" step="any" value="' + e[1] + '" style="width:100px; padding:6px 8px; border-radius:8px; border:1px solid #D1D5DB; font-weight:700; text-align:right">' +
+        '</div>';
+      }).join('');
+
+      html += modalSection(
+        'Edit User: ' + u.id,
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>Email</label>' +
+            '<input type="email" value="' + (u.email || '') + '" placeholder="user@example.com">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Wallet</label>' +
+            '<input type="text" value="' + u.wallet + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Rank</label>' +
+            '<select>' + rankOptions + '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>KYC Status</label>' +
+            '<select>' +
+              '<option value="NOT_SUBMITTED">Not Submitted</option>' +
+              '<option value="PENDING">Under Review</option>' +
+              '<option value="APPROVED" selected>Approved</option>' +
+              '<option value="REJECTED">Rejected</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>Balance (Per Asset)</label>' +
+            '<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px">' + balanceFields + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="notice subtle" style="margin-top:12px">' +
+          '<span class="material-icons" aria-hidden="true">edit</span>' +
+          '<div>' +
+            '<div class="notice-title">Operational Note</div>' +
+            '<div class="notice-body">Balance changes append the difference to the ledger. Rank/KYC changes are recorded in the audit log.</div>' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Save</button>'
+      );
+
+      // 12. Ledger Edit Form
+      var ledger = (state.ledger || [])[0] || { id: 'L001', delta: 1800 };
+      html += modalSection(
+        'Edit Ledger: ' + ledger.id,
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>Change (Delta)</label>' +
+            '<input type="number" step="1" value="' + Number(ledger.delta || 0) + '">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Save</button>'
+      );
+
+      // 13. Withdrawal Edit Form
+      html += modalSection(
+        'Edit Withdrawal: ' + w.id,
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>Asset</label>' +
+            '<input type="text" value="' + w.asset + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Amount</label>' +
+            '<input type="number" step="1" min="0" value="' + Number(w.amount || 0) + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Destination</label>' +
+            '<input type="text" value="' + (w.to || '') + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Transfer Status</label>' +
+            '<select>' +
+              '<option value="PENDING"' + (w.status === 'PENDING' ? ' selected' : '') + '>Unprocessed</option>' +
+              '<option value="PROCESSING"' + (w.status === 'PROCESSING' ? ' selected' : '') + '>Processing</option>' +
+              '<option value="COMPLETED"' + (w.status === 'COMPLETED' ? ' selected' : '') + '>Completed</option>' +
+              '<option value="FAILED"' + (w.status === 'FAILED' ? ' selected' : '') + '>Failed</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field" style="grid-column: 1 / -1">' +
+            '<label>TxHash (Optional)</label>' +
+            '<input type="text" value="' + (w.txHash || '') + '">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">Cancel</button>' +
+        '<button class="btn" type="button">Save</button>'
+      );
+
+      // Append all modal sections
+      var container = document.createElement('div');
+      container.innerHTML = html;
+      document.body.appendChild(container);
+    }
+
+    // ---------- Translation (EN) ----------
+    function applyAdminTranslations() {
+      if (typeof ADMIN_TRANSLATIONS === 'undefined') return;
+
+      // Walk text nodes
+      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+      var textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+      textNodes.forEach(function(node) {
+        var text = node.textContent;
+        for (var ja in ADMIN_TRANSLATIONS) {
+          if (text.indexOf(ja) !== -1) {
+            text = text.split(ja).join(ADMIN_TRANSLATIONS[ja]);
+          }
+        }
+        node.textContent = text;
+      });
+
+      // Translate placeholder attributes
+      document.querySelectorAll('[placeholder]').forEach(function(el) {
+        var ph = el.getAttribute('placeholder');
+        if (ADMIN_TRANSLATIONS[ph]) el.setAttribute('placeholder', ADMIN_TRANSLATIONS[ph]);
+      });
+
+      // Translate title attribute
+      document.querySelectorAll('[title]').forEach(function(el) {
+        var t = el.getAttribute('title');
+        if (ADMIN_TRANSLATIONS[t]) el.setAttribute('title', ADMIN_TRANSLATIONS[t]);
+      });
+
+      // Translate value attributes on buttons/inputs with Japanese text
+      document.querySelectorAll('option').forEach(function(el) {
+        var text = el.textContent.trim();
+        for (var ja in ADMIN_TRANSLATIONS) {
+          if (text.indexOf(ja) !== -1) {
+            el.textContent = el.textContent.split(ja).join(ADMIN_TRANSLATIONS[ja]);
+          }
+        }
+      });
+    }
+  </script>
+  <script src="../admin-translations.js"></script>
+</body>
+</html>

@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KING and QUEEN Admin - Figma Export (All Screens + Modals)</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+:root{
+  --r: 12px;
+  --r2: 16px;
+
+  /* Brand (match @user) */
+  --brand:#C62828;
+  --brand-700:#B71C1C;
+  --brand-50:#FEF2F2;
+  --gold: var(--brand);
+
+  --ok:#15803d;
+  --warn:#b45309;
+  --err:#b91c1c;
+  --neu:#6b7280;
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: "Noto Sans JP", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+  /* Light (default) */
+  --bg: #F3F4F6;     /* gray-100 */
+  --panel:#ffffff;
+  --card:#ffffff;
+  --text:#1F2937;    /* gray-800 */
+  --muted:#6B7280;   /* gray-500 */
+  --line:#E5E7EB;    /* gray-200 */
+
+  --shadow: 0 1px 2px rgba(15,23,42,.06);
+  --shadow2: 0 10px 15px rgba(15,23,42,.06);
+  --focus: 0 0 0 3px rgba(198,40,40,.25);
+
+  --thead-bg:#F9FAFB; /* gray-50 */
+  --table-bg:#ffffff;
+}
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--text);
+    background: var(--bg);
+  }
+
+  .gold{color:var(--brand)}
+  .muted{color:var(--muted)}
+  .ok-text{color:var(--ok)}
+  .err-text{color:var(--err)}
+  .code{font-family:var(--mono); font-size:.92em; color: rgba(31,41,55,.75)}
+
+  .app{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height:100vh;
+    background: var(--bg);
+  }
+
+  /* ===== LOGIN OVERLAY ===== */
+  .login-overlay{
+    position:fixed; inset:0; z-index:100;
+    display:grid; place-items:center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding:18px;
+  }
+  .login-overlay.is-hidden{ display:none; }
+  .login-card{
+    width:min(420px, 100%);
+    border-radius: var(--r2);
+    background: #ffffff;
+    box-shadow: 0 25px 50px rgba(0,0,0,.25);
+    overflow:hidden;
+  }
+  .login-brand{
+    text-align:center;
+    padding:36px 24px 24px;
+    background: var(--brand);
+    color:#fff;
+  }
+  .login-brand-icon{
+    font-size:2.5rem;
+    margin-bottom:12px;
+    display:block;
+  }
+  .login-brand-title{
+    font-weight:900;
+    font-size:1.6rem;
+    letter-spacing:.04em;
+  }
+  .login-brand-title .gold{ color:#FFD54F; }
+  .login-brand-sub{
+    margin-top:4px;
+    font-size:.9rem;
+    opacity:.85;
+  }
+  .login-form{
+    padding:28px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .login-error{
+    text-align:center;
+    color:var(--err);
+    font-size:.9rem;
+    padding:8px;
+    border-radius:8px;
+    background:#FEF2F2;
+    border:1px solid #FECACA;
+  }
+
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:0;
+    background: var(--panel);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    box-shadow: var(--shadow);
+  }
+
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:16px 16px 14px;
+    border-bottom:1px solid rgba(229,231,235,.7);
+    background: var(--panel);
+  }
+  .brand-icon{
+    font-size:1.75rem;
+    color: var(--brand);
+  }
+  .brand-title{font-weight:800; letter-spacing:.03em}
+  .brand-sub{color:var(--muted); font-size:.9rem; margin-top:2px}
+
+  .nav{display:flex; flex-direction:column; gap:6px}
+  .nav-section{
+    margin:10px 10px 4px;
+    color:var(--muted);
+    font-size:.8rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .nav-item{
+    width:100%;
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px;
+    border-radius: 10px;
+    border:1px solid transparent;
+    background:transparent;
+    color: #4B5563;
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .nav-item .material-icons{font-size:20px; color: currentColor}
+  .nav-item:hover{
+    background: #F9FAFB;
+    color: #111827;
+  }
+  .nav-item:focus{outline:none; box-shadow: var(--focus)}
+  .nav-item.is-active{
+    background: var(--brand-50);
+    color: var(--brand);
+    border-right: 4px solid var(--brand);
+    font-weight: 700;
+    border-radius: 0;
+  }
+  .badge{
+    margin-left:auto;
+    min-width:22px;
+    height:20px;
+    padding:0 8px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background: #F3F4F6;
+    border:1px solid #E5E7EB;
+    font-size:.78rem;
+    color:#374151;
+  }
+
+  .sidebar-footer{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:14px 16px 16px;
+    border-top:1px solid rgba(229,231,235,.7);
+    background: #F9FAFB;
+  }
+  .chip{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    background: #ffffff;
+    border:1px solid #E5E7EB;
+  }
+  .chip-k{color:var(--muted); font-size:.9rem}
+  .chip-v{font-weight:700}
+
+  .main{display:flex; flex-direction:column; min-width:0}
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:14px 24px;
+    background: #ffffff;
+    border-bottom:1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .topbar-left{display:flex; align-items:center; gap:12px}
+  .topbar-right{display:flex; align-items:center; gap:8px}
+  #pageTitle{margin:0; font-size:1.1rem}
+  .crumb{color:var(--muted); font-size:.9rem; margin-top:2px}
+  .notification-btn{
+    position:relative;
+    color: var(--muted);
+  }
+  .notification-btn:hover{color: var(--brand)}
+  .notification-btn .fa-bell{font-size:1.25rem}
+  .notification-dot{
+    display:none;
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:8px;
+    height:8px;
+    background: var(--err);
+    border-radius:50%;
+  }
+  .notification-dot.has-notice{display:block}
+
+  .search{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid #E5E7EB;
+    background: #F9FAFB;
+    border-radius: 999px;
+    padding:8px 10px;
+    min-width: 360px;
+  }
+  .search input{
+    width:100%;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--text);
+  }
+  .search .material-icons{font-size:20px; color:#9CA3AF}
+
+  .icon-btn{
+    border:none;
+    background:transparent;
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    width:34px;height:34px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .icon-btn:hover{background: rgba(17,24,39,.06)}
+  .icon-btn:focus{outline:none; box-shadow: var(--focus)}
+
+  .only-mobile{display:none}
+
+  .content{padding:18px; display:block}
+  .footer{padding:12px 18px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem}
+
+  .grid{display:grid; gap:14px}
+  .grid.cards{grid-template-columns: repeat(4, minmax(0,1fr))}
+  .grid.two{grid-template-columns: repeat(2, minmax(0,1fr))}
+  .grid.three{grid-template-columns: repeat(3, minmax(0,1fr))}
+  .grid-span-2{grid-column:1/-1}
+  .chart-wrap{min-height:220px; position:relative}
+
+  .card, .panel{
+    border-radius: var(--r2);
+    border:1px solid rgba(229,231,235,.7);
+    background: #ffffff;
+    box-shadow: var(--shadow);
+  }
+  .card{padding:14px}
+  .card-h{color:var(--muted); font-size:.95rem}
+  .card-v{font-size:2rem; font-weight:900; margin-top:6px}
+  .card-s{color:var(--muted); margin-top:6px; font-size:.9rem}
+
+  .panel-h{
+    padding:14px 14px 10px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-title{font-weight:900}
+  .panel-sub{color:var(--muted); font-size:.92rem; margin-top:4px}
+  .panel-b{padding:14px}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 12px;
+    border-radius: 10px;
+    border:1px solid var(--brand);
+    background: var(--brand);
+    color:#ffffff;
+    cursor:pointer;
+    transition:.15s ease;
+    font-weight:700;
+  }
+  .btn:hover{transform: translateY(-1px); background: var(--brand-700); border-color: var(--brand-700)}
+  .btn:focus{outline:none; box-shadow: var(--focus)}
+  .btn.ghost{
+    border:1px solid #D1D5DB;
+    background: #ffffff;
+    color: #374151;
+  }
+  .btn.ghost:hover{background: #F9FAFB}
+  .w100{width:100%; justify-content:center}
+  .btn.small{padding:6px 10px; font-size:.9rem}
+
+  .toolbar{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    gap:12px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .field{display:flex; flex-direction:column; gap:6px; min-width: 200px}
+  .field label{color:var(--muted); font-size:.85rem}
+  .field input, .field select, .field textarea{
+    padding:10px 12px;
+    border-radius: 10px;
+    border:1px solid #D1D5DB;
+    background: #ffffff;
+    color: #111827;
+    outline:none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{box-shadow: var(--focus); border-color: rgba(198,40,40,.45)}
+  .hint{color:var(--muted); font-size:.9rem}
+
+  .table-wrap{
+    border:1px solid #E5E7EB;
+    border-radius: var(--r2);
+    overflow:hidden;
+    background: var(--table-bg);
+  }
+  .table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:.92rem;
+  }
+  .table thead th{
+    position:sticky; top:0;
+    background: var(--thead-bg);
+    border-bottom:1px solid #E5E7EB;
+    padding:12px 12px;
+    text-align:left;
+    color:#4B5563;
+    font-weight: 700;
+  }
+  .table tbody td{
+    padding:12px 12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  .table tbody tr:hover{background: #F9FAFB}
+  .table .right{text-align:right}
+
+  .pill{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:6px 10px;
+    border-radius: 999px;
+    border:1px solid #E5E7EB;
+    background: #F3F4F6;
+    font-size:.78rem;
+    font-weight:800;
+  }
+  .pill.ok{border-color: #BBF7D0; background: #DCFCE7; color: var(--ok)}
+  .pill.warn{border-color: #FDE68A; background: #FEF3C7; color: var(--warn)}
+  .pill.err{border-color: #FECACA; background: #FEE2E2; color: var(--err)}
+  .pill.neu{border-color: #E5E7EB; background: #F3F4F6; color: var(--neu)}
+  .pill.info{border-color: #BFDBFE; background: #DBEAFE; color: #1D4ED8}
+
+  .kv-row{
+    display:flex; justify-content:space-between; gap:10px;
+    padding:10px 12px;
+    border-radius: 12px;
+    border:1px solid #E5E7EB;
+    background: #F9FAFB;
+    margin-bottom:10px;
+  }
+  .kv-k{color:var(--muted)}
+  .kv-v{font-weight:900}
+
+  .flow-steps{margin:0; padding-left:18px; color:var(--muted)}
+  .flow-steps li{margin:10px 0}
+  .flow-steps li.done{color:rgba(49,208,123,.95)}
+  .flow-steps li.active{color: rgba(198,40,40,.95)}
+
+  .notice{
+    display:flex; gap:10px;
+    padding:12px;
+    border-radius: var(--r2);
+    border:1px solid #DBEAFE;
+    background: #EFF6FF;
+    margin-bottom:12px;
+  }
+  .notice.subtle{border-color: #E5E7EB; background: #F9FAFB}
+  .notice.err{border-color: #FECACA; background: #FEF2F2}
+  .notice-title{font-weight:900}
+  .notice-body{color:var(--muted); font-size:.92rem; margin-top:2px}
+
+  .stat{
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    border-radius: var(--r2);
+    padding:12px;
+  }
+  .stat-k{color:var(--muted); font-size:.85rem}
+  .stat-v{font-weight:900; margin-top:6px}
+
+  .logbox{
+    margin-top:12px;
+    border-radius: var(--r2);
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    padding:10px 12px;
+  }
+
+  /* CSV import */
+  .import-grid{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap:14px;
+    margin-bottom: 12px;
+  }
+  .import-drop{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    border-radius: var(--r2);
+    border: 2px dashed #E5E7EB;
+    background: #ffffff;
+    cursor:pointer;
+    transition: .15s ease;
+    outline: none;
+  }
+  .import-drop:hover{ background:#F9FAFB; }
+  .import-drop:focus{ box-shadow: var(--focus); }
+  .import-drop.is-dragover{
+    border-color: rgba(198,40,40,.45);
+    background: rgba(198,40,40,.04);
+  }
+  .import-drop-ic{
+    width:44px;height:44px;
+    border-radius: 12px;
+    background: #F3F4F6;
+    display:grid;
+    place-items:center;
+    color: #6B7280;
+  }
+  .import-drop-title{ font-weight:900; }
+  .import-drop-sub{ color: var(--muted); font-size:.92rem; margin-top:2px; }
+  .import-side{ display:flex; flex-direction:column; gap:10px; }
+  .import-meta{
+    border:1px solid #E5E7EB;
+    background:#ffffff;
+    border-radius: 12px;
+    padding:10px 12px;
+  }
+  .import-stats{ margin-top: 10px; }
+  .errorbox{
+    border:1px solid #FECACA;
+    background:#FEF2F2;
+    border-radius: var(--r2);
+    padding:12px;
+    margin: 10px 0;
+  }
+  .errorbox-title{ font-weight:900; color:#991B1B; }
+  .errorbox-list{ margin:8px 0 0; padding-left: 18px; color:#7F1D1D; }
+  .logbox summary{cursor:pointer; color:var(--muted); font-weight:800}
+  .logbox pre{margin:10px 0 0; white-space:pre-wrap; color: rgba(15,23,42,.86)}
+
+  .empty{
+    padding:18px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  .view.is-hidden{display:none}
+  .is-hidden{display:none !important}
+
+  .account-slide{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .account-slide.is-open{
+    max-height: 220px;
+  }
+  .account-panel{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:10px 0 0;
+  }
+  .account-chip{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#ffffff;
+    border:1px solid #E5E7EB;
+  }
+  .account-chip .chip-k{color:var(--muted); font-size:.9rem}
+  .account-chip .chip-v{font-weight:700}
+  .withdrawal-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .withdrawal-btns{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .accounts-cell .account-item{
+    display:block;
+    margin:4px 0;
+    font-size:.9rem;
+  }
+
+  .modal{
+    position:fixed; inset:0; z-index:30;
+    display:grid; place-items:center;
+    background: rgba(0,0,0,.55);
+    padding:18px;
+  }
+  .modal.is-hidden{display:none}
+  .modal-card{
+    width:min(720px, 100%);
+    max-height: 90vh;
+    border-radius: var(--r2);
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .modal-h, .modal-f{
+    padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .modal-f{border-bottom:none; border-top:1px solid var(--line)}
+  .modal-b{padding:14px; overflow-y:auto; flex:1}
+  .modal-title{font-weight:900}
+
+  /* ===== DRAWER ===== */
+  .drawer-overlay{
+    position:fixed; inset:0; z-index:35;
+    background: rgba(0,0,0,.45);
+    transition: opacity .2s;
+  }
+  .drawer-overlay.is-hidden{ display:none; }
+  .drawer{
+    position:fixed;
+    top:0; right:0; bottom:0;
+    width:min(560px, 90vw);
+    z-index:36;
+    background: #ffffff;
+    border-left:1px solid var(--line);
+    box-shadow: -10px 0 30px rgba(0,0,0,.12);
+    display:flex;
+    flex-direction:column;
+    transform: translateX(0);
+    transition: transform .25s ease;
+  }
+  .drawer.is-hidden{
+    transform: translateX(100%);
+    pointer-events:none;
+  }
+  .drawer-h{
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .drawer-title{font-weight:900; font-size:1.05rem}
+  .drawer-b{
+    padding:16px;
+    overflow-y:auto;
+    flex:1;
+  }
+  .drawer-f{
+    padding:12px 16px;
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .drawer-section{
+    margin-bottom:16px;
+  }
+  .drawer-section-title{
+    font-weight:800;
+    font-size:.9rem;
+    color:var(--muted);
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+
+  /* ===== TAB BAR ===== */
+  .tab-bar{
+    display:flex;
+    gap:0;
+    border-bottom:2px solid var(--line);
+    margin-bottom:14px;
+  }
+  .tab-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:10px 16px;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-2px;
+    font-weight:700;
+    transition:.15s ease;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.is-active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+  }
+  .tab-btn .material-icons{ font-size:18px; }
+  .tab-btn .badge{ margin-left:4px; }
+  .tab-panel.is-hidden{ display:none; }
+
+  /* ===== PAGINATION ===== */
+  .pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:12px 0;
+  }
+  .pagination .btn{
+    padding:6px 12px;
+    font-size:.88rem;
+  }
+  .pagination .page-info{
+    color:var(--muted);
+    font-size:.9rem;
+    font-weight:700;
+  }
+
+  .toasts{
+    position:fixed; right:16px; bottom:16px; z-index:40;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .toast{
+    width:min(360px, calc(100vw - 32px));
+    border-radius: 16px;
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    padding:12px 12px;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .toast .t-title{font-weight:900}
+  .toast .t-body{color:var(--muted); font-size:.9rem; margin-top:2px}
+  .toast.ok{border-color: rgba(49,208,123,.22)}
+  .toast.err{border-color: rgba(255,90,107,.22)}
+  .toast.warn{border-color: rgba(255,204,102,.22)}
+
+  .overlay{
+    position:fixed; inset:0; z-index:20;
+    background: rgba(0,0,0,.55);
+  }
+
+  /* Rate pulse animation */
+  @keyframes ratePulse {
+    0% { opacity: 1; }
+    30% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+  .rate-pulse {
+    animation: ratePulse 0.6s ease-in-out;
+  }
+
+  .rate-card { border-left: 4px solid var(--brand); }
+  .rate-card .card-v { font-size: 1.5rem; letter-spacing: -.02em; }
+
+  .rate-card-panel { border-left: 4px solid var(--brand); }
+
+  .btn.danger {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn.danger:hover { background: #b91c1c; border-color: #b91c1c; }
+  .btn.danger:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn.warn-btn {
+    background: #F59E0B;
+    border-color: #F59E0B;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn.warn-btn:hover { background: #D97706; border-color: #D97706; }
+
+  .total-row td { border-top: 2px solid var(--line); background: var(--panel); }
+
+  .rate-pulse-cell { font-weight: 700; color: var(--brand); }
+
+  /* CSS Dropzone */
+  .csv-dropzone {
+    border: 2px dashed var(--line);
+    border-radius: var(--r2);
+    padding: 48px 32px;
+    text-align: center;
+    background: var(--bg);
+    transition: border-color .25s, background .25s, box-shadow .25s, transform .2s;
+    cursor: pointer;
+  }
+  .csv-dropzone:hover,
+  .csv-dropzone.is-dragover {
+    border-color: var(--brand);
+    background: rgba(198, 40, 40, .03);
+    box-shadow: 0 0 0 4px rgba(198, 40, 40, .08);
+  }
+  .csv-dropzone.is-dragover {
+    transform: scale(1.01);
+    background: rgba(198, 40, 40, .06);
+    border-style: solid;
+  }
+  .csv-dropzone-icon-area {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(198, 40, 40, .06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    transition: background .25s, transform .25s;
+  }
+  .csv-dropzone:hover .csv-dropzone-icon-area,
+  .csv-dropzone.is-dragover .csv-dropzone-icon-area {
+    background: rgba(198, 40, 40, .12);
+    transform: scale(1.08);
+  }
+  .csv-dropzone-icon {
+    font-size: 2.2rem;
+    color: var(--brand);
+    opacity: .55;
+    display: block;
+    transition: opacity .25s, transform .25s;
+  }
+  .csv-dropzone:hover .csv-dropzone-icon,
+  .csv-dropzone.is-dragover .csv-dropzone-icon {
+    opacity: .9;
+    transform: translateY(-2px);
+  }
+  .csv-dropzone-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .csv-dropzone-sub {
+    font-size: .88rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .csv-dropzone-or {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+    position: relative;
+    display: inline-block;
+    padding: 0 12px;
+  }
+  .csv-dropzone-or::before,
+  .csv-dropzone-or::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: var(--line);
+  }
+  .csv-dropzone-or::before { right: 100%; }
+  .csv-dropzone-or::after { left: 100%; }
+  .csv-dropzone-formats {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .csv-format-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-size: .78rem;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: .02em;
+  }
+  .csv-dropzone-hint {
+    font-size: .8rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+  .csv-dropzone .btn {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* Form grid */
+  .form-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:14px;
+  }
+  @media (max-width:600px){
+    .form-grid{ grid-template-columns: 1fr; }
+  }
+
+  /* Toggle switch */
+  .toggle-switch{
+    position:relative;
+    display:inline-block;
+    width:44px; height:24px;
+  }
+  .toggle-switch input{
+    opacity:0; width:0; height:0;
+  }
+  .toggle-slider{
+    position:absolute; cursor:pointer;
+    top:0; left:0; right:0; bottom:0;
+    background:#D1D5DB;
+    border-radius:24px;
+    transition:.2s;
+  }
+  .toggle-slider:before{
+    content:"";
+    position:absolute;
+    height:18px; width:18px;
+    left:3px; bottom:3px;
+    background:#fff;
+    border-radius:50%;
+    transition:.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider{
+    background:var(--brand);
+  }
+  .toggle-switch input:checked + .toggle-slider:before{
+    transform:translateX(20px);
+  }
+
+  /* === Figma Export Mode (body.figma-export scope) === */
+  body.figma-export .login-overlay { display: none !important; }
+  body.figma-export .modal, body.figma-export .drawer, body.figma-export .drawer-overlay, body.figma-export .overlay { display: none !important; }
+  body.figma-export .topbar, body.figma-export .footer { display: none !important; }
+  body.figma-export .toasts { display: none !important; }
+  body.figma-export .view.is-hidden { display: block !important; }
+  body.figma-export .view { display: block !important; }
+  body.figma-export .sidebar {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  body.figma-export .app {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+  body.figma-export .main { margin-left: 0 !important; }
+  body.figma-export .content { max-width: 1400px; margin: 0 auto; }
+
+  /* Labels */
+  body.figma-export .figma-label {
+    background: #C62828;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "Noto Sans JP", sans-serif;
+    border-radius: 12px 12px 0 0;
+    margin-top: 60px;
+  }
+  body.figma-export .figma-label:first-of-type { margin-top: 20px; }
+
+  /* View border */
+  body.figma-export .figma-label + .view {
+    border: 3px solid #C62828;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    margin-bottom: 20px;
+    padding: 24px;
+    background: #F9FAFB;
+  }
+
+  /* Sidebar label */
+  body.figma-export .figma-sidebar-label {
+    background: #C62828;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: "Noto Sans JP", sans-serif;
+    border-radius: 12px 12px 0 0;
+    margin: 20px 0 0;
+  }
+  body.figma-export .figma-sidebar-label + .sidebar {
+    border: 3px solid #C62828 !important;
+    border-top: none !important;
+    border-radius: 0 0 12px 12px !important;
+  }
+
+  /* Page title */
+  body.figma-export .figma-page-title {
+    text-align: center;
+    font-family: "Noto Sans JP", sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin: 40px 24px 20px;
+    color: #1F2937;
+  }
+
+  /* Login standalone section */
+  body.figma-export .figma-login-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  body.figma-export .figma-login-section .login-overlay {
+    display: grid !important;
+    position: relative !important;
+    min-height: 500px;
+    border: 3px solid #C62828;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  /* Modal sections for Figma export */
+  body.figma-export .figma-modal-section {
+    background: #F9FAFB;
+    border: 3px solid #C62828;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  body.figma-export .figma-modal-section .modal-card {
+    border: 1px solid #E5E7EB;
+    border-radius: var(--r2);
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  </style>
+</head>
+<body>
+  <script>
+    const ADMIN_SAMPLE_BASE = '../../../admin/';
+
+    const VIEW_LABELS = {
+      'view-dashboard': 'Dashboard (\u30C0\u30C3\u30B7\u30E5\u30DC\u30FC\u30C9)',
+      'view-approvalTasks': 'Approval Tasks (\u627F\u8A8D\u30BF\u30B9\u30AF)',
+      'view-scraper': 'CSV Import (CSV\u30A4\u30F3\u30DD\u30FC\u30C8\u30FB\u53F0\u5E33\u53CD\u6620)',
+      'view-users': 'User Management (\u30E6\u30FC\u30B6\u30FC\u7BA1\u7406)',
+      'view-ledger': 'Token Ledger (\u30C8\u30FC\u30AF\u30F3\u53F0\u5E33)',
+      'view-announcements': 'Announcements (\u304A\u77E5\u3089\u305B\u7BA1\u7406)',
+      'view-settings': 'Master Settings (\u30DE\u30B9\u30BF\u8A2D\u5B9A)',
+    };
+
+    fetch(ADMIN_SAMPLE_BASE + 'sample.html')
+      .then(r => r.text())
+      .then(html => {
+        document.body.innerHTML = html;
+        document.body.classList.add('figma-export');
+
+        // Insert page title
+        const title = document.createElement('div');
+        title.className = 'figma-page-title';
+        title.textContent = 'KING and QUEEN Admin Console - All Screens';
+        document.body.insertBefore(title, document.body.firstChild);
+
+        // Load sample.js
+        const s = document.createElement('script');
+        s.src = ADMIN_SAMPLE_BASE + 'sample.js';
+        s.onload = () => {
+          setTimeout(() => {
+            injectLabels();
+            showBothApprovalTabs();
+            cloneLoginSection();
+            buildModalSections();
+          }, 800);
+        };
+        document.body.appendChild(s);
+      });
+
+    function injectLabels() {
+      // Label before sidebar
+      const sidebar = document.querySelector('.sidebar');
+      if (sidebar && !sidebar.previousElementSibling?.classList?.contains('figma-sidebar-label')) {
+        const label = document.createElement('div');
+        label.className = 'figma-sidebar-label';
+        label.textContent = 'Sidebar Navigation (\u30B5\u30A4\u30C9\u30D0\u30FC)';
+        sidebar.parentNode.insertBefore(label, sidebar);
+      }
+
+      // Labels before each view
+      document.querySelectorAll('.view').forEach(view => {
+        if (view.previousElementSibling?.classList?.contains('figma-label')) return;
+        const label = document.createElement('div');
+        label.className = 'figma-label';
+        label.textContent = VIEW_LABELS[view.id] || view.id;
+        view.parentNode.insertBefore(label, view);
+      });
+    }
+
+    function showBothApprovalTabs() {
+      // Show both tab panels (account linking and withdrawal requests)
+      const hiddenPanels = document.querySelectorAll('#view-approvalTasks .tab-panel.is-hidden');
+      hiddenPanels.forEach(p => p.classList.remove('is-hidden'));
+
+      // Mark both tab buttons as active
+      const tabBtns = document.querySelectorAll('#approvalTabBar .tab-btn');
+      tabBtns.forEach(btn => btn.classList.add('is-active'));
+    }
+
+    function cloneLoginSection() {
+      const loginOverlay = document.querySelector('.login-overlay');
+      if (!loginOverlay) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'figma-login-section';
+
+      const label = document.createElement('div');
+      label.className = 'figma-label';
+      label.textContent = 'Login Screen (\u30ED\u30B0\u30A4\u30F3\u753B\u9762)';
+      label.style.marginTop = '60px';
+
+      const clone = loginOverlay.cloneNode(true);
+      clone.classList.remove('is-hidden');
+      clone.id = 'loginOverlayClone';
+      // Remove any error message hidden state for display
+      const errEl = clone.querySelector('.login-error');
+      if (errEl) errEl.classList.remove('is-hidden');
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(clone);
+      document.body.appendChild(wrapper);
+    }
+
+    // --- Helpers ---
+    function pill(status) {
+      const map = { APPROVED: 'ok', PENDING: 'warn', REJECTED: 'err', ACTIVE: 'ok', BANNED: 'err', PROCESSING: 'info', COMPLETED: 'ok', FAILED: 'err' };
+      return '<span class="pill ' + (map[status] || 'neu') + '">' + status + '</span>';
+    }
+
+    function pillKycStatus(status) {
+      const map = { APPROVED: 'ok', PENDING: 'warn', REJECTED: 'err', NOT_SUBMITTED: 'neu' };
+      const labels = { APPROVED: '\u627F\u8A8D\u6E08\u307F', PENDING: '\u5BE9\u67FB\u4E2D', REJECTED: '\u5374\u4E0B', NOT_SUBMITTED: '\u672A\u63D0\u51FA' };
+      return '<span class="pill ' + (map[status] || 'neu') + '">' + (labels[status] || status || '-') + '</span>';
+    }
+
+    function pillWithdrawalStatus(status) {
+      const map = { PENDING: 'warn', APPROVED: 'ok', PROCESSING: 'info', COMPLETED: 'ok', FAILED: 'err', CANCELLED: 'neu' };
+      const labels = { PENDING: '\u7533\u8ACB\u4E2D', APPROVED: '\u627F\u8A8D\u6E08', PROCESSING: '\u51E6\u7406\u4E2D', COMPLETED: '\u5B8C\u4E86', FAILED: '\u5931\u6557', CANCELLED: '\u30AD\u30E3\u30F3\u30BB\u30EB' };
+      return '<span class="pill ' + (map[status] || 'neu') + '">' + (labels[status] || status) + '</span>';
+    }
+
+    function money(n) {
+      return Number(n || 0).toLocaleString();
+    }
+
+    function formatAssetBalancePills(balObj) {
+      if (!balObj || typeof balObj !== 'object') return '<span class="pill neu" style="font-size:.75rem; padding:4px 8px">KQ: <b>0</b></span>';
+      return Object.entries(balObj)
+        .map(function(e) {
+          var k = e[0], v = e[1];
+          return '<span class="pill neu" style="font-size:.75rem; padding:4px 8px">' + k + ': <b>' + (typeof v === 'number' && v < 1 && v > 0 ? v.toFixed(4) : money(v)) + '</b></span>';
+        })
+        .join(' ');
+    }
+
+    function modalSection(title, bodyHTML, footerHTML) {
+      return '<div class="figma-label" style="margin-top:60px">Modal: ' + title + '</div>' +
+        '<div class="figma-modal-section">' +
+          '<div class="modal-card" style="position:relative; max-width:720px; margin:0 auto;">' +
+            '<div class="modal-h">' +
+              '<div class="modal-title">' + title + '</div>' +
+              '<button class="icon-btn" type="button"><span class="material-icons">close</span></button>' +
+            '</div>' +
+            '<div class="modal-b">' + bodyHTML + '</div>' +
+            '<div class="modal-f">' + footerHTML + '</div>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function buildModalSections() {
+      var raw = localStorage.getItem('kq_admin_mock_v06');
+      var state = raw ? JSON.parse(raw) : {};
+      var users = state.users || [];
+      var applications = state.applications || [];
+      var withdrawals = state.withdrawals || [];
+      var ranks = state.ranks || { GOLD: { name: 'Gold', multi: 2.0 }, SILVER: { name: 'Silver', multi: 1.5 }, MEMBER: { name: 'Member', multi: 1.0 } };
+
+      // Use first user as sample
+      var u = users[0] || { id: 'U001', wallet: '0x9a...1b2c', email: 'user001@example.com', rank: 'GOLD', kycStatus: 'APPROVED', balance: { KQ: 12000, BTC: 0.05, ETH: 0.8, USDT: 500, USDC: 300, XRP: 200, JPYR: 8000, JPYC: 5000, IZAKAYA: 150 }, status: 'ACTIVE' };
+
+      // Find a PENDING application or use first
+      var pendingApp = applications.find(function(a) { return a.status === 'PENDING'; });
+      var app = pendingApp || applications[0] || { id: 'A015', date: new Date().toISOString(), userId: 'U001', broker: 'FXGT', accountNo: '14151617', status: 'PENDING' };
+      var appUser = users.find(function(x) { return x.id === app.userId; }) || u;
+
+      // Find a PENDING withdrawal or use first
+      var pendingW = withdrawals.find(function(w) { return w.status === 'PENDING'; });
+      var w = pendingW || withdrawals[0] || { id: 'W001', date: new Date().toISOString(), userId: 'U001', asset: 'KQ', amount: 1500, to: '0x9a...1b2c', status: 'PENDING', txHash: '' };
+      var wUser = users.find(function(x) { return x.id === w.userId; }) || u;
+
+      var html = '';
+
+      // 1. Account Linking Approval Modal
+      html += modalSection(
+        '\u53E3\u5EA7\u7533\u8ACB \u64CD\u4F5C: ' + app.id,
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">\u7533\u8ACB\u65E5\u6642</span><span class="kv-v">' + new Date(app.date).toLocaleString() + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30E6\u30FC\u30B6\u30FC</span><span class="kv-v">' + (appUser.id || app.userId) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">Wallet</span><span class="kv-v code">' + (appUser.wallet || '-') + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30D6\u30ED\u30FC\u30AB\u30FC</span><span class="kv-v">' + app.broker + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u53E3\u5EA7\u756A\u53F7</span><span class="kv-v code">' + app.accountNo + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30B9\u30C6\u30FC\u30BF\u30B9</span><span class="kv-v">' + pill(app.status) + '</span></div>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.9rem">\u627F\u8A8D\u307E\u305F\u306F\u5374\u4E0B\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044</p>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<div style="display:flex; gap:8px">' +
+          '<button class="btn" type="button">\u627F\u8A8D</button>' +
+          '<button class="btn ghost" type="button">\u5374\u4E0B</button>' +
+        '</div>'
+      );
+
+      // 2. Rejection Reason
+      html += modalSection(
+        '\u5374\u4E0B\u7406\u7531\u306E\u5165\u529B',
+        '<div class="field">' +
+          '<label>\u7406\u7531\uFF08\u5FC5\u9808\uFF09</label>' +
+          '<input type="text" placeholder="\u4F8B\uFF1A\u53E3\u5EA7\u756A\u53F7\u304C\u4E0D\u6B63\u3001\u672C\u4EBA\u78BA\u8A8D\u672A\u5B8C\u4E86\u306A\u3069" value="">' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u5374\u4E0B\u3059\u308B</button>'
+      );
+
+      // 3. Withdrawal Actions Modal
+      html += modalSection(
+        '\u51FA\u91D1\u64CD\u4F5C: ' + w.id,
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">\u30E6\u30FC\u30B6\u30FCID</span><span class="kv-v">' + (wUser.id || w.userId) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30E1\u30FC\u30EB</span><span class="kv-v code">' + (wUser.email || '-') + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">KYC</span><span class="kv-v">' + pillKycStatus(wUser.kycStatus) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30A6\u30A9\u30EC\u30C3\u30C8\u30A2\u30C9\u30EC\u30B9</span><span class="kv-v code">' + (w.to || wUser.wallet || '-') + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u4FDD\u6709\u6B8B\u9AD8</span><span class="kv-v">' + formatAssetBalancePills(wUser.balance) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u51FA\u91D1\u7533\u8ACB\u984D</span><span class="kv-v"><b>' + money(w.amount) + '</b> ' + w.asset + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u9001\u91D1\u30B9\u30C6\u30FC\u30BF\u30B9</span><span class="kv-v">' + pillWithdrawalStatus(w.status) + '</span></div>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.9rem">\u72B6\u614B\u9077\u79FB: PENDING \u2192 \u627F\u8A8D \u2192 \u51E6\u7406\u4E2D \u2192 \u5B8C\u4E86/\u5931\u6557</p>',
+        '<button class="btn ghost" type="button">\u9589\u3058\u308B</button>' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
+          '<button class="btn ghost" type="button">\u7DE8\u96C6</button>' +
+          '<button class="btn" type="button">\u627F\u8A8D</button>' +
+        '</div>'
+      );
+
+      // 4. Announcement Create Form
+      html += modalSection(
+        '\u304A\u77E5\u3089\u305B\u3092\u4F5C\u6210',
+        '<div class="form-grid">' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u30BF\u30A4\u30C8\u30EB</label>' +
+            '<input type="text" placeholder="\u4F8B\uFF1A\u30E1\u30F3\u30C6\u30CA\u30F3\u30B9\u306E\u304A\u77E5\u3089\u305B" value="">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u672C\u6587</label>' +
+            '<textarea rows="5" style="padding:10px 12px;border-radius:10px;border:1px solid #D1D5DB;background:#ffffff;color:#111827;outline:none;width:100%;resize:vertical;font-family:var(--sans)"></textarea>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u30AB\u30C6\u30B4\u30EA</label>' +
+            '<select>' +
+              '<option value="UPDATE">\u30A2\u30C3\u30D7\u30C7\u30FC\u30C8</option>' +
+              '<option value="MAINTENANCE">\u30E1\u30F3\u30C6\u30CA\u30F3\u30B9</option>' +
+              '<option value="CAMPAIGN">\u30AD\u30E3\u30F3\u30DA\u30FC\u30F3</option>' +
+              '<option value="OTHER">\u305D\u306E\u4ED6</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u512A\u5148\u5EA6</label>' +
+            '<select>' +
+              '<option value="HIGH">\u9AD8</option>' +
+              '<option value="NORMAL" selected>\u901A\u5E38</option>' +
+              '<option value="LOW">\u4F4E</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u30B9\u30C6\u30FC\u30BF\u30B9</label>' +
+            '<select>' +
+              '<option value="DRAFT" selected>\u4E0B\u66F8\u304D</option>' +
+              '<option value="SCHEDULED">\u4E88\u7D04\u516C\u958B</option>' +
+              '<option value="PUBLISHED">\u516C\u958B\u4E2D</option>' +
+              '<option value="ARCHIVED">\u30A2\u30FC\u30AB\u30A4\u30D6</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u4E88\u7D04\u516C\u958B\u65E5\u6642</label>' +
+            '<input type="datetime-local" value="">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn ghost" type="button">\u4E0B\u66F8\u304D\u4FDD\u5B58</button>' +
+        '<button class="btn ghost" type="button">\u4E88\u7D04\u516C\u958B</button>' +
+        '<button class="btn" type="button">\u516C\u958B</button>'
+      );
+
+      // 5. Add Broker Form
+      html += modalSection(
+        '\u63D0\u643AFX\u696D\u8005\u3092\u8FFD\u52A0',
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>\u30B3\u30FC\u30C9\uFF08\u8B58\u5225\u5B50\uFF09</label>' +
+            '<input type="text" placeholder="\u4F8B: XM, EXNESS" value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u540D\u79F0</label>' +
+            '<input type="text" placeholder="\u4F8B: XM Trading" value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u8868\u793A\u540D</label>' +
+            '<input type="text" placeholder="\u4F8B: XM" value="">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u30A2\u30D5\u30A3\u30EA\u30A8\u30A4\u30C8URL</label>' +
+            '<input type="text" placeholder="https://..." value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u30E1\u30F3\u30C6\u30CA\u30F3\u30B9\u30D5\u30E9\u30B0</label>' +
+            '<select>' +
+              '<option value="false" selected>\u7A3C\u50CD\u4E2D</option>' +
+              '<option value="true">\u30E1\u30F3\u30C6\u30CA\u30F3\u30B9\u4E2D\uFF08\u4ED8\u4E0E\u505C\u6B62\uFF09</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u6709\u52B9\u30D5\u30E9\u30B0</label>' +
+            '<select>' +
+              '<option value="true" selected>\u6709\u52B9</option>' +
+              '<option value="false">\u7121\u52B9</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Reward Rate %</label>' +
+            '<input type="number" min="0" max="100" step="1" value="30">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>CSV Format</label>' +
+            '<select>' +
+              '<option value="BIGBOSS">BIGBOSS</option>' +
+              '<option value="XM">XM</option>' +
+              '<option value="FXGT">FXGT</option>' +
+              '<option value="EXNESS">EXNESS</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Account Types</label>' +
+            '<input type="text" placeholder="\u4F8B: Standard" value="Standard">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>IB Currency</label>' +
+            '<select>' +
+              '<option value="USD" selected>USD</option>' +
+              '<option value="JPY">JPY</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Fee Rate %</label>' +
+            '<input type="number" min="0" max="100" step="0.1" value="0">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Campaign Multiplier Override</label>' +
+            '<input type="number" min="0" step="0.1" value="1.0">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u8FFD\u52A0</button>'
+      );
+
+      // 6. Campaign Add Form
+      html += modalSection(
+        '\u30AD\u30E3\u30F3\u30DA\u30FC\u30F3\u8FFD\u52A0',
+        '<div class="form-grid">' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u540D\u79F0</label>' +
+            '<input type="text" placeholder="\u4F8B: \u6625\u30AD\u30E3\u30F3\u30DA\u30FC\u30F3" value="">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u30BF\u30A4\u30D7</label>' +
+            '<select>' +
+              '<option value="PERIOD">\u671F\u9593\u9650\u5B9A</option>' +
+              '<option value="PER_USER">\u500B\u5225</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u500D\u7387</label>' +
+            '<input type="number" step="0.1" min="1" value="1.5">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u958B\u59CB\u65E5</label>' +
+            '<input type="date">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u7D42\u4E86\u65E5</label>' +
+            '<input type="date">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u8FFD\u52A0</button>'
+      );
+
+      // 7. User Actions Modal
+      html += modalSection(
+        '\u30E6\u30FC\u30B6\u30FC\u64CD\u4F5C: ' + u.id,
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">Wallet</span><span class="kv-v code">' + u.wallet + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30E9\u30F3\u30AF</span><span class="kv-v">' + u.rank + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u6B8B\u9AD8</span><span class="kv-v">' + formatAssetBalancePills(u.balance) + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u72B6\u614B</span><span class="kv-v">' + pill(u.status || 'ACTIVE') + '</span></div>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.9rem">\u64CD\u4F5C\u3092\u9078\u629E\u3057\u3066\u304F\u3060\u3055\u3044</p>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
+          '<button class="btn ghost" type="button">\u7DE8\u96C6</button>' +
+          '<button class="btn ghost" type="button">\u5F37\u5236\u9000\u4F1A(BAN)</button>' +
+          '<button class="btn ghost" type="button">\u30C8\u30FC\u30AF\u30F3\u6CA1\u53CE</button>' +
+        '</div>'
+      );
+
+      // 8. Ban User Confirmation
+      html += modalSection(
+        '\u5F37\u5236\u9000\u4F1A(BAN)',
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">\u30E6\u30FC\u30B6\u30FC</span><span class="kv-v">' + u.id + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u30E1\u30FC\u30EB</span><span class="kv-v code">' + (u.email || '-') + '</span></div>' +
+        '</div>' +
+        '<div class="notice err" style="margin-bottom:14px">' +
+          '<span class="material-icons" aria-hidden="true">warning</span>' +
+          '<div><div class="notice-body">\u3053\u306E\u64CD\u4F5C\u306F\u53D6\u308A\u6D88\u305B\u307E\u305B\u3093\u3002\u30E6\u30FC\u30B6\u30FC\u306F\u30D7\u30E9\u30C3\u30C8\u30D5\u30A9\u30FC\u30E0\u306B\u30A2\u30AF\u30BB\u30B9\u3067\u304D\u306A\u304F\u306A\u308A\u307E\u3059\u3002</div></div>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label>BAN\u7406\u7531\uFF08\u5FC5\u9808\uFF09</label>' +
+          '<input type="text" placeholder="\u4F8B: \u4E0D\u6B63\u5229\u7528\u306E\u7591\u3044">' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn danger" type="button">BAN\u3092\u5B9F\u884C</button>'
+      );
+
+      // 9. Token Confiscation Form
+      html += modalSection(
+        '\u30C8\u30FC\u30AF\u30F3\u6CA1\u53CE',
+        '<div class="kv-rows" style="margin-bottom:14px">' +
+          '<div class="kv-row"><span class="kv-k">\u30E6\u30FC\u30B6\u30FC</span><span class="kv-v">' + u.id + '</span></div>' +
+          '<div class="kv-row"><span class="kv-k">\u73FE\u5728\u306E\u6B8B\u9AD8</span><span class="kv-v">' + formatAssetBalancePills(u.balance) + '</span></div>' +
+        '</div>' +
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>\u6CA1\u53CE\u5BFE\u8C61\u30A2\u30BB\u30C3\u30C8</label>' +
+            '<select>' +
+              '<option value="ALL">\u5168\u30A2\u30BB\u30C3\u30C8</option>' +
+              '<option value="KQ">KQ (\u6B8B\u9AD8: ' + money((u.balance || {}).KQ || 12000) + ')</option>' +
+              '<option value="BTC">BTC (\u6B8B\u9AD8: ' + ((u.balance || {}).BTC || 0.05) + ')</option>' +
+              '<option value="ETH">ETH (\u6B8B\u9AD8: ' + ((u.balance || {}).ETH || 0.8) + ')</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u6CA1\u53CE\u984D\uFF08\u7A7A=\u5168\u984D\uFF09</label>' +
+            '<input type="number" step="any" min="0" placeholder="\u5168\u984D\u306E\u5834\u5408\u306F\u7A7A\u6B04">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u6CA1\u53CE\u7406\u7531\uFF08\u5FC5\u9808\uFF09</label>' +
+            '<input type="text" placeholder="\u4F8B: \u5229\u7528\u898F\u7D04\u9055\u53CD">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn danger" type="button">\u6CA1\u53CE\u3092\u5B9F\u884C</button>'
+      );
+
+      // 10. Delta Adjustment Form
+      html += modalSection(
+        '\u30C7\u30EB\u30BF\u8ABF\u6574\uFF08\u8FFD\u8A18\u578B\uFF09',
+        '<div class="notice subtle" style="margin-bottom:14px">' +
+          '<span class="material-icons" aria-hidden="true">info</span>' +
+          '<div>' +
+            '<div class="notice-body">\u53F0\u5E33\u306F\u8FFD\u8A18\u578B\u3067\u3059\u3002\u3053\u306E\u64CD\u4F5C\u306F\u65B0\u3057\u3044\u30A8\u30F3\u30C8\u30EA\u3092\u8FFD\u52A0\u3057\u307E\u3059\u3002\u65E2\u5B58\u30A8\u30F3\u30C8\u30EA\u306F\u5909\u66F4\u3055\u308C\u307E\u305B\u3093\u3002</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>\u30E6\u30FC\u30B6\u30FC</label>' +
+            '<input type="text" value="' + u.id + '" readonly>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u30A2\u30BB\u30C3\u30C8</label>' +
+            '<select>' +
+              '<option value="KQ" selected>KQ</option>' +
+              '<option value="BTC">BTC</option>' +
+              '<option value="ETH">ETH</option>' +
+              '<option value="USDT">USDT</option>' +
+              '<option value="XRP">XRP</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u8ABF\u6574\u984D\uFF08\u6B63=\u52A0\u7B97, \u8CA0=\u6E1B\u7B97\uFF09</label>' +
+            '<input type="number" step="1" value="0" placeholder="\u4F8B: -500">' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u7406\u7531\uFF08\u5FC5\u9808\uFF09</label>' +
+            '<input type="text" placeholder="\u4F8B: \u8A08\u7B97\u8AA4\u5DEE\u306E\u4FEE\u6B63">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u9069\u7528</button>'
+      );
+
+      // 11. User Edit Form
+      var rankOptions = Object.keys(ranks).map(function(k) {
+        return '<option value="' + k + '"' + (u.rank === k ? ' selected' : '') + '>' + (ranks[k].name || k) + ' (x' + (ranks[k].multi || 1) + ')</option>';
+      }).join('');
+
+      var balanceFields = Object.entries(u.balance || { KQ: 12000, BTC: 0.05, ETH: 0.8, USDT: 500, USDC: 300, XRP: 200, JPYR: 8000, JPYC: 5000, IZAKAYA: 150 }).map(function(e) {
+        return '<div style="display:flex; align-items:center; gap:4px">' +
+          '<span class="pill neu" style="font-size:.78rem; padding:4px 8px">' + e[0] + '</span>' +
+          '<input type="number" step="any" value="' + e[1] + '" style="width:100px; padding:6px 8px; border-radius:8px; border:1px solid #D1D5DB; font-weight:700; text-align:right">' +
+        '</div>';
+      }).join('');
+
+      html += modalSection(
+        '\u30E6\u30FC\u30B6\u30FC\u7DE8\u96C6: ' + u.id,
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>\u30E1\u30FC\u30EB</label>' +
+            '<input type="email" value="' + (u.email || '') + '" placeholder="user@example.com">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>Wallet</label>' +
+            '<input type="text" value="' + u.wallet + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u30E9\u30F3\u30AF</label>' +
+            '<select>' + rankOptions + '</select>' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>KYC\u30B9\u30C6\u30FC\u30BF\u30B9</label>' +
+            '<select>' +
+              '<option value="NOT_SUBMITTED">\u672A\u63D0\u51FA</option>' +
+              '<option value="PENDING">\u5BE9\u67FB\u4E2D</option>' +
+              '<option value="APPROVED" selected>\u627F\u8A8D\u6E08\u307F</option>' +
+              '<option value="REJECTED">\u5374\u4E0B</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field" style="grid-column:1/-1">' +
+            '<label>\u6B8B\u9AD8\uFF08\u30A2\u30BB\u30C3\u30C8\u5225\uFF09</label>' +
+            '<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px">' + balanceFields + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="notice subtle" style="margin-top:12px">' +
+          '<span class="material-icons" aria-hidden="true">edit</span>' +
+          '<div>' +
+            '<div class="notice-title">\u904B\u7528\u30E1\u30E2</div>' +
+            '<div class="notice-body">\u6B8B\u9AD8\u5909\u66F4\u306F\u5DEE\u5206\u3092\u53F0\u5E33\u306B\u8FFD\u8A18\u3057\u307E\u3059\u3002\u30E9\u30F3\u30AF/KYC\u5909\u66F4\u306F\u76E3\u67FB\u30ED\u30B0\u306B\u8A18\u9332\u3055\u308C\u307E\u3059\u3002</div>' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u4FDD\u5B58</button>'
+      );
+
+      // 12. Ledger Edit Form
+      var ledger = (state.ledger || [])[0] || { id: 'L001', delta: 1800 };
+      html += modalSection(
+        '\u53F0\u5E33\u7DE8\u96C6: ' + ledger.id,
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>\u5897\u6E1B\uFF08delta\uFF09</label>' +
+            '<input type="number" step="1" value="' + Number(ledger.delta || 0) + '">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u4FDD\u5B58</button>'
+      );
+
+      // 13. Withdrawal Edit Form
+      html += modalSection(
+        '\u51FA\u91D1\u7533\u8ACB \u7DE8\u96C6: ' + w.id,
+        '<div class="form-grid">' +
+          '<div class="field">' +
+            '<label>\u30A2\u30BB\u30C3\u30C8</label>' +
+            '<input type="text" value="' + w.asset + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u6570\u91CF</label>' +
+            '<input type="number" step="1" min="0" value="' + Number(w.amount || 0) + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u9001\u4ED8\u5148</label>' +
+            '<input type="text" value="' + (w.to || '') + '">' +
+          '</div>' +
+          '<div class="field">' +
+            '<label>\u9001\u91D1\u30B9\u30C6\u30FC\u30BF\u30B9</label>' +
+            '<select>' +
+              '<option value="PENDING"' + (w.status === 'PENDING' ? ' selected' : '') + '>\u672A\u51E6\u7406</option>' +
+              '<option value="PROCESSING"' + (w.status === 'PROCESSING' ? ' selected' : '') + '>\u51E6\u7406\u4E2D</option>' +
+              '<option value="COMPLETED"' + (w.status === 'COMPLETED' ? ' selected' : '') + '>\u5B8C\u4E86</option>' +
+              '<option value="FAILED"' + (w.status === 'FAILED' ? ' selected' : '') + '>\u5931\u6557</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="field" style="grid-column: 1 / -1">' +
+            '<label>TxHash\uFF08\u4EFB\u610F\uFF09</label>' +
+            '<input type="text" value="' + (w.txHash || '') + '">' +
+          '</div>' +
+        '</div>',
+        '<button class="btn ghost" type="button">\u30AD\u30E3\u30F3\u30BB\u30EB</button>' +
+        '<button class="btn" type="button">\u4FDD\u5B58</button>'
+      );
+
+      // Append all modal sections
+      var container = document.createElement('div');
+      container.innerHTML = html;
+      document.body.appendChild(container);
+    }
+  </script>
+</body>
+</html>

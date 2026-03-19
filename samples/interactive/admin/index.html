@@ -1,0 +1,4725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KING and QUEEN - Admin Console</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+:root{
+  --r: 12px;
+  --r2: 16px;
+
+  /* Brand (match @user) */
+  --brand:#C62828;
+  --brand-700:#B71C1C;
+  --brand-50:#FEF2F2;
+  --gold: var(--brand);
+
+  --ok:#15803d;
+  --warn:#b45309;
+  --err:#b91c1c;
+  --neu:#6b7280;
+
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --sans: "Noto Sans JP", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+  /* Light (default) */
+  --bg: #F3F4F6;     /* gray-100 */
+  --panel:#ffffff;
+  --card:#ffffff;
+  --text:#1F2937;    /* gray-800 */
+  --muted:#6B7280;   /* gray-500 */
+  --line:#E5E7EB;    /* gray-200 */
+
+  --shadow: 0 1px 2px rgba(15,23,42,.06);
+  --shadow2: 0 10px 15px rgba(15,23,42,.06);
+  --focus: 0 0 0 3px rgba(198,40,40,.25);
+
+  --thead-bg:#F9FAFB; /* gray-50 */
+  --table-bg:#ffffff;
+}
+
+.app[data-theme="dark"]{
+  --bg: #0b0f14;
+  --panel:#111a27;
+  --card:#0f1724;
+  --text:#e8eef7;
+  --muted:#a5b3c7;
+  --line: rgba(255,255,255,.08);
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --shadow2: 0 10px 26px rgba(0,0,0,.28);
+  --focus: 0 0 0 3px rgba(198,40,40,.25);
+  --thead-bg: rgba(15,22,33,.92);
+  --table-bg: rgba(11,15,20,.35);
+}
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:var(--sans);
+    color:var(--text);
+    background: var(--bg);
+  }
+
+  .gold{color:var(--brand)}
+  .muted{color:var(--muted)}
+  .ok-text{color:var(--ok)}
+  .err-text{color:var(--err)}
+  .code{font-family:var(--mono); font-size:.92em; color: rgba(31,41,55,.75)}
+
+  .app{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height:100vh;
+    background: var(--bg);
+  }
+
+  /* ===== LOGIN OVERLAY ===== */
+  .login-overlay{
+    position:fixed; inset:0; z-index:100;
+    display:grid; place-items:center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding:18px;
+  }
+  .login-overlay.is-hidden{ display:none; }
+  .login-card{
+    width:min(420px, 100%);
+    border-radius: var(--r2);
+    background: #ffffff;
+    box-shadow: 0 25px 50px rgba(0,0,0,.25);
+    overflow:hidden;
+  }
+  .login-brand{
+    text-align:center;
+    padding:36px 24px 24px;
+    background: var(--brand);
+    color:#fff;
+  }
+  .login-brand-icon{
+    font-size:2.5rem;
+    margin-bottom:12px;
+    display:block;
+  }
+  .login-brand-title{
+    font-weight:900;
+    font-size:1.6rem;
+    letter-spacing:.04em;
+  }
+  .login-brand-title .gold{ color:#FFD54F; }
+  .login-brand-sub{
+    margin-top:4px;
+    font-size:.9rem;
+    opacity:.85;
+  }
+  .login-form{
+    padding:28px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .login-error{
+    text-align:center;
+    color:var(--err);
+    font-size:.9rem;
+    padding:8px;
+    border-radius:8px;
+    background:#FEF2F2;
+    border:1px solid #FECACA;
+  }
+
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:0;
+    background: var(--panel);
+    border-right:1px solid var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    box-shadow: var(--shadow);
+  }
+  .app[data-theme="dark"] .sidebar{ box-shadow:none; }
+
+  .brand{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:16px 16px 14px;
+    border-bottom:1px solid rgba(229,231,235,.7);
+    background: var(--panel);
+  }
+  .brand-icon{
+    font-size:1.75rem;
+    color: var(--brand);
+  }
+  .brand-title{font-weight:800; letter-spacing:.03em}
+  .brand-sub{color:var(--muted); font-size:.9rem; margin-top:2px}
+
+  .nav{display:flex; flex-direction:column; gap:6px}
+  .nav-section{
+    margin:10px 10px 4px;
+    color:var(--muted);
+    font-size:.8rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .nav-item{
+    width:100%;
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px;
+    border-radius: 10px;
+    border:1px solid transparent;
+    background:transparent;
+    color: #4B5563; /* gray-600 */
+    cursor:pointer;
+    transition:.15s ease;
+  }
+  .nav-item .material-icons{font-size:20px; color: currentColor}
+  .nav-item:hover{
+    background: #F9FAFB; /* gray-50 */
+    color: #111827; /* gray-900 */
+  }
+  .nav-item:focus{outline:none; box-shadow: var(--focus)}
+  .nav-item.is-active{
+    background: var(--brand-50);
+    color: var(--brand);
+    border-right: 4px solid var(--brand);
+    font-weight: 700;
+    border-radius: 0;
+  }
+  .badge{
+    margin-left:auto;
+    min-width:22px;
+    height:20px;
+    padding:0 8px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background: #F3F4F6;
+    border:1px solid #E5E7EB;
+    font-size:.78rem;
+    color:#374151; /* gray-700 */
+  }
+
+  .sidebar-footer{
+    margin-top:auto;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding:14px 16px 16px;
+    border-top:1px solid rgba(229,231,235,.7);
+    background: #F9FAFB;
+  }
+  .chip{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    background: #ffffff;
+    border:1px solid #E5E7EB;
+  }
+  .chip-k{color:var(--muted); font-size:.9rem}
+  .chip-v{font-weight:700}
+
+  .main{display:flex; flex-direction:column; min-width:0}
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:14px 24px;
+    background: #ffffff;
+    border-bottom:1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .app[data-theme="dark"] .topbar{ box-shadow:none; }
+  .topbar-left{display:flex; align-items:center; gap:12px}
+  .topbar-right{display:flex; align-items:center; gap:8px}
+  #pageTitle{margin:0; font-size:1.1rem}
+  .crumb{color:var(--muted); font-size:.9rem; margin-top:2px}
+  .notification-btn{
+    position:relative;
+    color: var(--muted);
+  }
+  .notification-btn:hover{color: var(--brand)}
+  .notification-btn .fa-bell{font-size:1.25rem}
+  .notification-dot{
+    display:none;
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:8px;
+    height:8px;
+    background: var(--err);
+    border-radius:50%;
+  }
+  .notification-dot.has-notice{display:block}
+
+  .search{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid #E5E7EB;
+    background: #F9FAFB;
+    border-radius: 999px;
+    padding:8px 10px;
+    min-width: 360px;
+  }
+  .search input{
+    width:100%;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--text);
+  }
+  .search .material-icons{font-size:20px; color:#9CA3AF}
+
+  .icon-btn{
+    border:none;
+    background:transparent;
+    color:var(--text);
+    display:grid;
+    place-items:center;
+    width:34px;height:34px;
+    border-radius:999px;
+    cursor:pointer;
+  }
+  .icon-btn:hover{background: rgba(255,255,255,.06)}
+  .app:not([data-theme="dark"]) .icon-btn:hover{background: rgba(17,24,39,.06)}
+  .icon-btn:focus{outline:none; box-shadow: var(--focus)}
+
+  .only-mobile{display:none}
+
+  .content{padding:18px; display:block}
+  .footer{padding:12px 18px; border-top:1px solid var(--line); color:var(--muted); font-size:.9rem}
+
+  .grid{display:grid; gap:14px}
+  .grid.cards{grid-template-columns: repeat(4, minmax(0,1fr))}
+  .grid.two{grid-template-columns: repeat(2, minmax(0,1fr))}
+  .grid.three{grid-template-columns: repeat(3, minmax(0,1fr))}
+  .grid-span-2{grid-column:1/-1}
+  .chart-wrap{min-height:220px; position:relative}
+
+  .card, .panel{
+    border-radius: var(--r2);
+    border:1px solid rgba(229,231,235,.7);
+    background: #ffffff;
+    box-shadow: var(--shadow);
+  }
+  .card{padding:14px}
+  .card-h{color:var(--muted); font-size:.95rem}
+  .card-v{font-size:2rem; font-weight:900; margin-top:6px}
+  .card-s{color:var(--muted); margin-top:6px; font-size:.9rem}
+
+  .panel-h{
+    padding:14px 14px 10px;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .panel-title{font-weight:900}
+  .panel-sub{color:var(--muted); font-size:.92rem; margin-top:4px}
+  .panel-b{padding:14px}
+  .actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 12px;
+    border-radius: 10px;
+    border:1px solid var(--brand);
+    background: var(--brand);
+    color:#ffffff;
+    cursor:pointer;
+    transition:.15s ease;
+    font-weight:700;
+  }
+  .btn:hover{transform: translateY(-1px); background: var(--brand-700); border-color: var(--brand-700)}
+  .btn:focus{outline:none; box-shadow: var(--focus)}
+  .btn.ghost{
+    border:1px solid #D1D5DB; /* gray-300 */
+    background: #ffffff;
+    color: #374151;
+  }
+  .btn.ghost:hover{background: #F9FAFB}
+  .app[data-theme="dark"] .btn.ghost{
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04);
+  }
+  .w100{width:100%; justify-content:center}
+  .btn.small{padding:6px 10px; font-size:.9rem}
+
+  .toolbar{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    gap:12px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .field{display:flex; flex-direction:column; gap:6px; min-width: 200px}
+  .field label{color:var(--muted); font-size:.85rem}
+  .field input, .field select, .field textarea{
+    padding:10px 12px;
+    border-radius: 10px;
+    border:1px solid #D1D5DB;
+    background: #ffffff;
+    color: #111827;
+    outline:none;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{box-shadow: var(--focus); border-color: rgba(198,40,40,.45)}
+  .hint{color:var(--muted); font-size:.9rem}
+
+  .table-wrap{
+    border:1px solid #E5E7EB;
+    border-radius: var(--r2);
+    overflow:hidden;
+    background: var(--table-bg);
+  }
+  .table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:.92rem;
+  }
+  .table thead th{
+    position:sticky; top:0;
+    background: var(--thead-bg);
+    border-bottom:1px solid #E5E7EB;
+    padding:12px 12px;
+    text-align:left;
+    color:#4B5563; /* gray-600 */
+    font-weight: 700;
+  }
+  .table tbody td{
+    padding:12px 12px;
+    border-bottom:1px solid var(--line);
+    vertical-align:middle;
+  }
+  .table tbody tr:hover{background: rgba(255,255,255,.03)}
+  .app:not([data-theme="dark"]) .table tbody tr:hover{background: #F9FAFB}
+  .table .right{text-align:right}
+
+  .pill{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:6px 10px;
+    border-radius: 999px;
+    border:1px solid #E5E7EB;
+    background: #F3F4F6;
+    font-size:.78rem;
+    font-weight:800;
+  }
+  .pill.ok{border-color: #BBF7D0; background: #DCFCE7; color: var(--ok)}
+  .pill.warn{border-color: #FDE68A; background: #FEF3C7; color: var(--warn)}
+  .pill.err{border-color: #FECACA; background: #FEE2E2; color: var(--err)}
+  .pill.neu{border-color: #E5E7EB; background: #F3F4F6; color: var(--neu)}
+  .pill.info{border-color: #BFDBFE; background: #DBEAFE; color: #1D4ED8}
+
+  .kv-row{
+    display:flex; justify-content:space-between; gap:10px;
+    padding:10px 12px;
+    border-radius: 12px;
+    border:1px solid #E5E7EB;
+    background: #F9FAFB;
+    margin-bottom:10px;
+  }
+  .kv-k{color:var(--muted)}
+  .kv-v{font-weight:900}
+
+  .flow-steps{margin:0; padding-left:18px; color:var(--muted)}
+  .flow-steps li{margin:10px 0}
+  .flow-steps li.done{color:rgba(49,208,123,.95)}
+  .flow-steps li.active{color: rgba(198,40,40,.95)}
+
+  .notice{
+    display:flex; gap:10px;
+    padding:12px;
+    border-radius: var(--r2);
+    border:1px solid #DBEAFE; /* blue-100 */
+    background: #EFF6FF;      /* blue-50 */
+    margin-bottom:12px;
+  }
+  .notice.subtle{border-color: #E5E7EB; background: #F9FAFB}
+  .notice.err{border-color: #FECACA; background: #FEF2F2}
+  .notice-title{font-weight:900}
+  .notice-body{color:var(--muted); font-size:.92rem; margin-top:2px}
+
+  .stat{
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    border-radius: var(--r2);
+    padding:12px;
+  }
+  .stat-k{color:var(--muted); font-size:.85rem}
+  .stat-v{font-weight:900; margin-top:6px}
+
+  .logbox{
+    margin-top:12px;
+    border-radius: var(--r2);
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    padding:10px 12px;
+  }
+
+  /* CSV import */
+  .import-grid{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap:14px;
+    margin-bottom: 12px;
+  }
+  .import-drop{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    border-radius: var(--r2);
+    border: 2px dashed #E5E7EB;
+    background: #ffffff;
+    cursor:pointer;
+    transition: .15s ease;
+    outline: none;
+  }
+  .import-drop:hover{ background:#F9FAFB; }
+  .import-drop:focus{ box-shadow: var(--focus); }
+  .import-drop.is-dragover{
+    border-color: rgba(198,40,40,.45);
+    background: rgba(198,40,40,.04);
+  }
+  .import-drop-ic{
+    width:44px;height:44px;
+    border-radius: 12px;
+    background: #F3F4F6;
+    display:grid;
+    place-items:center;
+    color: #6B7280;
+  }
+  .import-drop-title{ font-weight:900; }
+  .import-drop-sub{ color: var(--muted); font-size:.92rem; margin-top:2px; }
+  .import-side{ display:flex; flex-direction:column; gap:10px; }
+  .import-meta{
+    border:1px solid #E5E7EB;
+    background:#ffffff;
+    border-radius: 12px;
+    padding:10px 12px;
+  }
+  .import-stats{ margin-top: 10px; }
+  .errorbox{
+    border:1px solid #FECACA;
+    background:#FEF2F2;
+    border-radius: var(--r2);
+    padding:12px;
+    margin: 10px 0;
+  }
+  .errorbox-title{ font-weight:900; color:#991B1B; }
+  .errorbox-list{ margin:8px 0 0; padding-left: 18px; color:#7F1D1D; }
+  .logbox summary{cursor:pointer; color:var(--muted); font-weight:800}
+  .logbox pre{margin:10px 0 0; white-space:pre-wrap; color: rgba(15,23,42,.86)}
+  .app[data-theme="dark"] .logbox pre{color:rgba(232,238,247,.92)}
+
+  .empty{
+    padding:18px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  .view.is-hidden{display:none}
+  .is-hidden{display:none !important}
+
+  .account-slide{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .account-slide.is-open{
+    max-height: 220px;
+  }
+  .account-panel{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:10px 0 0;
+  }
+  .account-chip{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 12px;
+    border-radius:12px;
+    background:#ffffff;
+    border:1px solid #E5E7EB;
+  }
+  .account-chip .chip-k{color:var(--muted); font-size:.9rem}
+  .account-chip .chip-v{font-weight:700}
+  .withdrawal-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .withdrawal-btns{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .accounts-cell .account-item{
+    display:block;
+    margin:4px 0;
+    font-size:.9rem;
+  }
+
+  .modal{
+    position:fixed; inset:0; z-index:30;
+    display:grid; place-items:center;
+    background: rgba(0,0,0,.55);
+    padding:18px;
+  }
+  .modal.is-hidden{display:none}
+  .modal-card{
+    width:min(720px, 100%);
+    max-height: 90vh;
+    border-radius: var(--r2);
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  .app[data-theme="dark"] .modal-card{
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(15,22,33,.96);
+  }
+  .modal-h, .modal-f{
+    padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .modal-f{border-bottom:none; border-top:1px solid var(--line)}
+  .modal-b{padding:14px; overflow-y:auto; flex:1}
+  .modal-title{font-weight:900}
+
+  /* ===== DRAWER ===== */
+  .drawer-overlay{
+    position:fixed; inset:0; z-index:35;
+    background: rgba(0,0,0,.45);
+    transition: opacity .2s;
+  }
+  .drawer-overlay.is-hidden{ display:none; }
+  .drawer{
+    position:fixed;
+    top:0; right:0; bottom:0;
+    width:min(560px, 90vw);
+    z-index:36;
+    background: #ffffff;
+    border-left:1px solid var(--line);
+    box-shadow: -10px 0 30px rgba(0,0,0,.12);
+    display:flex;
+    flex-direction:column;
+    transform: translateX(0);
+    transition: transform .25s ease;
+  }
+  .drawer.is-hidden{
+    transform: translateX(100%);
+    pointer-events:none;
+  }
+  .drawer-h{
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .drawer-title{font-weight:900; font-size:1.05rem}
+  .drawer-b{
+    padding:16px;
+    overflow-y:auto;
+    flex:1;
+  }
+  .drawer-f{
+    padding:12px 16px;
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    flex-shrink:0;
+  }
+  .drawer-section{
+    margin-bottom:16px;
+  }
+  .drawer-section-title{
+    font-weight:800;
+    font-size:.9rem;
+    color:var(--muted);
+    margin-bottom:8px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+  }
+
+  /* ===== TAB BAR ===== */
+  .tab-bar{
+    display:flex;
+    gap:0;
+    border-bottom:2px solid var(--line);
+    margin-bottom:14px;
+  }
+  .tab-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:12px 20px;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    font-weight:700;
+    font-size:.95rem;
+    border-bottom:2px solid transparent;
+    margin-bottom:-2px;
+    transition:.15s;
+  }
+  .tab-btn:hover{
+    color:var(--text);
+    background:rgba(198,40,40,.03);
+  }
+  .tab-btn.is-active{
+    color:var(--brand);
+    border-bottom-color:var(--brand);
+  }
+  .tab-btn .material-icons{ font-size:18px; }
+  .tab-btn .badge{ margin-left:4px; }
+  .tab-panel.is-hidden{ display:none; }
+
+  /* ===== PAGINATION ===== */
+  .pagination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:14px 0 4px;
+  }
+  .pagination .btn{
+    padding:6px 12px;
+    font-size:.88rem;
+  }
+  .pagination .page-info{
+    color:var(--muted);
+    font-size:.9rem;
+    font-weight:700;
+  }
+
+  .toasts{
+    position:fixed; right:16px; bottom:16px; z-index:40;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .toast{
+    width:min(360px, calc(100vw - 32px));
+    border-radius: 16px;
+    border:1px solid #E5E7EB;
+    background: #ffffff;
+    box-shadow: var(--shadow2);
+    padding:12px 12px;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .app[data-theme="dark"] .toast{
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(15,22,33,.95);
+  }
+  .toast .t-title{font-weight:900}
+  .toast .t-body{color:var(--muted); font-size:.9rem; margin-top:2px}
+  .toast.ok{border-color: rgba(49,208,123,.22)}
+  .toast.err{border-color: rgba(255,90,107,.22)}
+  .toast.warn{border-color: rgba(255,204,102,.22)}
+
+  .overlay{
+    position:fixed; inset:0; z-index:20;
+    background: rgba(0,0,0,.55);
+  }
+
+  /* Rate pulse animation */
+  @keyframes ratePulse {
+    0% { opacity: 1; }
+    30% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+  .rate-pulse {
+    animation: ratePulse 0.6s ease-in-out;
+  }
+
+  .rate-card { border-left: 4px solid var(--brand); }
+  .rate-card .card-v { font-size: 1.5rem; letter-spacing: -.02em; }
+
+  .rate-card-panel { border-left: 4px solid var(--brand); }
+
+  .btn.danger {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn.danger:hover { background: #b91c1c; border-color: #b91c1c; }
+  .btn.danger:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn.warn-btn {
+    background: #F59E0B;
+    border-color: #F59E0B;
+    color: #fff;
+    font-weight: 700;
+  }
+  .btn.warn-btn:hover { background: #D97706; border-color: #D97706; }
+
+  .total-row td { border-top: 2px solid var(--line); background: var(--panel); }
+
+  .rate-pulse-cell { font-weight: 700; color: var(--brand); }
+
+  /* CSS Dropzone */
+  .csv-dropzone {
+    border: 2px dashed var(--line);
+    border-radius: var(--r2);
+    padding: 48px 32px;
+    text-align: center;
+    background: var(--bg);
+    transition: border-color .25s, background .25s, box-shadow .25s, transform .2s;
+    cursor: pointer;
+  }
+  .csv-dropzone:hover,
+  .csv-dropzone.is-dragover {
+    border-color: var(--brand);
+    background: rgba(198, 40, 40, .03);
+    box-shadow: 0 0 0 4px rgba(198, 40, 40, .08);
+  }
+  .csv-dropzone.is-dragover {
+    transform: scale(1.01);
+    background: rgba(198, 40, 40, .06);
+    border-style: solid;
+  }
+  .csv-dropzone-icon-area {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(198, 40, 40, .06);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    transition: background .25s, transform .25s;
+  }
+  .csv-dropzone:hover .csv-dropzone-icon-area,
+  .csv-dropzone.is-dragover .csv-dropzone-icon-area {
+    background: rgba(198, 40, 40, .12);
+    transform: scale(1.08);
+  }
+  .csv-dropzone-icon {
+    font-size: 2.2rem;
+    color: var(--brand);
+    opacity: .55;
+    display: block;
+    transition: opacity .25s, transform .25s;
+  }
+  .csv-dropzone:hover .csv-dropzone-icon,
+  .csv-dropzone.is-dragover .csv-dropzone-icon {
+    opacity: .9;
+    transform: translateY(-2px);
+  }
+  .csv-dropzone-text {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .csv-dropzone-sub {
+    font-size: .88rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .csv-dropzone-or {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-bottom: 14px;
+    position: relative;
+    display: inline-block;
+    padding: 0 12px;
+  }
+  .csv-dropzone-or::before,
+  .csv-dropzone-or::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: var(--line);
+  }
+  .csv-dropzone-or::before { right: 100%; }
+  .csv-dropzone-or::after { left: 100%; }
+  .csv-dropzone-formats {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .csv-format-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-size: .78rem;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: .02em;
+  }
+  .csv-dropzone-hint {
+    font-size: .8rem;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+  .csv-dropzone .btn {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* Form grid */
+  .form-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:14px;
+  }
+  @media (max-width:600px){
+    .form-grid{ grid-template-columns: 1fr; }
+  }
+
+  /* Toggle switch */
+  .toggle-switch{
+    position:relative;
+    display:inline-block;
+    width:44px; height:24px;
+  }
+  .toggle-switch input{
+    opacity:0; width:0; height:0;
+  }
+  .toggle-slider{
+    position:absolute; cursor:pointer;
+    top:0; left:0; right:0; bottom:0;
+    background:#D1D5DB;
+    border-radius:24px;
+    transition:.2s;
+  }
+  .toggle-slider:before{
+    content:"";
+    position:absolute;
+    height:18px; width:18px;
+    left:3px; bottom:3px;
+    background:#fff;
+    border-radius:50%;
+    transition:.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider{
+    background:var(--brand);
+  }
+  .toggle-switch input:checked + .toggle-slider:before{
+    transform:translateX(20px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px){
+    .grid.cards{grid-template-columns: repeat(2, minmax(0,1fr))}
+    .grid.three{grid-template-columns: repeat(2, minmax(0,1fr))}
+    .search{min-width: 280px}
+  }
+  @media (max-width: 860px){
+    .app{grid-template-columns: 1fr}
+    .sidebar{
+      position:fixed;
+      left:0; top:0; bottom:0;
+      width: 290px;
+      transform: translateX(-105%);
+      transition: transform .18s ease;
+      z-index:25;
+    }
+    .sidebar.is-open{transform: translateX(0)}
+    .only-mobile{display:inline-grid}
+    .topbar{padding:12px 12px}
+    .content{padding:12px}
+    .grid.two{grid-template-columns: 1fr}
+    .grid.three{grid-template-columns: 1fr}
+    .search{min-width: 220px}
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    font-weight: 700;
+    transition: .15s ease;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.is-active {
+    color: var(--brand);
+    border-bottom-color: var(--brand);
+  }
+  .tab-panel.is-hidden { display: none; }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0;
+  }
+  </style>
+</head>
+<body>
+<div class="app" data-theme="light">
+    <!-- LOGIN OVERLAY -->
+    <div class="login-overlay" id="loginOverlay">
+      <div class="login-card">
+        <div class="login-brand">
+          <i class="fa-solid fa-chess-king login-brand-icon" aria-hidden="true"></i>
+          <div class="login-brand-title">KING<span class="gold">and</span>QUEEN</div>
+          <div class="login-brand-sub">管理コンソール</div>
+        </div>
+        <div class="login-form">
+          <div class="field">
+            <label>メールアドレス</label>
+            <input id="loginEmail" type="email" placeholder="admin@example.com" value="admin@kingandqueen.io">
+          </div>
+          <div class="field">
+            <label>パスワード</label>
+            <input id="loginPassword" type="password" placeholder="パスワード" value="admin1234">
+          </div>
+          <button class="btn w100" id="btnLoginSubmit" type="button">
+            <span class="material-icons" aria-hidden="true">login</span>
+            ログイン
+          </button>
+          <div class="login-error is-hidden" id="loginError">メールアドレスまたはパスワードが正しくありません</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <i class="fa-solid fa-chess-king brand-icon" aria-hidden="true"></i>
+        <div class="brand-text">
+          <div class="brand-title">KING<span class="gold">and</span>QUEEN</div>
+          <div class="brand-sub">管理コンソール</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Main navigation">
+        <div class="nav-section">メイン</div>
+        <button class="nav-item is-active" data-view="dashboard" type="button">
+          <span class="material-icons" aria-hidden="true">dashboard</span>
+          <span>ダッシュボード</span>
+        </button>
+
+        <div class="nav-section">運用・操作</div>
+        <button class="nav-item" data-view="approvalTasks" type="button">
+          <span class="material-icons" aria-hidden="true">task_alt</span>
+          <span>承認タスク</span>
+          <span class="badge" id="badgeApprovalTasks">0</span>
+        </button>
+        <button class="nav-item" data-view="scraper" type="button">
+          <span class="material-icons" aria-hidden="true">upload_file</span>
+          <span>CSVインポート・台帳反映</span>
+        </button>
+
+        <div class="nav-section">データベース</div>
+        <button class="nav-item" data-view="users" type="button">
+          <span class="material-icons" aria-hidden="true">people</span>
+          <span>ユーザー管理</span>
+        </button>
+        <button class="nav-item" data-view="ledger" type="button">
+          <span class="material-icons" aria-hidden="true">receipt_long</span>
+          <span>トークン台帳</span>
+        </button>
+
+        <div class="nav-section">コンテンツ</div>
+        <button class="nav-item" data-view="announcements" type="button">
+          <span class="material-icons" aria-hidden="true">campaign</span>
+          <span>お知らせ管理</span>
+        </button>
+
+        <div class="nav-section">システム</div>
+        <button class="nav-item" data-view="settings" type="button">
+          <span class="material-icons" aria-hidden="true">settings</span>
+          <span>マスター管理</span>
+        </button>
+        <button class="nav-item" id="btnAccountToggle" type="button">
+          <span class="material-icons" aria-hidden="true">account_circle</span>
+          <span>アカウント</span>
+        </button>
+        <div class="account-slide" id="accountSlide">
+          <div class="account-panel">
+            <div class="account-chip">
+              <span class="chip-k">権限</span><span class="chip-v" id="accountRole">管理者</span>
+            </div>
+            <button class="btn ghost w100" id="btnLogout" type="button">
+              <span class="material-icons" aria-hidden="true">logout</span>
+              <span>ログアウト</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn only-mobile" id="btnToggleSidebar" type="button" aria-label="Open menu">
+            <span class="material-icons" aria-hidden="true">menu</span>
+          </button>
+          <div>
+            <h1 id="pageTitle">ダッシュボード</h1>
+            <div class="crumb" id="pageCrumb">管理コンソール / ダッシュボード</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="icon-btn notification-btn" type="button" aria-label="通知" title="通知">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot" id="notificationDot"></span>
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- DASHBOARD -->
+        <section class="view" id="view-dashboard">
+          <div class="grid cards">
+            <article class="card">
+              <div class="card-h">未承認の口座申請</div>
+              <div class="card-v" id="kpiApprovals">0</div>
+              <div class="card-s">件のアクションが必要</div>
+            </article>
+            <article class="card">
+              <div class="card-h">未処理の出金申請</div>
+              <div class="card-v" id="kpiWithdrawals">0</div>
+              <div class="card-s">件のアクションが必要</div>
+            </article>
+            <article class="card">
+              <div class="card-h">有効ユーザー数</div>
+              <div class="card-v" id="kpiUsers">0</div>
+              <div class="card-s">ウォレット接続済み</div>
+            </article>
+            <article class="card rate-card">
+              <div class="card-h">KQ トークンレート</div>
+              <div class="card-v" id="kpiKqRate">--</div>
+              <div class="card-s" id="kpiKqRateTime">API同期中...</div>
+            </article>
+          </div>
+
+          <div class="grid three" style="margin-top:18px">
+            <div class="panel">
+              <div class="panel-h">
+                <div class="panel-title">ユーザー数（推移）</div>
+                <div class="panel-sub">日別の累計ユーザー数</div>
+              </div>
+              <div class="panel-b">
+                <div class="chart-wrap">
+                  <canvas id="chartUsers" height="220"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-h">
+                <div class="panel-title">KQトークン付与総数（推移）</div>
+                <div class="panel-sub">日別のKQトークン付与量</div>
+              </div>
+              <div class="panel-b">
+                <div class="chart-wrap">
+                  <canvas id="chartPoints" height="220"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-h">
+                <div class="panel-title">KQトークンレート（推移）</div>
+                <div class="panel-sub">直近のレート変動</div>
+              </div>
+              <div class="panel-b">
+                <div class="chart-wrap">
+                  <canvas id="chartRate" height="220"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- APPROVAL TASKS (merged approvals + withdrawals) -->
+        <section class="view is-hidden" id="view-approvalTasks">
+          <div class="panel">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">承認タスク</div>
+                <div class="panel-sub">口座連携申請と出金申請の承認/却下を一元管理</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="addDemoApplication" type="button">+ デモ口座申請</button>
+                <button class="btn ghost" data-action="addDemoWithdrawal" type="button">+ デモ出金申請</button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <!-- Tabs -->
+              <div class="tab-bar" id="approvalTabBar">
+                <button class="tab-btn is-active" data-tab="accountLinking" type="button">
+                  <span class="material-icons" aria-hidden="true">how_to_reg</span>
+                  口座連携申請
+                  <span class="badge" id="badgeAccountLinking">0</span>
+                </button>
+                <button class="tab-btn" data-tab="withdrawalRequests" type="button">
+                  <span class="material-icons" aria-hidden="true">payments</span>
+                  出金申請
+                  <span class="badge" id="badgeWithdrawalRequests">0</span>
+                </button>
+              </div>
+
+              <!-- Account Linking Tab -->
+              <div class="tab-panel" id="tabPanel-accountLinking">
+                <div class="toolbar">
+                  <div class="field">
+                    <label>ステータス</label>
+                    <select id="filterAStatus">
+                      <option value="ALL">すべて</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="APPROVED">APPROVED</option>
+                      <option value="REJECTED">REJECTED</option>
+                    </select>
+                  </div>
+                  <div class="hint" id="approvalsHint"></div>
+                </div>
+                <div class="table-wrap">
+                  <table class="table" id="tblApprovals">
+                    <thead>
+                      <tr>
+                        <th>申請日時</th>
+                        <th>ユーザー (Wallet)</th>
+                        <th>ブローカー</th>
+                        <th>口座番号</th>
+                        <th>ステータス</th>
+                        <th class="right">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <div class="empty" id="emptyApprovals" hidden>該当データがありません</div>
+                </div>
+              </div>
+
+              <!-- Withdrawal Requests Tab -->
+              <div class="tab-panel is-hidden" id="tabPanel-withdrawalRequests">
+                <div class="toolbar">
+                  <div class="field">
+                    <label>送金ステータス</label>
+                    <select id="filterWStatus">
+                      <option value="ALL">すべて</option>
+                      <option value="PENDING">申請中</option>
+                      <option value="APPROVED">承認済み</option>
+                      <option value="PROCESSING">処理中</option>
+                      <option value="COMPLETED">完了</option>
+                      <option value="FAILED">失敗</option>
+                      <option value="CANCELLED">キャンセル</option>
+                    </select>
+                  </div>
+                  <div class="hint" id="withdrawalsHint"></div>
+                </div>
+                <div class="table-wrap">
+                  <table class="table" id="tblWithdrawals">
+                    <thead>
+                      <tr>
+                        <th>申請日時</th>
+                        <th>ユーザーID</th>
+                        <th>メール</th>
+                        <th>ウォレットアドレス</th>
+                        <th class="right">保有ポイント</th>
+                        <th class="right">出金申請額</th>
+                        <th>アセット</th>
+                        <th>送金ステータス</th>
+                        <th class="right">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                  <div class="empty" id="emptyWithdrawals" hidden>該当データがありません</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CSVインポート・台帳反映 -->
+        <section class="view is-hidden" id="view-scraper">
+          <!-- KQレートカード -->
+          <div class="panel rate-card-panel">
+            <div class="panel-b" style="text-align:center; padding:20px 16px">
+              <div class="muted" style="font-size:.85rem; margin-bottom:4px">KQ トークンレート（リアルタイム）</div>
+              <div id="scraperLiveRate" style="font-size:2rem; font-weight:900; letter-spacing:-.02em">--</div>
+            </div>
+          </div>
+
+          <!-- CSVアップロード -->
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">取引データCSVインポート</div>
+                <div class="panel-sub">ブローカーからダウンロードしたCSV/Excelを取り込み、KQトークン付与を計算します</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="downloadCsvTemplate" type="button">
+                  <span class="material-icons" aria-hidden="true">download</span> テンプレートCSV
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <input type="file" id="csvFile" accept=".csv,.txt" hidden>
+              <div class="csv-dropzone" id="csvDropzone">
+                <div class="csv-dropzone-icon-area">
+                  <span class="material-icons csv-dropzone-icon" aria-hidden="true">cloud_upload</span>
+                </div>
+                <div class="csv-dropzone-text">CSVファイルをドラッグ&ドロップ</div>
+                <div class="csv-dropzone-sub">ブローカーのレポートCSVをここにドラッグしてください</div>
+                <div class="csv-dropzone-or">または</div>
+                <button class="btn" type="button" id="btnCsvBrowse">
+                  <span class="material-icons" aria-hidden="true">folder_open</span> ファイルを選択してアップロード
+                </button>
+                <div class="csv-dropzone-formats">
+                  <span class="csv-format-badge">.csv</span>
+                  <span class="csv-format-badge">.txt</span>
+                </div>
+                <div class="csv-dropzone-hint">CSV内の broker 列でブローカーを自動判定</div>
+              </div>
+
+              <div id="importMeta" style="margin-top:14px"><div class="muted">ファイル未選択</div></div>
+
+              <div class="grid two import-stats" id="importStats" hidden style="margin-top:12px">
+                <div class="stat">
+                  <div class="stat-k">行数</div>
+                  <div class="stat-v" id="impRowCount">0</div>
+                </div>
+                <div class="stat">
+                  <div class="stat-k">適用 / スキップ / 除外</div>
+                  <div class="stat-v" id="impCounts">- / - / -</div>
+                </div>
+              </div>
+
+              <div class="table-wrap" style="margin-top:14px">
+                <table class="table" id="tblImportPreview">
+                  <thead>
+                    <tr>
+                      <th>行</th>
+                      <th>ユーザー</th>
+                      <th>ブローカー</th>
+                      <th>口座番号</th>
+                      <th class="right">原資(IB報酬)</th>
+                      <th class="right">付与KQ</th>
+                      <th>ステータス</th>
+                      <th>備考</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty" id="emptyImportPreview">CSVファイルをアップロードしてください</div>
+              </div>
+
+              <div id="importLogBox" hidden style="margin-top:12px">
+                <details>
+                  <summary class="muted" style="cursor:pointer; font-size:.9rem">処理ログ</summary>
+                  <pre id="importLog" style="font-size:.8rem; max-height:200px; overflow:auto; margin-top:4px; padding:8px; background:var(--bg); border-radius:var(--r)"></pre>
+                </details>
+              </div>
+
+              <div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap; align-items:center">
+                <button class="btn danger" data-action="applyCsvImport" id="btnApplyCsvImport" type="button" disabled>
+                  <span class="material-icons" aria-hidden="true">check_circle</span> 確定して台帳に反映
+                </button>
+                <span class="muted" style="font-size:.9rem">最終インポート: <span id="lastImportTime">未実行</span></span>
+              </div>
+
+              <div class="notice subtle" style="margin-top:14px">
+                <span class="material-icons" aria-hidden="true">info</span>
+                <div>
+                  <div class="notice-title">運用フロー</div>
+                  <div class="notice-body">月1回、各ブローカーの管理画面からレポートCSVをダウンロード → この画面でアップロード → プレビュー確認 → 「確定して台帳に反映」で付与が確定します。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- USERS -->
+        <section class="view is-hidden" id="view-users">
+          <div class="panel">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">ユーザー管理</div>
+                <div class="panel-sub">ウォレット・ランク・残高の確認。BAN・トークン没収・退会処理</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="addDemoWithdrawalRequest" type="button">+ デモ退会申請を追加</button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div class="toolbar">
+                <div class="field" style="min-width:300px">
+                  <label>検索（user_id, メール）</label>
+                  <input id="filterUserSearch" type="text" placeholder="U001, user@example.com...">
+                </div>
+                <div class="hint" id="usersHint"></div>
+              </div>
+              <div class="table-wrap">
+                <table class="table" id="tblUsers">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Wallet</th>
+                      <th>ランク</th>
+                      <th>KYC</th>
+                      <th>紐づき口座一覧</th>
+                      <th class="right">残高</th>
+                      <th>状態</th>
+                      <th class="right">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty" id="emptyUsers" hidden>ユーザーがいません</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LEDGER -->
+        <section class="view is-hidden" id="view-ledger">
+          <div class="panel">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">トークン台帳</div>
+                <div class="panel-sub">付与/減算の履歴（追記型・編集不可）</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="exportLedgerCsv" type="button">
+                  <span class="material-icons" aria-hidden="true">download</span> CSV出力
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div class="toolbar" style="flex-wrap:wrap">
+                <div class="field">
+                  <label>ユーザー</label>
+                  <input id="filterLedgerUser" type="text" placeholder="U001...">
+                </div>
+                <div class="field">
+                  <label>開始日</label>
+                  <input id="filterLedgerDateFrom" type="date">
+                </div>
+                <div class="field">
+                  <label>終了日</label>
+                  <input id="filterLedgerDateTo" type="date">
+                </div>
+                <div class="field">
+                  <label>アセット</label>
+                  <select id="filterLedgerAsset">
+                    <option value="ALL">すべて</option>
+                    <option value="KQ">KQ</option>
+                    <option value="BTC">BTC</option>
+                    <option value="ETH">ETH</option>
+                    <option value="USDT">USDT</option>
+                    <option value="USDC">USDC</option>
+                    <option value="XRP">XRP</option>
+                    <option value="JPYR">JPYR</option>
+                    <option value="JPYC">JPYC</option>
+                    <option value="IZAKAYA">IZAKAYA</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>種別</label>
+                  <select id="filterLedgerType">
+                    <option value="ALL">すべて</option>
+                    <option value="CREDIT">CREDIT</option>
+                    <option value="DEBIT">DEBIT</option>
+                    <option value="ADJUSTMENT">ADJUSTMENT</option>
+                    <option value="CONFISCATE">CONFISCATE</option>
+                  </select>
+                </div>
+                <div class="hint" id="ledgerHint"></div>
+              </div>
+              <div class="table-wrap">
+                <table class="table" id="tblLedger">
+                  <thead>
+                    <tr>
+                      <th>日付</th>
+                      <th>ユーザー</th>
+                      <th>アセット</th>
+                      <th>種別</th>
+                      <th class="right">増減</th>
+                      <th>参照</th>
+                      <th class="right">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty" id="emptyLedger" hidden>台帳が空です</div>
+              </div>
+              <div class="pagination" id="ledgerPagination"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ANNOUNCEMENTS -->
+        <section class="view is-hidden" id="view-announcements">
+          <div class="panel">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">お知らせ管理（CMS）</div>
+                <div class="panel-sub">ユーザーに表示するお知らせの作成・編集・公開管理</div>
+              </div>
+              <div class="actions">
+                <button class="btn" data-action="addAnnouncement" type="button">
+                  <span class="material-icons" aria-hidden="true">add</span> 新規作成
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div class="toolbar">
+                <div class="field">
+                  <label>ステータス</label>
+                  <select id="filterAnnStatus">
+                    <option value="ALL">すべて</option>
+                    <option value="DRAFT">下書き</option>
+                    <option value="SCHEDULED">予約公開</option>
+                    <option value="PUBLISHED">公開中</option>
+                    <option value="ARCHIVED">アーカイブ</option>
+                  </select>
+                </div>
+                <div class="hint" id="announcementsHint"></div>
+              </div>
+
+              <div class="table-wrap">
+                <table class="table" id="tblAnnouncements">
+                  <thead>
+                    <tr>
+                      <th>作成日時</th>
+                      <th>タイトル / 本文</th>
+                      <th>カテゴリ</th>
+                      <th>優先度</th>
+                      <th>ステータス</th>
+                      <th class="right">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty" id="emptyAnnouncements" hidden>お知らせがありません</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SETTINGS (マスター管理) -->
+        <section class="view is-hidden" id="view-settings">
+          <div class="panel">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">ルール設定</div>
+                <div class="panel-sub">付与アセット・出金ネットワークの設定</div>
+              </div>
+              <div class="actions">
+                <button class="btn" data-action="saveSettings" type="button">
+                  <span class="material-icons" aria-hidden="true">save</span> 保存
+                </button>
+                <button class="btn ghost" data-action="resetMock" type="button">
+                  <span class="material-icons" aria-hidden="true">restart_alt</span> Reset
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div class="form-grid">
+                <div class="field">
+                  <label>デフォルト付与アセット</label>
+                  <select id="setAsset">
+                    <option value="KQ">KQ</option>
+                    <option value="USDT">USDT</option>
+                    <option value="JPYR">JPYR</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>還元率 (%)</label>
+                  <input id="setRewardRate" type="number" min="0" max="100" step="1" value="30">
+                </div>
+                <div class="field">
+                  <label>出金ネットワーク</label>
+                  <input value="Polygon" disabled />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">提携FX業者と設定値</div>
+                <div class="panel-sub">ブローカーごとのパラメータ管理</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="addBroker" type="button">
+                  <span class="material-icons" aria-hidden="true">add</span> 追加
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div class="table-wrap">
+                <table class="table" id="tblBrokers">
+                  <thead>
+                    <tr>
+                      <th>コード</th>
+                      <th>名称</th>
+                      <th>表示名</th>
+                      <th>CSV形式</th>
+                      <th>還元率</th>
+                      <th>IB通貨</th>
+                      <th>ステータス</th>
+                      <th class="right">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="empty" id="emptyBrokers" hidden>業者が登録されていません</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">配分比率（DST-01）</div>
+                <div class="panel-sub">アセット間の配分比率（合計100%）</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="addDistributionAsset" type="button">
+                  <span class="material-icons" aria-hidden="true">add</span> アセット追加
+                </button>
+                <button class="btn" data-action="saveDistributionRatios" type="button">
+                  <span class="material-icons" aria-hidden="true">save</span> 保存
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div id="distributionRatiosList"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">ランクマスター（RNK-01）</div>
+                <div class="panel-sub">ランク定義・還元率倍率・昇格条件</div>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div id="rankMasterList"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">キャンペーン管理（CMP-01）</div>
+                <div class="panel-sub">キャンペーン倍率（期間限定/個別）の管理</div>
+              </div>
+              <div class="actions">
+                <button class="btn ghost" data-action="addCampaign" type="button">
+                  <span class="material-icons" aria-hidden="true">add</span> 新規作成
+                </button>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div id="campaignMasterList"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">参考レート（PRC-01）</div>
+                <div class="panel-sub">各アセットの参考レート（付与量計算に使用）</div>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div id="referenceRatesList"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:14px">
+            <div class="panel-h">
+              <div>
+                <div class="panel-title">緊急停止スイッチ（OPS-01）</div>
+                <div class="panel-sub">異常時に即時停止/再開</div>
+              </div>
+            </div>
+            <div class="panel-b">
+              <div id="emergencyStopStatus"></div>
+            </div>
+          </div>
+
+          <div class="notice subtle" style="margin-top:14px">
+            <span class="material-icons" aria-hidden="true">shield</span>
+            <div>
+              <div class="notice-title">注意</div>
+              <div class="notice-body">本番では、設定変更は監査ログ（誰がいつ何を変更したか）を必ず残す。</div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <span class="muted">KQ Admin Console (Mock) · v0.3</span>
+      </footer>
+    </main>
+
+    <!-- MODAL -->
+    <div class="modal is-hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <div class="modal-h">
+          <div class="modal-title" id="modalTitle">タイトル</div>
+          <button class="icon-btn" data-action="closeModal" type="button" aria-label="Close">
+            <span class="material-icons" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <div class="modal-b" id="modalBody"></div>
+        <div class="modal-f" id="modalFooter"></div>
+      </div>
+    </div>
+
+    <!-- DRAWER -->
+    <div class="drawer-overlay is-hidden" id="drawerOverlay"></div>
+    <div class="drawer is-hidden" id="drawer" role="dialog" aria-modal="true">
+      <div class="drawer-h">
+        <div class="drawer-title" id="drawerTitle">詳細</div>
+        <button class="icon-btn" data-action="closeDrawer" type="button" aria-label="Close">
+          <span class="material-icons" aria-hidden="true">close</span>
+        </button>
+      </div>
+      <div class="drawer-b" id="drawerBody"></div>
+      <div class="drawer-f" id="drawerFooter"></div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+(() => {
+    window.addEventListener("error", (event) => {
+    });
+    // ------------------------------
+    // Storage
+    // ------------------------------
+    const STORAGE_KEY = "kq_admin_mock_v06";
+    const MOCK_SCHEMA_VERSION = 2;
+    const DEBUG_UI_FINGERPRINT = "admin-ui-2026-03-08-brokers-misalignment-check";
+  
+    const nowISO = () => new Date().toISOString();
+    const fmtDate = (iso) => new Date(iso).toLocaleString();
+  
+    const uid = (prefix="id") => `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now()}`;
+  
+    const money = (n) => Number(n || 0).toLocaleString();
+    const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+
+    // Multi-asset balance helpers
+    const ensureBalObj = (bal) => {
+      if (typeof bal === "object" && bal !== null) return bal;
+      return { KQ: Number(bal || 0), BTC: 0, ETH: 0, USDT: 0, USDC: 0, XRP: 0, JPYR: 0, JPYC: 0, IZAKAYA: 0 };
+    };
+    const totalBalanceKq = (balObj) => {
+      const b = ensureBalObj(balObj);
+      return Object.values(b).reduce((s, v) => s + Number(v || 0), 0);
+    }
+    const formatAssetBalance = (balObj) => {
+      const b = ensureBalObj(balObj);
+      return Object.entries(b)
+        .filter(([, v]) => v > 0)
+        .map(([k, v]) => `${k}: ${typeof v === "number" && v < 1 ? v.toFixed(4) : money(v)}`)
+        .join(" / ") || "0";
+    };
+    const formatAssetBalancePills = (balObj) => {
+      const b = ensureBalObj(balObj);
+      return Object.entries(b)
+        .map(([k, v]) => `<span class="pill neu" style="font-size:.75rem; padding:4px 8px">${k}: <b>${typeof v === "number" && v < 1 && v > 0 ? v.toFixed(4) : money(v)}</b></span>`)
+        .join(" ");
+    };
+  
+    // ------------------------------
+    // Initial Mock
+    // ------------------------------
+    const createInitialState = () => ({
+      meta: {
+        schemaVersion: MOCK_SCHEMA_VERSION,
+        lastImportAt: "2026-03-05T10:30:00Z",
+        lastImportCount: 24,
+        theme: "light"
+      },
+      settings: {
+        rewardRate: 30,       // 還元率 (%)
+        defaultAsset: "KQ",
+        emergencyStop: { csvImport: true, reward: false, withdrawal: false, accountLinking: false },
+      },
+      distributionRatios: [
+        { asset: "KQ",      ratio: 25 },
+        { asset: "BTC",     ratio: 8 },
+        { asset: "ETH",     ratio: 8 },
+        { asset: "USDT",    ratio: 15 },
+        { asset: "USDC",    ratio: 10 },
+        { asset: "XRP",     ratio: 7 },
+        { asset: "JPYR",    ratio: 12 },
+        { asset: "JPYC",    ratio: 10 },
+        { asset: "IZAKAYA", ratio: 5 },
+      ],
+      referenceRates: {
+        KQ: 120, BTC: 15000000, ETH: 600000, USDT: 155, USDC: 155, XRP: 80, JPYR: 1, JPYC: 1, IZAKAYA: 50,
+      },
+      campaigns: [
+        { id: "CMP001", name: "春キャンペーン", type: "PERIOD", multiplier: 1.5, startDate: "2026-03-01", endDate: "2026-03-31", status: "ACTIVE" },
+        { id: "CMP002", name: "入会1ヶ月キャンペーン", type: "PER_USER", multiplier: 1.3, durationDays: 30, status: "ACTIVE" },
+        { id: "CMP003", name: "GOLD会員限定ボーナス", type: "PER_USER", multiplier: 2.0, durationDays: 0, status: "INACTIVE" },
+      ],
+      users: [
+        { id: "U001", wallet: "0x9a...1b2c", email: "user001@example.com", rank: "GOLD",   kycStatus: "APPROVED",       balance: { KQ: 12000, BTC: 0.05, ETH: 0.8, USDT: 500, USDC: 300, XRP: 200, JPYR: 8000, JPYC: 5000, IZAKAYA: 150 }, status: "ACTIVE", createdAt: "2026-01-05" },
+        { id: "U002", wallet: "0x4f...99aa", email: "user002@example.com", rank: "SILVER", kycStatus: "APPROVED",       balance: { KQ: 3500, BTC: 0.01, ETH: 0.2, USDT: 150, USDC: 80, XRP: 80, JPYR: 3200, JPYC: 1500, IZAKAYA: 40 }, status: "ACTIVE", createdAt: "2026-01-10" },
+        { id: "U003", wallet: "0x77...cdef", email: "user003@example.com", rank: "MEMBER", kycStatus: "PENDING",        balance: { KQ: 900, BTC: 0, ETH: 0, USDT: 50, USDC: 30, XRP: 30, JPYR: 4500, JPYC: 800, IZAKAYA: 0 }, status: "ACTIVE", createdAt: "2026-01-15" },
+        { id: "U004", wallet: "0xa3...4e5f", email: "user004@example.com", rank: "GOLD",   kycStatus: "APPROVED",       balance: { KQ: 8200, BTC: 0.03, ETH: 0.5, USDT: 350, USDC: 200, XRP: 150, JPYR: 6000, JPYC: 3000, IZAKAYA: 100 }, status: "ACTIVE", createdAt: "2026-01-18" },
+        { id: "U005", wallet: "0xb1...7c8d", email: "user005@example.com", rank: "SILVER", kycStatus: "APPROVED",       balance: { KQ: 4100, BTC: 0.02, ETH: 0.3, USDT: 200, USDC: 120, XRP: 100, JPYR: 2800, JPYC: 1200, IZAKAYA: 60 }, status: "ACTIVE", createdAt: "2026-01-20" },
+        { id: "U006", wallet: "0xc2...9e0a", email: "user006@example.com", rank: "MEMBER", kycStatus: "NOT_SUBMITTED",  balance: { KQ: 1500, BTC: 0, ETH: 0.1, USDT: 80, USDC: 50, XRP: 40, JPYR: 1200, JPYC: 600, IZAKAYA: 20 }, status: "ACTIVE", createdAt: "2026-01-25" },
+        { id: "U007", wallet: "0xd4...b1c2", email: "user007@example.com", rank: "GOLD",   kycStatus: "APPROVED",       balance: { KQ: 15000, BTC: 0.08, ETH: 1.2, USDT: 800, USDC: 450, XRP: 300, JPYR: 12000, JPYC: 7000, IZAKAYA: 200 }, status: "ACTIVE", createdAt: "2026-01-28" },
+        { id: "U008", wallet: "0xe5...d3e4", email: "user008@example.com", rank: "SILVER", kycStatus: "APPROVED",       balance: { KQ: 2800, BTC: 0.01, ETH: 0.15, USDT: 120, USDC: 70, XRP: 60, JPYR: 3200, JPYC: 900, IZAKAYA: 30 }, status: "ACTIVE", createdAt: "2026-02-01" },
+        { id: "U009", wallet: "0xf6...f5a6", email: "user009@example.com", rank: "MEMBER", kycStatus: "PENDING",        balance: { KQ: 600, BTC: 0, ETH: 0, USDT: 30, USDC: 20, XRP: 15, JPYR: 800, JPYC: 400, IZAKAYA: 10 }, status: "ACTIVE", createdAt: "2026-02-05" },
+        { id: "U010", wallet: "0xa7...17b8", email: "user010@example.com", rank: "SILVER", kycStatus: "APPROVED",       balance: { KQ: 5200, BTC: 0.02, ETH: 0.4, USDT: 250, USDC: 140, XRP: 120, JPYR: 4000, JPYC: 2000, IZAKAYA: 80 }, status: "ACTIVE", createdAt: "2026-02-08" },
+        { id: "U011", wallet: "0xb8...29c9", email: "user011@example.com", rank: "GOLD",   kycStatus: "APPROVED",       balance: { KQ: 9800, BTC: 0.04, ETH: 0.6, USDT: 400, USDC: 220, XRP: 180, JPYR: 7500, JPYC: 4000, IZAKAYA: 120 }, status: "ACTIVE", createdAt: "2026-02-10" },
+        { id: "U012", wallet: "0xc9...3bda", email: "user012@example.com", rank: "MEMBER", kycStatus: "NOT_SUBMITTED",  balance: { KQ: 1100, BTC: 0, ETH: 0.05, USDT: 60, USDC: 35, XRP: 25, JPYR: 900, JPYC: 500, IZAKAYA: 15 }, status: "ACTIVE", createdAt: "2026-02-12" },
+      ],
+      ranks: {
+        GOLD:   { name: "Gold",   multi: 2.0, threshold: 50000 },
+        SILVER: { name: "Silver", multi: 1.5, threshold: 10000 },
+        MEMBER: { name: "Member", multi: 1.0, threshold: 0 },
+      },
+      brokers: [
+        { id: "B001", code: "EXNESS", name: "Exness",     displayName: "Exness",     affiliateLink: "https://example.com/exness", maintenance: false, active: true, rewardRate: 30, csvFormat: "EXNESS", accountTypes: "Standard", ibCurrency: "USD", feeRate: 0, campaignMultiplier: 1.0 },
+        { id: "B002", code: "FXGT",   name: "FX GT",      displayName: "FX GT",      affiliateLink: "https://example.com/fxgt",   maintenance: false, active: true, rewardRate: 30, csvFormat: "FXGT",   accountTypes: "Standard", ibCurrency: "USD", feeRate: 0, campaignMultiplier: 1.0 },
+        { id: "B003", code: "XM",     name: "XM Trading", displayName: "XM Trading", affiliateLink: "https://example.com/xm",     maintenance: false, active: true, rewardRate: 30, csvFormat: "XM",     accountTypes: "Standard", ibCurrency: "USD", feeRate: 0, campaignMultiplier: 1.0 },
+      ],
+      applications: [
+        { id: "A001", date: nowISO(), userId: "U001", broker: "EXNESS", accountNo: "12345678", status: "APPROVED" },
+        { id: "A002", date: nowISO(), userId: "U002", broker: "FXGT",   accountNo: "87654321", status: "APPROVED" },
+        { id: "A003", date: nowISO(), userId: "U003", broker: "XM",     accountNo: "11223344", status: "APPROVED" },
+        { id: "A004", date: nowISO(), userId: "U004", broker: "EXNESS", accountNo: "22334455", status: "APPROVED" },
+        { id: "A005", date: nowISO(), userId: "U005", broker: "FXGT",   accountNo: "33445566", status: "APPROVED" },
+        { id: "A006", date: nowISO(), userId: "U006", broker: "XM",     accountNo: "44556677", status: "APPROVED" },
+        { id: "A007", date: nowISO(), userId: "U007", broker: "EXNESS", accountNo: "55667788", status: "APPROVED" },
+        { id: "A008", date: nowISO(), userId: "U008", broker: "FXGT",   accountNo: "66778899", status: "APPROVED" },
+        { id: "A009", date: nowISO(), userId: "U009", broker: "XM",     accountNo: "77889900", status: "APPROVED" },
+        { id: "A010", date: nowISO(), userId: "U010", broker: "EXNESS", accountNo: "88990011", status: "APPROVED" },
+        { id: "A011", date: nowISO(), userId: "U011", broker: "FXGT",   accountNo: "99001122", status: "APPROVED" },
+        { id: "A012", date: nowISO(), userId: "U012", broker: "XM",     accountNo: "10111213", status: "APPROVED" },
+        { id: "A013", date: nowISO(), userId: "U005", broker: "XM",     accountNo: "30405060", status: "APPROVED" },
+        { id: "A014", date: nowISO(), userId: "U007", broker: "XM",     accountNo: "50607080", status: "APPROVED" },
+        { id: "A015", date: nowISO(), userId: "U001", broker: "FXGT",   accountNo: "14151617", status: "PENDING" },
+        { id: "A016", date: nowISO(), userId: "U004", broker: "XM",     accountNo: "18192021", status: "PENDING" },
+      ],
+      withdrawals: [
+        { id: "W001", date: nowISO(), userId: "U001", asset: "KQ",   amount: 1500, to: "0x9a...1b2c", status: "PENDING",    txHash: "" },
+        { id: "W002", date: nowISO(), userId: "U007", asset: "USDT", amount: 300,  to: "0xd4...b1c2", status: "PENDING",    txHash: "" },
+        { id: "W003", date: nowISO(), userId: "U004", asset: "JPYR", amount: 5000, to: "0xa3...4e5f", status: "PROCESSING", txHash: "" },
+      ],
+      ledger: [
+        // 3月（直近） — 9アセットをバラバラに
+        { id: "L001", date: "2026-03-08", userId: "U001", asset: "KQ",      delta: 1800,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L002", date: "2026-03-08", userId: "U002", asset: "USDT",    delta: 120,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L003", date: "2026-03-08", userId: "U003", asset: "JPYC",    delta: 6500,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L004", date: "2026-03-07", userId: "U004", asset: "BTC",     delta: 0.0018, type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L005", date: "2026-03-07", userId: "U005", asset: "IZAKAYA", delta: 85,     type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L006", date: "2026-03-06", userId: "U006", asset: "USDC",    delta: 95,     type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L007", date: "2026-03-06", userId: "U007", asset: "ETH",     delta: 0.15,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L008", date: "2026-03-05", userId: "U008", asset: "XRP",     delta: 220,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L009", date: "2026-03-05", userId: "U009", asset: "JPYR",    delta: 4200,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L010", date: "2026-03-04", userId: "U010", asset: "KQ",      delta: 2400,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L011", date: "2026-03-04", userId: "U011", asset: "USDT",    delta: 180,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L012", date: "2026-03-03", userId: "U012", asset: "JPYC",    delta: 3800,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L013", date: "2026-03-03", userId: "U001", asset: "IZAKAYA", delta: 120,    type: "CREDIT", reason: "キャンペーンボーナス", ref: "CMP001" },
+        { id: "L014", date: "2026-03-02", userId: "U002", asset: "BTC",     delta: 0.0008, type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L015", date: "2026-03-02", userId: "U003", asset: "ETH",     delta: 0.04,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L016", date: "2026-03-01", userId: "U004", asset: "USDC",    delta: 210,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        { id: "L017", date: "2026-03-01", userId: "U005", asset: "XRP",     delta: 350,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-03" },
+        // 2月
+        { id: "L018", date: "2026-02-28", userId: "U006", asset: "KQ",      delta: 1600,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L019", date: "2026-02-28", userId: "U007", asset: "JPYR",    delta: 9500,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L020", date: "2026-02-27", userId: "U008", asset: "USDT",    delta: 95,     type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L021", date: "2026-02-27", userId: "U009", asset: "IZAKAYA", delta: 45,     type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L022", date: "2026-02-26", userId: "U010", asset: "JPYC",    delta: 5200,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L023", date: "2026-02-25", userId: "U011", asset: "BTC",     delta: 0.003,  type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L024", date: "2026-02-25", userId: "U012", asset: "ETH",     delta: 0.02,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L025", date: "2026-02-24", userId: "U001", asset: "USDC",    delta: 280,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L026", date: "2026-02-23", userId: "U002", asset: "XRP",     delta: 180,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L027", date: "2026-02-22", userId: "U003", asset: "JPYR",    delta: 3800,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L028", date: "2026-02-20", userId: "U004", asset: "KQ",      delta: 3200,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L029", date: "2026-02-18", userId: "U005", asset: "USDT",    delta: 160,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L030", date: "2026-02-15", userId: "U001", asset: "KQ",      delta: -1500,  type: "DEBIT",  reason: "出金", ref: "W001" },
+        { id: "L031", date: "2026-02-15", userId: "U007", asset: "USDT",    delta: -200,   type: "DEBIT",  reason: "出金", ref: "W002" },
+        { id: "L032", date: "2026-02-14", userId: "U006", asset: "IZAKAYA", delta: 55,     type: "CREDIT", reason: "キャンペーンボーナス", ref: "CMP002" },
+        { id: "L033", date: "2026-02-12", userId: "U007", asset: "USDC",    delta: 420,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L034", date: "2026-02-10", userId: "U008", asset: "JPYC",    delta: 2800,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L035", date: "2026-02-08", userId: "U009", asset: "BTC",     delta: 0.0005, type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        { id: "L036", date: "2026-02-06", userId: "U010", asset: "ETH",     delta: 0.08,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-02" },
+        // 1月
+        { id: "L037", date: "2026-01-31", userId: "U011", asset: "XRP",     delta: 280,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L038", date: "2026-01-31", userId: "U012", asset: "JPYR",    delta: 2200,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L039", date: "2026-01-28", userId: "U001", asset: "USDT",    delta: 140,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L040", date: "2026-01-25", userId: "U002", asset: "JPYC",    delta: 4100,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L041", date: "2026-01-22", userId: "U003", asset: "KQ",      delta: 900,    type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L042", date: "2026-01-20", userId: "U004", asset: "KQ",      delta: 150,    type: "ADJUSTMENT", reason: "手動調整（計算誤差補正）", ref: "ADJ-001" },
+        { id: "L043", date: "2026-01-18", userId: "U005", asset: "IZAKAYA", delta: -30,    type: "CONFISCATE", reason: "不正利用による没収", ref: "CONF-001" },
+        { id: "L044", date: "2026-01-15", userId: "U006", asset: "USDC",    delta: 45,     type: "CREDIT", reason: "入会ボーナス", ref: "SIGNUP-U006" },
+        { id: "L045", date: "2026-01-12", userId: "U007", asset: "BTC",     delta: 0.005,  type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L046", date: "2026-01-10", userId: "U008", asset: "ETH",     delta: 0.12,   type: "CREDIT", reason: "月次IB報酬", ref: "BATCH-2026-01" },
+        { id: "L047", date: "2026-01-08", userId: "U009", asset: "JPYR",    delta: 1500,   type: "CREDIT", reason: "入会ボーナス", ref: "SIGNUP-U009" },
+        { id: "L048", date: "2026-01-05", userId: "U010", asset: "USDT",    delta: 75,     type: "CREDIT", reason: "入会ボーナス", ref: "SIGNUP-U010" },
+      ],
+      announcements: [
+        { id: "ANN001", title: "サービス開始のお知らせ", body: "KING and QUEENのサービスを正式にリリースしました。海外FXの取引でKQトークンが貯まる新しい体験をお楽しみください。", category: "UPDATE", priority: "HIGH", status: "PUBLISHED", publishedAt: "2026-02-20T09:00:00Z", createdAt: "2026-02-19T10:00:00Z", updatedAt: "2026-02-19T10:00:00Z" },
+        { id: "ANN002", title: "メンテナンスのお知らせ", body: "2月25日 0:00〜6:00 にシステムメンテナンスを実施します。メンテナンス中はサービスをご利用いただけません。ご不便をおかけしますが、ご了承ください。", category: "MAINTENANCE", priority: "NORMAL", status: "PUBLISHED", publishedAt: "2026-02-22T12:00:00Z", createdAt: "2026-02-22T10:00:00Z", updatedAt: "2026-02-22T10:00:00Z" },
+        { id: "ANN003", title: "春のキャンペーン（下書き）", body: "3月限定でKQトークンの付与率が1.5倍になるキャンペーンを開催予定です。", category: "CAMPAIGN", priority: "NORMAL", status: "DRAFT", publishedAt: null, createdAt: "2026-02-23T08:00:00Z", updatedAt: "2026-02-23T08:00:00Z" },
+        { id: "ANN004", title: "KQトークン出金機能リリース", body: "KQトークンの出金機能がご利用いただけるようになりました。メニュー → 出金から申請いただけます。", category: "UPDATE", priority: "HIGH", status: "PUBLISHED", publishedAt: "2026-03-01T09:00:00Z", createdAt: "2026-03-01T08:00:00Z", updatedAt: "2026-03-01T08:00:00Z" },
+        { id: "ANN005", title: "9アセット対応のお知らせ", body: "KQトークンに加え、BTC・ETH・USDT・USDC・XRP・JPYR・JPYC・IZAKAYAの計9アセットでの付与に対応しました。", category: "UPDATE", priority: "NORMAL", status: "PUBLISHED", publishedAt: "2026-02-28T12:00:00Z", createdAt: "2026-02-28T10:00:00Z", updatedAt: "2026-02-28T10:00:00Z" },
+        { id: "ANN006", title: "ランクシステム改定（予定）", body: "4月よりランクの昇格条件を一部見直す予定です。詳細は後日お知らせいたします。", category: "UPDATE", priority: "LOW", status: "SCHEDULED", publishedAt: "2026-04-01T00:00:00Z", createdAt: "2026-03-05T14:00:00Z", updatedAt: "2026-03-05T14:00:00Z" },
+      ],
+      withdrawalRequests: [],
+      imports: [],
+      transactions: [],
+      adminLogs: [],
+      scrapedData: [] // legacy (unused)
+    });
+
+    const getSeedSignature = (seed) => JSON.stringify({
+      settings: seed.settings,
+      distributionRatios: seed.distributionRatios,
+      referenceRates: seed.referenceRates,
+      campaigns: seed.campaigns,
+      users: seed.users,
+      ranks: seed.ranks,
+      brokers: seed.brokers,
+      applications: seed.applications.map(({ id, userId, broker, accountNo, status }) => ({ id, userId, broker, accountNo, status })),
+      withdrawals: seed.withdrawals.map(({ id, userId, asset, amount, to, status }) => ({ id, userId, asset, amount, to, status })),
+      ledger: seed.ledger,
+      announcements: seed.announcements,
+    });
+  
+    const loadState = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          const initial = createInitialState();
+          initial.meta.seedSignature = getSeedSignature(initial);
+          return initial;
+        }
+        const data = JSON.parse(raw);
+        const base = createInitialState();
+        const currentSeedSignature = getSeedSignature(base);
+        base.meta.seedSignature = currentSeedSignature;
+        if (data?.meta?.schemaVersion !== MOCK_SCHEMA_VERSION) {
+          return base;
+        }
+        if (data?.meta?.seedSignature !== currentSeedSignature) {
+          return base;
+        }
+        const merged = { ...base, ...data };
+        merged.meta = { ...base.meta, ...data.meta, schemaVersion: MOCK_SCHEMA_VERSION, seedSignature: currentSeedSignature };
+        if (!Array.isArray(merged.brokers) || merged.brokers.length === 0) {
+          merged.brokers = [...base.brokers];
+        } else {
+          const defaults = { affiliateLink: "", maintenance: false };
+          merged.brokers = merged.brokers.map(b => ({ ...defaults, ...b }));
+          merged.brokers.forEach((b) => {
+            if (!b.displayName) b.displayName = b.name || b.code || "";
+          });
+          const existingCodes = new Set(merged.brokers.map(x => String(x.code || "").trim().toUpperCase()));
+          base.brokers.forEach(db => {
+            const code = String(db.code || "").trim().toUpperCase();
+            if (!existingCodes.has(code)) {
+              merged.brokers.push({ ...db });
+              existingCodes.add(code);
+            }
+          });
+        }
+        if (!Array.isArray(merged.distributionRatios)) merged.distributionRatios = base.distributionRatios;
+        if (!merged.referenceRates) merged.referenceRates = base.referenceRates;
+        if (!Array.isArray(merged.campaigns)) merged.campaigns = base.campaigns;
+        if (!merged.settings.emergencyStop) merged.settings.emergencyStop = base.settings.emergencyStop;
+        if (merged.settings.rewardRate == null) merged.settings.rewardRate = base.settings.rewardRate;
+        if (!Array.isArray(merged.withdrawalRequests)) merged.withdrawalRequests = [];
+        merged.users.forEach((u, i) => {
+          if (!u.createdAt) {
+            const d = new Date();
+            d.setDate(d.getDate() - Math.max(0, 30 - i));
+            u.createdAt = d.toISOString().slice(0, 10);
+          }
+          // Migrate legacy ranks
+          if (u.rank === "PLATINUM") u.rank = "GOLD";
+          if (u.rank === "BRONZE") u.rank = "MEMBER";
+          // Migrate numeric balance → object
+          if (typeof u.balance === "number") u.balance = { KQ: u.balance, BTC: 0, ETH: 0, USDT: 0, XRP: 0 };
+        });
+        // Remove legacy ranks if present
+        if (merged.ranks && merged.ranks.PLATINUM) delete merged.ranks.PLATINUM;
+        if (merged.ranks && merged.ranks.BRONZE) delete merged.ranks.BRONZE;
+        return merged;
+      } catch (error) {
+        const initial = createInitialState();
+        initial.meta.seedSignature = getSeedSignature(initial);
+        return initial;
+      }
+    };
+  
+    const saveState = () => {
+      if (!state.meta) state.meta = {};
+      state.meta.schemaVersion = MOCK_SCHEMA_VERSION;
+      state.meta.seedSignature = getSeedSignature(createInitialState());
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    };
+  
+    let state = loadState();
+    let adminLoggedIn = false;
+    const updateLoginUI = () => {
+      const btnLogout = $("#btnLogout");
+      if (btnLogout) btnLogout.classList.toggle("is-hidden", !adminLoggedIn);
+    };
+
+    // ------------------------------
+    // DOM helpers
+    // ------------------------------
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
+  
+    const views = ["dashboard","approvalTasks","scraper","users","ledger","announcements","settings"];
+    const viewTitle = {
+      dashboard: "ダッシュボード",
+      approvalTasks: "承認タスク",
+      scraper: "CSVインポート・台帳反映",
+      users: "ユーザー管理",
+      ledger: "トークン台帳",
+      announcements: "お知らせ管理",
+      settings: "マスター管理",
+    };
+  
+    const pill = (status) => {
+      const map = {
+        PENDING:    ["neu", "PENDING"],
+        APPROVED:   ["ok", "APPROVED"],
+        REJECTED:   ["err", "REJECTED"],
+        PROCESSING: ["warn", "PROCESSING"],
+        COMPLETED:  ["ok", "COMPLETED"],
+        FAILED:     ["err", "FAILED"],
+        OK:         ["ok", "OK"],
+        ACTIVE:     ["ok", "ACTIVE"],
+        BANNED:     ["err", "BANNED"],
+        WITHDRAWN:  ["neu", "WITHDRAWN"],
+        EXCLUDED:   ["err", "EXCLUDED"],
+      };
+      const [cls, label] = map[status] || ["neu", status];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+
+    const pillWithdrawalStatus = (status) => {
+      const map = {
+        PENDING:    ["neu", "申請中"],
+        APPROVED:   ["ok", "承認済み"],
+        PROCESSING: ["warn", "処理中"],
+        COMPLETED:  ["ok", "完了"],
+        FAILED:     ["err", "失敗"],
+        CANCELLED:  ["neu", "キャンセル"],
+      };
+      const [cls, label] = map[status] || ["neu", status];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+
+    const pillKycStatus = (status) => {
+      const map = {
+        NOT_SUBMITTED: ["neu", "未提出"],
+        PENDING:       ["warn", "審査中"],
+        APPROVED:      ["ok", "承認済み"],
+        REJECTED:      ["err", "却下"],
+      };
+      const [cls, label] = map[status] || ["neu", status || "未提出"];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+  
+    const toast = (type, title, body="", ms=2400) => {
+      const box = $("#toasts");
+      const el = document.createElement("div");
+      el.className = `toast ${type || ""}`;
+      el.innerHTML = `
+        <span class="material-icons" aria-hidden="true">${
+          type==="ok" ? "check_circle" : type==="err" ? "error" : type==="warn" ? "warning" : "info"
+        }</span>
+        <div>
+          <div class="t-title">${title}</div>
+          ${body ? `<div class="t-body">${body}</div>` : ""}
+        </div>
+      `;
+      box.appendChild(el);
+      setTimeout(() => el.remove(), ms);
+    };
+  
+    // ------------------------------
+    // Navigation / View
+    // ------------------------------
+    const setView = (name) => {
+      views.forEach(v => {
+        const el = $(`#view-${v}`);
+        if (el) el.classList.toggle("is-hidden", v !== name);
+      });
+      $$("#sidebar .nav-item").forEach(b => b.classList.toggle("is-active", b.dataset.view === name));
+      $("#pageTitle").textContent = viewTitle[name] || name;
+      $("#pageCrumb").textContent = `管理コンソール / ${viewTitle[name] || name}`;
+      closeSidebar();
+    };
+  
+    const openSidebar = () => {
+      $("#sidebar").classList.add("is-open");
+      $("#overlay").hidden = false;
+    };
+    const closeSidebar = () => {
+      $("#sidebar").classList.remove("is-open");
+      $("#overlay").hidden = true;
+    };
+  
+    // ------------------------------
+    // Renderers
+    // ------------------------------
+    const renderKpis = () => {
+      const pendingApprovals = state.applications.filter(a => a.status === "PENDING").length;
+      const pendingWithdrawals = state.withdrawals.filter(w => ["PENDING","PROCESSING"].includes(w.status)).length;
+  
+      $("#kpiApprovals").textContent = pendingApprovals;
+      $("#kpiWithdrawals").textContent = pendingWithdrawals;
+      const dot = $("#notificationDot");
+      if (dot) dot.classList.toggle("has-notice", pendingApprovals > 0 || pendingWithdrawals > 0);
+      $("#kpiUsers").textContent = state.users.length;
+  
+      const rateEl = $("#kpiKqRate");
+      if (rateEl && rateEl.textContent === "--") rateEl.textContent = `¥${liveKqRate?.toFixed?.(2) ?? "---"}`;
+    };
+
+    const renderDashboardCharts = () => {
+      if (typeof Chart === "undefined") return;
+      const dash = $("#view-dashboard");
+      if (dash?.classList.contains("is-hidden")) return;
+      const days = 30;
+      const today = new Date();
+      const labels = [];
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        labels.push(d.toISOString().slice(5, 10).replace("-", "/"));
+      }
+      const dateKeys = labels.map((_, i) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - (days - 1 - i));
+        return d.toISOString().slice(0, 10);
+      });
+
+      const userCountData = dateKeys.map(date => {
+        return state.users.filter(u => (u.createdAt || "9999-99-99") <= date).length;
+      });
+
+      const pointsByDate = {};
+      dateKeys.forEach(k => { pointsByDate[k] = 0; });
+      (state.ledger || []).forEach(l => {
+        const d = String(l.date || "").slice(0, 10);
+        if (d in pointsByDate && Number(l.delta) > 0) {
+          pointsByDate[d] += Number(l.delta);
+        }
+      });
+      const pointsData = dateKeys.map(k => pointsByDate[k] || 0);
+
+      const brandColor = getComputedStyle(document.documentElement).getPropertyValue("--brand") || "#C62828";
+      const lineColor = brandColor.trim();
+      const gridColor = getComputedStyle(document.documentElement).getPropertyValue("--line") || "#E5E7EB";
+
+      const destroyChart = (id) => {
+        const c = window[`_chart_${id}`];
+        if (c) { c.destroy(); window[`_chart_${id}`] = null; }
+      };
+
+      destroyChart("Users");
+      const ctxUsers = document.getElementById("chartUsers");
+      if (ctxUsers) {
+        window._chart_Users = new Chart(ctxUsers, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "ユーザー数",
+              data: userCountData,
+              borderColor: lineColor,
+              backgroundColor: lineColor + "20",
+              fill: true,
+              tension: 0.3,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { maxRotation: 45 } },
+              y: { beginAtZero: true, grid: { color: gridColor }, ticks: { stepSize: 1 } },
+            },
+          },
+        });
+      }
+
+      destroyChart("Points");
+      const ctxPoints = document.getElementById("chartPoints");
+      if (ctxPoints) {
+        window._chart_Points = new Chart(ctxPoints, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{
+              label: "KQ付与",
+              data: pointsData,
+              backgroundColor: lineColor + "60",
+              borderColor: lineColor,
+              borderWidth: 1,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: gridColor }, ticks: { maxRotation: 45 } },
+              y: { beginAtZero: true, grid: { color: gridColor } },
+            },
+          },
+        });
+      }
+    };
+  
+    // ------------------------------
+    // CSV Import (canonical)
+    // ------------------------------
+    let importDraft = null;
+
+    // ------------------------------
+    // Auto scrape scheduler (Mock)
+    // ------------------------------
+    const ymdLocal = (d) => {
+      const dd = d instanceof Date ? d : new Date(d);
+      const y = dd.getFullYear();
+      const m = String(dd.getMonth() + 1).padStart(2, "0");
+      const day = String(dd.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    };
+
+    const nextLocalMidnight = (from = new Date()) => {
+      const d = new Date(from);
+      d.setHours(24, 0, 0, 0);
+      return d;
+    };
+
+    const localMidnightOfToday = (from = new Date()) => {
+      const d = new Date(from);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    };
+
+    const seededRand01 = (seedStr) => {
+      // xorshift32 seeded by fnv1a
+      let x = parseInt(fnv1a(seedStr), 16) || 123456789;
+      x ^= x << 13; x >>>= 0;
+      x ^= x >>> 17; x >>>= 0;
+      x ^= x << 5; x >>>= 0;
+      return (x >>> 0) / 0x100000000;
+    };
+
+    const renderLastImportInfo = () => {
+      const lastEl = $("#lastImportTime");
+      if (!lastEl) return;
+      lastEl.textContent = state.meta.lastImportAt ? fmtDate(state.meta.lastImportAt) : "未実行";
+    };
+
+    const normalizeBroker = (v) => String(v || "").trim().toUpperCase();
+    const normalizeAccountNo = (v) => String(v || "").trim();
+
+    const safeText = (v) => String(v ?? "");
+
+    const fnv1a = (str) => {
+      let h = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return ("00000000" + (h >>> 0).toString(16)).slice(-8);
+    };
+
+    const sha256Hex = async (text) => {
+      if (!globalThis.crypto?.subtle) return null;
+      const enc = new TextEncoder();
+      const buf = await crypto.subtle.digest("SHA-256", enc.encode(text));
+      return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+    };
+
+    const computeTextHash = async (text) => {
+      const h = await sha256Hex(text);
+      return h || fnv1a(text);
+    };
+
+    const parseCsv = (text) => {
+      const rows = [];
+      let row = [];
+      let cur = "";
+      let inQuotes = false;
+
+      const pushCell = () => { row.push(cur); cur = ""; };
+      const pushRow = () => {
+        // ignore completely empty trailing line
+        if (row.length === 1 && row[0] === "" && rows.length && rows[rows.length - 1].length === 0) return;
+        rows.push(row);
+        row = [];
+      };
+
+      const s = text.replace(/\uFEFF/g, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            const next = s[i + 1];
+            if (next === '"') { cur += '"'; i++; }
+            else { inQuotes = false; }
+          } else {
+            cur += ch;
+          }
+        } else {
+          if (ch === '"') inQuotes = true;
+          else if (ch === ",") pushCell();
+          else if (ch === "\n") { pushCell(); pushRow(); }
+          else cur += ch;
+        }
+      }
+      pushCell(); pushRow();
+
+      // trim end empty rows
+      const compact = rows.filter(r => r.some(c => String(c).trim() !== ""));
+      if (!compact.length) return { header: [], data: [] };
+      const header = compact[0].map(h => String(h || "").trim());
+      const data = compact.slice(1);
+      return { header, data };
+    };
+
+    const parseIsoDate = (v) => {
+      const t = Date.parse(v);
+      return Number.isFinite(t) ? new Date(t) : null;
+    };
+
+    const isFileHashImported = (fileHash) => (state.imports || []).some(imp => imp.fileHash === fileHash);
+    const isTxKeyImported = (txKey) => (state.transactions || []).some(tx => tx.txKey === txKey);
+
+    const resolveApprovedAccount = (broker, accountNo) => {
+      const b = normalizeBroker(broker);
+      const a = normalizeAccountNo(accountNo);
+      return state.applications.find(x =>
+        normalizeBroker(x.broker) === b &&
+        normalizeAccountNo(x.accountNo) === a &&
+        x.status === "APPROVED"
+      ) || null;
+    };
+
+    // 原資ベース計算 (BR-08)
+    // ユーザー還元原資 = IB報酬 × 還元率 × ランク倍率 × キャンペーン倍率
+    // 各アセット付与額 = ユーザー還元原資 × 配分比率
+    // 各アセット付与量 = floor(付与額 ÷ 参考レート)
+    const calcRewardPerAsset = ({ ibReward, rewardRate, rankMultiplier, campaignMultiplier, distributionRatios, referenceRates }) => {
+      const userRewardBase = ibReward * (rewardRate / 100) * rankMultiplier * campaignMultiplier;
+      const results = [];
+      (distributionRatios || []).forEach(dr => {
+        const allocationAmount = userRewardBase * (dr.ratio / 100);
+        const rate = referenceRates[dr.asset] || 1;
+        // KQトークン: 1トークン単位切り捨て, 他通貨: 1pt単位切り捨て (D-03)
+        const grantAmount = Math.floor(allocationAmount / rate);
+        results.push({ asset: dr.asset, ratio: dr.ratio, allocationAmount, grantAmount });
+      });
+      return { userRewardBase, results };
+    };
+
+    const buildCanonicalTemplateCsv = () => {
+      const header = ["broker","トレーダー名","口座タイプ","口座通貨","キャンペーン","発注時間","決済時間","取引カテゴリ","取引タイプ","金融商品","銘柄グループ","ロット数","合計報酬","アフィリエイト報酬"];
+      const traders = ["U001","U002","U003","U004","U005"];
+      const symbols = ["USDJPY","EURUSD","GBPUSD","EURJPY","AUDUSD","XAUUSD"];
+      const accounts = ["11223344","10111213","30405060","50607080","70809010"];
+      const rows = [header.join(",")];
+      for (let d = 1; d <= 28; d++) {
+        const date = `2026-02-${String(d).padStart(2, "0")}`;
+        const dayOfWeek = new Date(date).getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) continue;
+        traders.forEach((trader, ti) => {
+          const tradesPerDay = 1 + Math.floor(Math.random() * 3);
+          for (let t = 0; t < tradesPerDay; t++) {
+            const lots = (0.1 + Math.random() * 9.9).toFixed(2);
+            const sym = symbols[Math.floor(Math.random() * symbols.length)];
+            const totalReward = (Number(lots) * 8 + Math.random() * 5).toFixed(2);
+            const affiliateReward = (Number(totalReward) * 0.3 + Math.random() * 2).toFixed(2);
+            const time = `${date}T${String(9 + Math.floor(Math.random() * 8)).padStart(2, "0")}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}:00`;
+            const closeTime = `${date}T${String(10 + Math.floor(Math.random() * 8)).padStart(2, "0")}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}:00`;
+            rows.push(["XM", trader, "Standard", "USD", "", time, closeTime, "FX", "BUY", sym, "FX Majors", lots, totalReward, affiliateReward].join(","));
+          }
+        });
+      }
+      return rows.join("\n");
+    };
+
+    const downloadTextFile = (name, text, mime="text/plain;charset=utf-8") => {
+      const blob = new Blob([text], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    const renderCsvImport = () => {
+      const tbody = $("#tblImportPreview tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      $("#emptyImportPreview").hidden = !!(importDraft?.preview?.length);
+
+      const meta = $("#importMeta");
+      const statsBox = $("#importStats");
+      const logBox = $("#importLogBox");
+      const logPre = $("#importLog");
+      const btnApply = $("#btnApplyCsvImport");
+
+      if (!importDraft) {
+        meta.innerHTML = `<div class="muted">未選択</div>`;
+        statsBox.hidden = true;
+        logBox.hidden = true;
+        btnApply.disabled = true;
+        return;
+      }
+
+      meta.innerHTML = `
+        <div><b>${safeText(importDraft.fileName)}</b></div>
+        <div class="muted">hash: <span class="code">${safeText(importDraft.fileHash)}</span></div>
+      `;
+
+      const c = importDraft.counts || { rows:0, applied:0, skipped:0, excluded:0, error:0 };
+      statsBox.hidden = false;
+      $("#impRowCount").textContent = c.rows;
+      $("#impCounts").textContent = `${c.applied} / ${c.skipped} / ${c.excluded}`;
+
+      if (importDraft.log?.length) {
+        logBox.hidden = false;
+        logPre.textContent = importDraft.log.join("\n");
+      } else {
+        logBox.hidden = true;
+      }
+
+      importDraft.preview.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="code">${r.rowNo}</td>
+          <td><b>${safeText(r.traderName || r.userId || "-")}</b>${r.wallet ? `<div class="code">${safeText(r.wallet)}</div>` : ""}</td>
+          <td><span class="pill neu">${safeText(r.broker)}</span></td>
+          <td class="code">${safeText(r.accountNo)}</td>
+          <td class="right"><b>¥${money(r.ibReward || 0)}</b></td>
+          <td class="right"><b>${money(r.delta || 0)}</b></td>
+          <td>${pill(r.status)}</td>
+          <td class="muted">${safeText(r.reason || "")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+
+      const fileDup = importDraft.isFileDuplicate;
+      btnApply.disabled = fileDup || (c.applied === 0);
+    };
+
+    const buildPreviewFromCsv = async ({ file, text }) => {
+      const fileHash = await computeTextHash(text);
+
+      const errors = [];
+      const log = [];
+
+      if (!text.trim()) {
+        return { fileName: file?.name || "-", fileHash, preview: [], errors: ["CSVが空です"], log: [], counts: { rows:0, applied:0, skipped:0, excluded:0, error:1 }, isFileDuplicate:false };
+      }
+
+      const { header, data } = parseCsv(text);
+      const idx = Object.fromEntries(header.map((h,i) => [h, i]));
+
+      // 新CSV列: broker, トレーダー名, 口座タイプ, 口座通貨, キャンペーン, 発注時間, 決済時間, 取引カテゴリ, 取引タイプ, 金融商品, 銘柄グループ, ロット数, 合計報酬, アフィリエイト報酬
+      // 旧CSV列もフォールバック対応: date, broker, accountNo, lots, tradeId
+      const isNewFormat = "トレーダー名" in idx && "アフィリエイト報酬" in idx;
+      const isOldFormat = "date" in idx && "accountNo" in idx && "lots" in idx;
+
+      if (!isNewFormat && !isOldFormat) {
+        return {
+          fileName: file?.name || "-",
+          fileHash,
+          preview: [],
+          errors: [`必須列が不足しています。新形式: トレーダー名, アフィリエイト報酬 / 旧形式: date, accountNo, lots`],
+          log: [],
+          counts: { rows:0, applied:0, skipped:0, excluded:0, error:1 },
+          isFileDuplicate: isFileHashImported(fileHash),
+        };
+      }
+
+      const isFileDuplicate = isFileHashImported(fileHash);
+      if (isFileDuplicate) errors.push("同一ファイル（hash一致）は取り込み済みのため、確定できません。");
+
+      // 緊急停止チェック
+      if (state.settings.emergencyStop?.csvImport) {
+        errors.push("CSV取込は緊急停止中です。");
+        return { fileName: file?.name || "-", fileHash, preview: [], errors, log: [], counts: { rows:0, applied:0, skipped:0, excluded:0, error:1 }, isFileDuplicate };
+      }
+
+      const preview = [];
+      let applied = 0, skipped = 0, excluded = 0, error = 0;
+
+      if (isNewFormat) {
+        // 原資ベースフロー: アフィリエイト報酬をトレーダー名で集計 → 原資プリフィル → 計算
+        const traderAgg = {};
+        data.forEach((row, i) => {
+          const traderName = (row[idx["トレーダー名"]] ?? "").trim();
+          const rawBroker = (idx["broker"] != null ? row[idx["broker"]] : "").trim();
+          const rawLots = (row[idx["ロット数"]] ?? "").trim();
+          const rawAffReward = (row[idx["アフィリエイト報酬"]] ?? "").trim();
+          const rawSymbol = (idx["金融商品"] != null ? (row[idx["金融商品"]] ?? "").trim() : "");
+          const rawDate = (idx["発注時間"] != null ? (row[idx["発注時間"]] ?? "").trim() : "");
+
+          if (!traderName) return;
+          if (!traderAgg[traderName]) {
+            traderAgg[traderName] = { broker: normalizeBroker(rawBroker), totalIbReward: 0, totalLots: 0, tradeCount: 0, rows: [] };
+          }
+          traderAgg[traderName].totalIbReward += Number(rawAffReward) || 0;
+          traderAgg[traderName].totalLots += Number(rawLots) || 0;
+          traderAgg[traderName].tradeCount++;
+          traderAgg[traderName].rows.push(i + 1);
+        });
+
+        let rowNo = 0;
+        Object.entries(traderAgg).forEach(([traderName, agg]) => {
+          rowNo++;
+          const broker = agg.broker;
+          const ibReward = Math.round(agg.totalIbReward * 100) / 100;
+          let status = "OK";
+          let reason = "";
+          let userId = traderName; // トレーダー名 = ユーザーID
+          let wallet = "";
+          let delta = 0;
+
+          const u = state.users.find(x => x.id === traderName);
+          if (!u) {
+            status = "EXCLUDED";
+            reason = "未登録ユーザーのため除外";
+          } else {
+            wallet = u.wallet || "";
+            const rank = u.rank || "MEMBER";
+            const rankMultiplier = state.ranks[rank]?.multi || 1.0;
+            const campaignMultiplier = 1.0; // キャンペーン倍率はマスター設定で管理
+            const rewardRate = state.settings.rewardRate || 30;
+
+            // 原資ベース計算: ユーザー還元原資 = IB報酬 × 還元率 × ランク倍率 × キャンペーン倍率
+            const calc = calcRewardPerAsset({
+              ibReward,
+              rewardRate,
+              rankMultiplier,
+              campaignMultiplier,
+              distributionRatios: state.distributionRatios,
+              referenceRates: state.referenceRates,
+            });
+            // デフォルトアセットの付与量をdeltaに
+            const defaultAssetResult = calc.results.find(r => r.asset === state.settings.defaultAsset);
+            delta = defaultAssetResult?.grantAmount || 0;
+            status = "APPROVED";
+            reason = `IB報酬¥${ibReward.toFixed(0)} × 還元率${rewardRate}% × ランク${rank}(x${rankMultiplier}) = 還元原資¥${calc.userRewardBase.toFixed(0)}`;
+          }
+
+          const txKey = `${broker}|${traderName}|${fileHash}`;
+
+          if (status !== "EXCLUDED" && status !== "FAILED") {
+            if (isTxKeyImported(txKey)) {
+              status = "SKIPPED";
+              reason = "過去に取り込み済み";
+            }
+          }
+
+          if (status === "APPROVED") applied++;
+          else if (status === "SKIPPED") skipped++;
+          else if (status === "EXCLUDED") excluded++;
+          else if (status === "FAILED") error++;
+
+          preview.push({
+            rowNo,
+            traderName,
+            date: "",
+            broker,
+            accountNo: "-",
+            ibReward,
+            lots: agg.totalLots.toFixed(2),
+            tradeCount: agg.tradeCount,
+            txKey,
+            userId,
+            wallet,
+            delta,
+            status,
+            reason,
+          });
+        });
+      } else {
+        // 旧フォーマットフォールバック
+        data.forEach((row, i) => {
+          const rowNo = i + 1;
+          const rawDate = (row[idx.date] ?? "").trim();
+          const rawBroker = (idx.broker != null ? row[idx.broker] : "").trim();
+          const rawAccountNo = (row[idx.accountNo] ?? "").trim();
+          const rawLots = (row[idx.lots] ?? "").trim();
+          const rawTradeId = (row[idx.tradeId] ?? "").trim();
+          const rawSymbol = (idx.symbol != null ? (row[idx.symbol] ?? "").trim() : "");
+
+          const broker = normalizeBroker(rawBroker);
+          const accountNo = normalizeAccountNo(rawAccountNo);
+          const dateObj = parseIsoDate(rawDate);
+          const lots = Number(rawLots);
+
+          let status = "OK";
+          let reason = "";
+          let userId = "";
+          let wallet = "";
+          let delta = 0;
+
+          if (!broker) { status = "FAILED"; reason = "broker列が空です"; }
+          else if (!accountNo) { status = "FAILED"; reason = "accountNo が空です"; }
+          else if (!dateObj) { status = "FAILED"; reason = "date が不正です"; }
+          else if (!Number.isFinite(lots) || lots < 0) { status = "FAILED"; reason = "lots が不正です"; }
+
+          const txKeyBase = rawTradeId
+            ? `${broker}|${accountNo}|${rawTradeId}`
+            : `${broker}|${accountNo}|${rawDate}|${rawLots}|${rawSymbol}`;
+          const txKey = rawTradeId ? txKeyBase : `H|${fnv1a(txKeyBase)}`;
+
+          if (status !== "FAILED") {
+            if (isTxKeyImported(txKey)) {
+              status = "SKIPPED"; reason = "過去に取り込み済み（txKey重複）";
+            } else {
+              const approved = resolveApprovedAccount(broker, accountNo);
+              if (!approved) {
+                status = "EXCLUDED"; reason = "未承認口座のため除外";
+              } else {
+                userId = approved.userId;
+                const u = state.users.find(x => x.id === userId);
+                wallet = u?.wallet || "";
+                const rank = u?.rank || "MEMBER";
+                const rankMultiplier = state.ranks[rank]?.multi || 1.0;
+                // 旧フォーマット: lots近似で原資推定
+                const ibReward = lots * 10; // 概算
+                const calc = calcRewardPerAsset({
+                  ibReward, rewardRate: state.settings.rewardRate || 30,
+                  rankMultiplier, campaignMultiplier: 1.0,
+                  distributionRatios: state.distributionRatios, referenceRates: state.referenceRates,
+                });
+                const defaultResult = calc.results.find(r => r.asset === state.settings.defaultAsset);
+                delta = defaultResult?.grantAmount || 0;
+                status = "APPROVED";
+                reason = rawTradeId ? `tradeId=${rawTradeId}` : "tradeIdなし";
+              }
+            }
+          }
+
+          if (status === "APPROVED") applied++;
+          else if (status === "SKIPPED") skipped++;
+          else if (status === "EXCLUDED") excluded++;
+          else if (status === "FAILED") error++;
+
+          if (status === "FAILED") errors.push(`${rowNo}行目: ${reason}`);
+          preview.push({ rowNo, date: rawDate, broker, accountNo, ibReward: 0, lots: rawLots, tradeId: rawTradeId, symbol: rawSymbol, txKey, userId, wallet, delta, status, reason });
+        });
+      }
+
+      log.push(`[parse] rows=${data.length} applied=${applied} skipped=${skipped} excluded=${excluded} error=${error}`);
+
+      return {
+        fileName: file?.name || "-",
+        fileHash,
+        preview,
+        errors,
+        log,
+        counts: { rows: data.length, applied, skipped, excluded, error },
+        isFileDuplicate,
+      };
+    };
+
+    const applyCsvImport = () => {
+      if (!importDraft) return;
+      const c = importDraft.counts || { rows:0, applied:0, skipped:0, excluded:0, error:0 };
+
+      if (importDraft.isFileDuplicate) {
+        toast("err", "取り込み済み", "同一ファイル（hash一致）は確定できません");
+        return;
+      }
+      if (c.error > 0) {
+        toast("err", "エラーあり", "エラーを修正してから確定してください");
+        return;
+      }
+      if (c.applied === 0) {
+        toast("warn", "適用なし", "適用対象行がありません");
+        return;
+      }
+
+      const importId = uid("IMP");
+      const importedAt = nowISO();
+
+      // ensure arrays exist (migration safety)
+      if (!Array.isArray(state.imports)) state.imports = [];
+      if (!Array.isArray(state.transactions)) state.transactions = [];
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+
+      const txs = [];
+      const fallbackDateYmd = new Date().toISOString().slice(0,10);
+
+      // 緊急停止チェック
+      if (state.settings.emergencyStop?.reward) {
+        toast("err", "緊急停止中", "付与処理は緊急停止中です");
+        return;
+      }
+
+      importDraft.preview.forEach(r => {
+        const txId = uid("TX");
+
+        const u = r.userId ? state.users.find(x => x.id === r.userId) : null;
+        const rank = u?.rank || "";
+        const multiplier = rank ? (state.ranks[rank]?.multi || 1.0) : 1.0;
+        const asset = state.settings.defaultAsset;
+
+        const tx = {
+          id: txId,
+          importId,
+          txKey: r.txKey,
+          rowNo: r.rowNo,
+          date: r.date || "",
+          broker: r.broker,
+          accountNo: r.accountNo || "",
+          traderName: r.traderName || "",
+          ibReward: r.ibReward || 0,
+          lots: r.lots,
+          userId: r.userId || "",
+          rank,
+          multiplier,
+          rewardRate: state.settings.rewardRate,
+          asset,
+          delta: Number(r.delta || 0),
+          status: r.status === "APPROVED" ? "APPLIED" : r.status === "SKIPPED" ? "SKIPPED" : r.status === "EXCLUDED" ? "EXCLUDED" : "ERROR",
+          reason: r.reason || "",
+        };
+        txs.push(tx);
+
+        if (tx.status === "APPLIED" && tx.userId) {
+          const user = state.users.find(x => x.id === tx.userId);
+          if (user) {
+            user.balance = ensureBalObj(user.balance);
+            // Distribute reward across all assets based on distribution ratios
+            const rank = user.rank || "MEMBER";
+            const rankMultiplier = state.ranks[rank]?.multi || 1.0;
+            const rewardRate = state.settings.rewardRate || 30;
+            const ibReward = r.ibReward || 0;
+            const calc = calcRewardPerAsset({
+              ibReward,
+              rewardRate,
+              rankMultiplier,
+              campaignMultiplier: 1.0,
+              distributionRatios: state.distributionRatios,
+              referenceRates: state.referenceRates,
+            });
+            const ledgerDate = (tx.date || "").slice(0,10) || fallbackDateYmd;
+            calc.results.forEach(cr => {
+              if (cr.grantAmount > 0) {
+                user.balance[cr.asset] = (user.balance[cr.asset] || 0) + cr.grantAmount;
+                state.ledger.push({
+                  id: uid("L"),
+                  date: ledgerDate,
+                  userId: tx.userId,
+                  asset: cr.asset,
+                  delta: cr.grantAmount,
+                  reason: "CSV Import",
+                  ref: importId,
+                });
+              }
+            });
+          }
+        }
+      });
+
+      // persist
+      state.transactions.push(...txs);
+      state.imports.push({
+        id: importId,
+        broker: "CSV",
+        fileName: importDraft.fileName,
+        fileHash: importDraft.fileHash,
+        importedAt,
+        rowCount: c.rows,
+        appliedCount: c.applied,
+        skippedCount: c.skipped,
+        excludedCount: c.excluded,
+        errorCount: c.error,
+      });
+
+      state.meta.lastImportAt = importedAt;
+      state.meta.lastImportCount = c.applied;
+
+      state.adminLogs.push({
+        id: uid("LOG"),
+        at: importedAt,
+        type: "CSV_IMPORT",
+        message: `${importDraft.fileName} applied=${c.applied} skipped=${c.skipped} excluded=${c.excluded}`,
+        ref: importId,
+      });
+
+      toast("ok", "確定しました", `${c.applied}行を反映しました`);
+      importDraft = null;
+      $("#csvFile").value = "";
+      setView("ledger");
+    };
+
+    const handleCsvFiles = async (files) => {
+      const file = files?.[0];
+      if (!file) return;
+      const text = await file.text();
+      importDraft = await buildPreviewFromCsv({ file, text });
+      renderAll();
+    };
+
+    const applyGlobalSearchFilter = (rows, getText) => {
+      const el = $("#globalSearch");
+      const q = (el?.value || "").trim().toLowerCase();
+      if (!q) return rows;
+      return rows.filter(r => getText(r).toLowerCase().includes(q));
+    };
+  
+    const getDuplicateAccountKeys = () => {
+      const keyCount = {};
+      state.applications.forEach(a => {
+        const key = `${normalizeBroker(a.broker)}|${normalizeAccountNo(a.accountNo)}`;
+        keyCount[key] = (keyCount[key] || 0) + 1;
+      });
+      return new Set(Object.entries(keyCount).filter(([, n]) => n > 1).map(([k]) => k));
+    };
+
+    const renderApprovals = () => {
+      const tbody = $("#tblApprovals tbody");
+      tbody.innerHTML = "";
+      const duplicateKeys = getDuplicateAccountKeys();
+
+      const filter = $("#filterAStatus").value;
+      let rows = [...state.applications].sort((a,b) => new Date(b.date) - new Date(a.date));
+      if (filter !== "ALL") rows = rows.filter(a => a.status === filter);
+
+      rows = applyGlobalSearchFilter(rows, (a) => {
+        const u = state.users.find(x => x.id === a.userId);
+        return `${a.id} ${a.broker} ${a.accountNo} ${a.status} ${u?.wallet || ""} ${u?.id || ""}`;
+      });
+
+      $("#approvalsHint").textContent = `${rows.length}件`;
+      $("#emptyApprovals").hidden = rows.length !== 0;
+
+      rows.forEach(a => {
+        const u = state.users.find(x => x.id === a.userId);
+        const key = `${normalizeBroker(a.broker)}|${normalizeAccountNo(a.accountNo)}`;
+        const isDup = duplicateKeys.has(key);
+        const tr = document.createElement("tr");
+        const rej = a.status === "REJECTED" && a.rejectedReason
+          ? `<div class="muted" style="margin-top:4px">理由: ${safeText(a.rejectedReason)}</div>`
+          : "";
+        const dupBadge = isDup ? `<span class="pill err" style="margin-left:4px">重複</span>` : "";
+        tr.innerHTML = `
+          <td>${fmtDate(a.date)}</td>
+          <td>
+            <div><b>${u?.id || a.userId}</b></div>
+            <div class="code">${u?.wallet || "-"}</div>
+          </td>
+          <td><span class="pill neu" style="color:var(--gold)">${a.broker}</span></td>
+          <td class="code">${a.accountNo}${dupBadge}</td>
+          <td>${pill(a.status)}${rej}</td>
+          <td class="right">
+            <button class="btn ghost" data-action="openApprovalActions" data-id="${a.id}" type="button">操作</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+  
+    const renderScraper = () => {
+      renderLastImportInfo();
+      renderCsvImport();
+    };
+  
+    const renderWithdrawals = () => {
+      const tbody = $("#tblWithdrawals tbody");
+      tbody.innerHTML = "";
+  
+      const filter = $("#filterWStatus").value;
+      let rows = [...state.withdrawals].sort((a,b) => new Date(b.date) - new Date(a.date));
+      if (filter !== "ALL") rows = rows.filter(w => w.status === filter);
+  
+      rows = applyGlobalSearchFilter(rows, (w) => {
+        const u = state.users.find(x => x.id === w.userId);
+        return `${w.id} ${w.asset} ${w.amount} ${w.status} ${w.to} ${w.txHash || ""} ${u?.id || ""} ${u?.wallet || ""}`;
+      });
+  
+      $("#withdrawalsHint").textContent = `${rows.length}件`;
+      $("#emptyWithdrawals").hidden = rows.length !== 0;
+  
+      rows.forEach(w => {
+        const u = state.users.find(x => x.id === w.userId);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${fmtDate(w.date)}</td>
+          <td><b>${u?.id || w.userId}</b></td>
+          <td class="code">${safeText(u?.email || "-")}</td>
+          <td class="code">${safeText(w.to || u?.wallet || "-")}</td>
+          <td class="right"><b>${money(ensureBalObj(u?.balance)[w.asset] ?? 0)}</b></td>
+          <td class="right"><b>${money(w.amount)}</b></td>
+          <td><span class="pill neu">${w.asset}</span></td>
+          <td>${pillWithdrawalStatus(w.status)}</td>
+          <td class="right">
+            <button class="btn ghost" data-action="openWithdrawalActions" data-id="${w.id}" type="button">操作</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+  
+    const renderUsers = () => {
+      const tbody = $("#tblUsers tbody");
+      tbody.innerHTML = "";
+
+      let rows = [...state.users];
+
+      const userSearch = ($("#filterUserSearch")?.value || "").trim().toLowerCase();
+      if (userSearch) {
+        rows = rows.filter(u => u.id.toLowerCase().includes(userSearch) || (u.email || "").toLowerCase().includes(userSearch));
+      }
+      const usersHintEl = $("#usersHint");
+      if (usersHintEl) usersHintEl.textContent = `${rows.length}件`;
+
+      rows = applyGlobalSearchFilter(rows, (u) => `${u.id} ${u.wallet} ${u.rank} ${formatAssetBalance(u.balance)}`);
+  
+      $("#emptyUsers").hidden = rows.length !== 0;
+  
+      rows.forEach(u => {
+        const userAccounts = state.applications.filter(a => a.userId === u.id);
+        const accountsHtml = userAccounts.length === 0
+          ? "<span class=\"muted\">なし</span>"
+          : userAccounts.map(a =>
+              `<div class="account-item"><span class="pill neu" style="color:var(--gold)">${a.broker}</span> <span class="code">${a.accountNo}</span> ${pill(a.status)}</div>`
+            ).join("");
+        const rankData = state.ranks[u.rank] || { name: u.rank, multi: 1.0 };
+        const userStatus = u.status || "ACTIVE";
+        const pendingWithdrawal = (state.withdrawalRequests || []).find(r => r.userId === u.id && r.status === "PENDING");
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><b>${u.id}</b></td>
+          <td class="code">${u.wallet}</td>
+          <td><span class="pill neu" style="color:var(--gold)">${rankData.name} (x${rankData.multi})</span></td>
+          <td>${pillKycStatus(u.kycStatus)}</td>
+          <td class="accounts-cell">${accountsHtml}</td>
+          <td class="right">${formatAssetBalancePills(u.balance)}</td>
+          <td>${pill(userStatus)}${pendingWithdrawal ? ' <span class="pill warn">退会申請中</span>' : ""}</td>
+          <td class="right">
+            <button class="btn ghost" data-action="openUserActions" data-id="${u.id}" type="button">操作</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+  
+    let ledgerPage = 0;
+    const LEDGER_PAGE_SIZE = 10;
+
+    const pillLedgerType = (type) => {
+      const map = {
+        CREDIT: ["ok", "CREDIT"],
+        DEBIT: ["err", "DEBIT"],
+        ADJUSTMENT: ["warn", "ADJUSTMENT"],
+        CONFISCATE: ["err", "CONFISCATE"],
+      };
+      const [cls, label] = map[type] || ["neu", type || "CREDIT"];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+
+    const renderLedger = () => {
+      const tbody = $("#tblLedger tbody");
+      tbody.innerHTML = "";
+
+      let rows = [...state.ledger].slice().reverse();
+
+      // Filters
+      const fUser = ($("#filterLedgerUser")?.value || "").trim().toUpperCase();
+      const fDateFrom = $("#filterLedgerDateFrom")?.value || "";
+      const fDateTo = $("#filterLedgerDateTo")?.value || "";
+      const fAsset = $("#filterLedgerAsset")?.value || "ALL";
+      const fType = $("#filterLedgerType")?.value || "ALL";
+
+      if (fUser) rows = rows.filter(l => l.userId.toUpperCase().includes(fUser));
+      if (fDateFrom) rows = rows.filter(l => l.date >= fDateFrom);
+      if (fDateTo) rows = rows.filter(l => l.date <= fDateTo);
+      if (fAsset !== "ALL") rows = rows.filter(l => l.asset === fAsset);
+      if (fType !== "ALL") rows = rows.filter(l => (l.type || "CREDIT") === fType);
+
+      rows = applyGlobalSearchFilter(rows, (l) => `${l.date} ${l.userId} ${l.asset} ${l.delta} ${l.ref}`);
+
+      const totalCount = rows.length;
+      const totalPages = Math.max(1, Math.ceil(totalCount / LEDGER_PAGE_SIZE));
+      if (ledgerPage >= totalPages) ledgerPage = totalPages - 1;
+      if (ledgerPage < 0) ledgerPage = 0;
+
+      const start = ledgerPage * LEDGER_PAGE_SIZE;
+      const pageRows = rows.slice(start, start + LEDGER_PAGE_SIZE);
+
+      const hintEl = $("#ledgerHint");
+      if (hintEl) hintEl.textContent = `${totalCount}件（${ledgerPage + 1}/${totalPages}ページ）`;
+      $("#emptyLedger").hidden = totalCount !== 0;
+
+      pageRows.forEach(l => {
+        const deltaClass = l.delta > 0 ? "ok-text" : "err-text";
+        const sign = l.delta > 0 ? "+" : "";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${l.date}</td>
+          <td>${l.userId}</td>
+          <td><span class="pill neu">${l.asset}</span></td>
+          <td>${pillLedgerType(l.type || "CREDIT")}</td>
+          <td class="right ${deltaClass}"><b>${sign}${money(l.delta)}</b></td>
+          <td class="code">${l.ref}</td>
+          <td class="right">
+            <button class="btn ghost small" data-action="openDeltaAdjustment" data-id="${l.userId}" data-asset="${l.asset}" type="button">デルタ調整</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Pagination
+      const pagEl = $("#ledgerPagination");
+      if (pagEl) {
+        pagEl.innerHTML = `
+          <button class="btn ghost small" ${ledgerPage <= 0 ? "disabled" : ""} data-action="ledgerPrevPage" type="button">\u2190 前</button>
+          <span class="muted" style="padding:0 8px">${ledgerPage + 1} / ${totalPages}</span>
+          <button class="btn ghost small" ${ledgerPage >= totalPages - 1 ? "disabled" : ""} data-action="ledgerNextPage" type="button">次 \u2192</button>
+        `;
+      }
+    };
+  
+    const pillAnnouncementCategory = (cat) => {
+      const map = {
+        MAINTENANCE: ["warn", "メンテナンス"],
+        UPDATE:      ["ok", "アップデート"],
+        CAMPAIGN:    ["neu", "キャンペーン"],
+        OTHER:       ["neu", "その他"],
+      };
+      const [cls, label] = map[cat] || ["neu", cat];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+
+    const pillAnnouncementPriority = (p) => {
+      const map = {
+        HIGH:   ["err", "高"],
+        NORMAL: ["neu", "通常"],
+        LOW:    ["neu", "低"],
+      };
+      const [cls, label] = map[p] || ["neu", p];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+
+    const pillAnnouncementStatus = (s) => {
+      const map = {
+        DRAFT:     ["neu", "下書き"],
+        SCHEDULED: ["warn", "予約公開"],
+        PUBLISHED: ["ok", "公開中"],
+        ARCHIVED:  ["warn", "アーカイブ"],
+      };
+      const [cls, label] = map[s] || ["neu", s];
+      return `<span class="pill ${cls}">${label}</span>`;
+    };
+
+    const renderAnnouncements = () => {
+      const tbody = $("#tblAnnouncements tbody");
+      tbody.innerHTML = "";
+
+      if (!Array.isArray(state.announcements)) state.announcements = [];
+
+      const filter = $("#filterAnnStatus").value;
+      let rows = [...state.announcements].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      if (filter !== "ALL") rows = rows.filter(a => a.status === filter);
+
+      rows = applyGlobalSearchFilter(rows, (a) => `${a.title} ${a.body} ${a.category} ${a.status}`);
+
+      $("#announcementsHint").textContent = `${rows.length}件`;
+      $("#emptyAnnouncements").hidden = rows.length !== 0;
+
+      rows.forEach(a => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${fmtDate(a.createdAt)}</td>
+          <td><b>${safeText(a.title)}</b><div class="muted" style="margin-top:4px;font-size:.85rem;max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${safeText(a.body)}</div></td>
+          <td>${pillAnnouncementCategory(a.category)}</td>
+          <td>${pillAnnouncementPriority(a.priority)}</td>
+          <td>${pillAnnouncementStatus(a.status)}</td>
+          <td class="right">
+            <button class="btn ghost small" data-action="editAnnouncement" data-id="${a.id}" type="button">編集</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+
+    const openAnnouncementModal = (announcementId) => {
+      const isEdit = !!announcementId;
+      const a = isEdit ? (state.announcements || []).find(x => x.id === announcementId) : {};
+      if (isEdit && !a) return;
+      openModal(
+        isEdit ? "お知らせを編集" : "お知らせを作成",
+        `
+          <div class="form-grid">
+            <div class="field" style="grid-column:1/-1">
+              <label>タイトル</label>
+              <input id="annTitle" type="text" placeholder="例：メンテナンスのお知らせ" value="${safeText(a.title || "")}">
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label>本文</label>
+              <textarea id="annBody" rows="5" style="padding:10px 12px;border-radius:10px;border:1px solid #D1D5DB;background:#ffffff;color:#111827;outline:none;width:100%;resize:vertical;font-family:var(--sans)">${safeText(a.body || "")}</textarea>
+            </div>
+            <div class="field">
+              <label>カテゴリ</label>
+              <select id="annCategory">
+                <option value="UPDATE" ${(a.category||"")=="UPDATE"?"selected":""}>アップデート</option>
+                <option value="MAINTENANCE" ${(a.category||"")=="MAINTENANCE"?"selected":""}>メンテナンス</option>
+                <option value="CAMPAIGN" ${(a.category||"")=="CAMPAIGN"?"selected":""}>キャンペーン</option>
+                <option value="OTHER" ${(a.category||"")=="OTHER"?"selected":""}>その他</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>優先度</label>
+              <select id="annPriority">
+                <option value="HIGH" ${(a.priority||"")=="HIGH"?"selected":""}>高</option>
+                <option value="NORMAL" ${(a.priority||"NORMAL")=="NORMAL"?"selected":""}>通常</option>
+                <option value="LOW" ${(a.priority||"")=="LOW"?"selected":""}>低</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>ステータス</label>
+              <select id="annStatus">
+                <option value="DRAFT" ${(a.status||"DRAFT")=="DRAFT"?"selected":""}>下書き</option>
+                <option value="SCHEDULED" ${(a.status||"")=="SCHEDULED"?"selected":""}>予約公開</option>
+                <option value="PUBLISHED" ${(a.status||"")=="PUBLISHED"?"selected":""}>公開中</option>
+                <option value="ARCHIVED" ${(a.status||"")=="ARCHIVED"?"selected":""}>アーカイブ</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>予約公開日時</label>
+              <input id="annScheduledAt" type="datetime-local" value="${a.scheduledAt ? a.scheduledAt.slice(0,16) : ""}">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          ${isEdit && ["DRAFT","SCHEDULED"].includes(a.status) ? `<button class="btn ghost" data-action="deleteAnnouncement" data-id="${a.id}" type="button" style="color:var(--err)">削除</button>` : ""}
+          <button class="btn ghost" data-action="saveAnnouncementDraft" data-id="${a.id || ""}" type="button">下書き保存</button>
+          <button class="btn ghost" data-action="saveAnnouncementScheduled" data-id="${a.id || ""}" type="button">予約公開</button>
+          <button class="btn" data-action="saveAnnouncementPublish" data-id="${a.id || ""}" type="button">公開</button>
+        `
+      );
+    };
+
+    const saveAnnouncement = (id) => {
+      const title = ($("#annTitle").value || "").trim();
+      const body = ($("#annBody").value || "").trim();
+      const category = $("#annCategory").value;
+      const priority = $("#annPriority").value;
+      const status = $("#annStatus").value;
+      if (!title) {
+        toast("err", "入力不正", "タイトルは必須です");
+        return;
+      }
+      if (!Array.isArray(state.announcements)) state.announcements = [];
+      const now = nowISO();
+      if (id) {
+        const a = state.announcements.find(x => x.id === id);
+        if (a) {
+          a.title = title;
+          a.body = body;
+          a.category = category;
+          a.priority = priority;
+          const wasPublished = a.status === "PUBLISHED";
+          a.status = status;
+          if (!wasPublished && status === "PUBLISHED") a.publishedAt = now;
+          a.updatedAt = now;
+          toast("ok", "保存しました", `お知らせ「${title}」を更新`);
+        }
+      } else {
+        state.announcements.push({
+          id: uid("ANN"),
+          title,
+          body,
+          category,
+          priority,
+          status,
+          publishedAt: status === "PUBLISHED" ? now : null,
+          createdAt: now,
+          updatedAt: now,
+        });
+        toast("ok", "作成しました", `お知らせ「${title}」を作成`);
+      }
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: now, type: "ANNOUNCEMENT", message: `${id ? "edit" : "create"} title="${title}" status=${status}`, ref: id || "" });
+      closeModal();
+    };
+
+    const renderSettings = () => {
+      $("#setAsset").value = state.settings.defaultAsset;
+      const rateEl = $("#setRewardRate");
+      if (rateEl) rateEl.value = state.settings.rewardRate ?? 30;
+      renderBrokers();
+      renderDistributionRatios();
+      renderRankMaster();
+      renderCampaignMaster();
+      renderReferenceRates();
+      renderEmergencyStop();
+    };
+
+    const renderBrokers = () => {
+      const tbody = $("#tblBrokers")?.querySelector("tbody");
+      const empty = $("#emptyBrokers");
+      if (!tbody) return;
+      const list = state.brokers || [];
+      tbody.innerHTML = "";
+      if (list.length === 0) {
+        if (empty) empty.hidden = false;
+        return;
+      }
+      if (empty) empty.hidden = true;
+      list.forEach((b) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="code">${safeText(b.code)}</span></td>
+          <td>${safeText(b.name)}</td>
+          <td>${safeText(b.displayName || b.name || "-")}</td>
+          <td><span class="pill neu">${safeText(b.csvFormat || "BIGBOSS")}</span></td>
+          <td class="right">${b.rewardRate ?? 30}%</td>
+          <td>${safeText(b.ibCurrency || "USD")}</td>
+          <td>${b.maintenance ? '<span class="pill err">メンテ中</span>' : '<span class="pill ok">稼働</span>'}</td>
+          <td class="right">
+            <button class="btn ghost small" data-action="editBroker" data-id="${b.id}" type="button">編集</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    };
+
+    const renderDistributionRatios = () => {
+      const container = $("#distributionRatiosList");
+      if (!container) return;
+      const ratios = state.distributionRatios || [];
+      const total = ratios.reduce((s, r) => s + r.ratio, 0);
+      container.innerHTML = ratios.map((r, i) => `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+          <input type="text" class="dist-asset-name" data-idx="${i}" value="${safeText(r.asset)}" style="width:80px; padding:8px 10px; border-radius:10px; border:1px solid #D1D5DB; font-weight:700; text-align:center" placeholder="アセット名">
+          <input type="number" class="dist-ratio-input" data-idx="${i}" value="${r.ratio}" min="0" max="100" step="1" style="width:80px; padding:8px 10px; border-radius:10px; border:1px solid #D1D5DB; font-weight:700; text-align:center">
+          <span style="font-weight:700; color:var(--muted)">%</span>
+          <button class="btn ghost small" data-action="removeDistributionAsset" data-idx="${i}" type="button" style="padding:6px 8px; min-width:auto">
+            <span class="material-icons" aria-hidden="true" style="font-size:16px">delete</span>
+          </button>
+        </div>
+      `).join("") + `
+        <div style="margin-top:10px; display:flex; align-items:center; gap:8px">
+          <span style="font-weight:900">合計: ${total}%</span>
+          ${total !== 100 ? '<span class="pill err">合計100%ではありません</span>' : '<span class="pill ok">OK</span>'}
+        </div>
+      `;
+
+      // live update total on input change
+      container.querySelectorAll(".dist-ratio-input").forEach(inp => {
+        inp.addEventListener("input", () => {
+          let t = 0;
+          container.querySelectorAll(".dist-ratio-input").forEach(el => { t += Number(el.value) || 0; });
+          const sumEl = container.querySelector("div:last-child");
+          if (sumEl) {
+            sumEl.innerHTML = `
+              <span style="font-weight:900">合計: ${t}%</span>
+              ${t !== 100 ? '<span class="pill err">合計100%ではありません</span>' : '<span class="pill ok">OK</span>'}
+            `;
+          }
+        });
+      });
+    };
+
+    const saveDistributionRatios = () => {
+      const container = $("#distributionRatiosList");
+      if (!container) return;
+      const names = container.querySelectorAll(".dist-asset-name");
+      const inputs = container.querySelectorAll(".dist-ratio-input");
+      const newRatios = [];
+      let total = 0;
+      inputs.forEach((inp, i) => {
+        const asset = (names[i]?.value || "").trim().toUpperCase();
+        const ratio = Number(inp.value) || 0;
+        if (asset) {
+          newRatios.push({ asset, ratio });
+          total += ratio;
+        }
+      });
+      if (total !== 100) {
+        toast("err", "合計100%ではありません", `現在の合計: ${total}%`);
+        return;
+      }
+      if (newRatios.length === 0) {
+        toast("err", "入力不正", "アセットが1つ以上必要です");
+        return;
+      }
+      state.distributionRatios = newRatios;
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "DISTRIBUTION_EDIT", message: `ratios=${JSON.stringify(newRatios)}`, ref: "" });
+      toast("ok", "保存しました", "配分比率を更新しました");
+      renderAll();
+    };
+
+    const addDistributionAsset = () => {
+      state.distributionRatios.push({ asset: "", ratio: 0 });
+      renderDistributionRatios();
+    };
+
+    const removeDistributionAsset = (idx) => {
+      state.distributionRatios.splice(idx, 1);
+      renderDistributionRatios();
+    };
+
+    const renderRankMaster = () => {
+      const container = $("#rankMasterList");
+      if (!container) return;
+      const ranks = state.ranks || {};
+      container.innerHTML = Object.entries(ranks).map(([key, r]) => `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
+          <span class="pill neu" style="min-width:70px; text-align:center">${r.name}</span>
+          <label style="font-size:.85rem; color:var(--muted)">倍率:</label>
+          <input type="number" class="rank-multi-input" data-rank="${key}" value="${r.multi}" step="0.1" min="0.1" style="width:70px; padding:6px 8px; border-radius:8px; border:1px solid #D1D5DB; font-weight:700; text-align:center">
+          <label style="font-size:.85rem; color:var(--muted)">昇格閾値 LEV_USD:</label>
+          <input type="number" class="rank-threshold-input" data-rank="${key}" value="${r.threshold || 0}" step="1000" min="0" style="width:100px; padding:6px 8px; border-radius:8px; border:1px solid #D1D5DB; font-weight:700; text-align:center">
+        </div>
+      `).join("") + `
+        <button class="btn ghost small" data-action="saveRankMaster" type="button" style="margin-top:8px">保存</button>
+      `;
+    };
+
+    const saveRankMaster = () => {
+      const container = $("#rankMasterList");
+      if (!container) return;
+      container.querySelectorAll(".rank-multi-input").forEach(inp => {
+        const key = inp.dataset.rank;
+        const multi = Number(inp.value);
+        if (state.ranks[key] && Number.isFinite(multi) && multi > 0) {
+          state.ranks[key].multi = Math.round(multi * 10) / 10;
+        }
+      });
+      container.querySelectorAll(".rank-threshold-input").forEach(inp => {
+        const key = inp.dataset.rank;
+        const threshold = Number(inp.value);
+        if (state.ranks[key] && Number.isFinite(threshold) && threshold >= 0) {
+          state.ranks[key].threshold = Math.floor(threshold);
+        }
+      });
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "RANK_EDIT", message: `ranks=${JSON.stringify(state.ranks)}`, ref: "" });
+      toast("ok", "保存しました", "ランクマスターを更新しました");
+      renderAll();
+    };
+
+    const renderCampaignMaster = () => {
+      const container = $("#campaignMasterList");
+      if (!container) return;
+      const campaigns = state.campaigns || [];
+      if (campaigns.length === 0) {
+        container.innerHTML = '<div class="muted">キャンペーンなし</div>';
+        return;
+      }
+      container.innerHTML = campaigns.map(c => {
+        const typeLabel = c.type === "PERIOD" ? "期間限定" : "個別";
+        const statusPill = c.status === "ACTIVE" ? '<span class="pill ok">有効</span>' : '<span class="pill neu">無効</span>';
+        const detail = c.type === "PERIOD"
+          ? `${c.startDate || "?"} 〜 ${c.endDate || "?"}`
+          : `入会後${c.durationDays || "?"}日間`;
+        return `
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap">
+            <span class="pill neu">${typeLabel}</span>
+            <b>${safeText(c.name)}</b>
+            <span>x${c.multiplier}</span>
+            <span class="muted">${detail}</span>
+            ${statusPill}
+            <button class="btn ghost small" data-action="editCampaign" data-id="${c.id}" type="button">編集</button>
+          </div>
+        `;
+      }).join("");
+    };
+
+    const renderReferenceRates = () => {
+      const container = $("#referenceRatesList");
+      if (!container) return;
+      const rates = state.referenceRates || {};
+      container.innerHTML = Object.entries(rates).map(([asset, rate]) => `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
+          <span class="pill neu" style="min-width:50px; text-align:center">${asset}</span>
+          <span style="font-weight:700">¥</span>
+          <input type="number" class="ref-rate-input" data-asset="${asset}" value="${rate}" step="any" min="0" style="width:120px; padding:6px 8px; border-radius:8px; border:1px solid #D1D5DB; font-weight:700; text-align:right">
+        </div>
+      `).join("") + `
+        <button class="btn ghost small" data-action="saveReferenceRates" type="button" style="margin-top:8px">保存</button>
+      `;
+    };
+
+    const saveReferenceRates = () => {
+      const container = $("#referenceRatesList");
+      if (!container) return;
+      container.querySelectorAll(".ref-rate-input").forEach(inp => {
+        const asset = inp.dataset.asset;
+        const rate = Number(inp.value);
+        if (Number.isFinite(rate) && rate > 0) {
+          state.referenceRates[asset] = rate;
+        }
+      });
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "REFERENCE_RATES_EDIT", message: `rates=${JSON.stringify(state.referenceRates)}`, ref: "" });
+      toast("ok", "保存しました", "参考レートを更新しました");
+      renderAll();
+    };
+
+    const renderEmergencyStop = () => {
+      const container = $("#emergencyStopStatus");
+      if (!container) return;
+      const es = state.settings.emergencyStop || {};
+      container.innerHTML = `
+        <div style="display:flex; gap:12px; flex-wrap:wrap">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer">
+            <input type="checkbox" data-action="toggleEmergency" data-key="csvImport" ${es.csvImport ? "checked" : ""}>
+            <span>CSV取込 ${es.csvImport ? '<span class="pill err">停止中</span>' : '<span class="pill ok">稼働</span>'}</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer">
+            <input type="checkbox" data-action="toggleEmergency" data-key="reward" ${es.reward ? "checked" : ""}>
+            <span>付与 ${es.reward ? '<span class="pill err">停止中</span>' : '<span class="pill ok">稼働</span>'}</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer">
+            <input type="checkbox" data-action="toggleEmergency" data-key="withdrawal" ${es.withdrawal ? "checked" : ""}>
+            <span>出金 ${es.withdrawal ? '<span class="pill err">停止中</span>' : '<span class="pill ok">稼働</span>'}</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer">
+            <input type="checkbox" data-action="toggleEmergency" data-key="accountLinking" ${es.accountLinking ? "checked" : ""}>
+            <span>口座連携 ${es.accountLinking ? '<span class="pill err">停止中</span>' : '<span class="pill ok">稼働</span>'}</span>
+          </label>
+        </div>
+      `;
+      container.querySelectorAll('[data-action="toggleEmergency"]').forEach(cb => {
+        cb.addEventListener("change", (e) => {
+          const key = e.target.dataset.key;
+          if (!state.settings.emergencyStop) state.settings.emergencyStop = {};
+          state.settings.emergencyStop[key] = e.target.checked;
+          if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+          state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "EMERGENCY_STOP", message: `${key}=${e.target.checked}`, ref: "" });
+          toast(e.target.checked ? "warn" : "ok", "緊急停止", `${key}: ${e.target.checked ? "停止" : "再開"}`);
+          renderAll();
+        });
+      });
+    };
+  
+    const renderAll = () => {
+      applyTheme(state.meta.theme);
+      renderKpis();
+      renderDashboardCharts();
+      renderApprovals();
+      renderWithdrawals();
+      renderScraper();
+      renderUsers();
+      renderLedger();
+      renderAnnouncements();
+      renderSettings();
+      // Update approval tasks badge
+      const pendingApprovals = state.applications.filter(a => a.status === "PENDING").length;
+      const pendingWithdrawals = state.withdrawals.filter(w => ["PENDING","PROCESSING"].includes(w.status)).length;
+      const badgeEl = $("#badgeApprovalTasks");
+      if (badgeEl) badgeEl.textContent = pendingApprovals + pendingWithdrawals;
+      const badgeAccEl = $("#badgeAccountLinking");
+      if (badgeAccEl) badgeAccEl.textContent = pendingApprovals;
+      const badgeWdEl = $("#badgeWithdrawalRequests");
+      if (badgeWdEl) badgeWdEl.textContent = pendingWithdrawals;
+      saveState();
+    };
+  
+    // ------------------------------
+    // Actions
+    // ------------------------------
+    const openApprovalActions = (applicationId) => {
+      const a = state.applications.find(x => x.id === applicationId);
+      if (!a) return;
+      const u = state.users.find(x => x.id === a.userId);
+      const key = `${normalizeBroker(a.broker)}|${normalizeAccountNo(a.accountNo)}`;
+      const duplicateKeys = getDuplicateAccountKeys();
+      const isDup = duplicateKeys.has(key);
+      openModal(
+        `口座申請 操作: ${a.id}`,
+        `
+          <div class="kv-rows" style="margin-bottom:14px">
+            <div class="kv-row"><span class="kv-k">申請日時</span><span class="kv-v">${fmtDate(a.date)}</span></div>
+            <div class="kv-row"><span class="kv-k">ユーザー</span><span class="kv-v">${u?.id || a.userId}</span></div>
+            <div class="kv-row"><span class="kv-k">Wallet</span><span class="kv-v code">${safeText(u?.wallet || "-")}</span></div>
+            <div class="kv-row"><span class="kv-k">ブローカー</span><span class="kv-v">${a.broker}</span></div>
+            <div class="kv-row"><span class="kv-k">口座番号</span><span class="kv-v code">${a.accountNo}</span></div>
+            <div class="kv-row"><span class="kv-k">ステータス</span><span class="kv-v">${pill(a.status)}</span></div>
+          </div>
+          ${isDup ? `
+          <div class="notice err" style="margin-bottom:14px">
+            <span class="material-icons" aria-hidden="true">warning</span>
+            <div>
+              <div class="notice-title">重複口座アラート</div>
+              <div class="notice-body">このブローカー/口座番号の組み合わせは複数申請に存在します。同一口座の重複登録の可能性があります。承認前に十分確認してください。</div>
+            </div>
+          </div>
+          ` : ""}
+          <p class="muted" style="font-size:.9rem">承認または却下を選択してください</p>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <div style="display:flex; gap:8px">
+            <button class="btn" data-action="approveApp" data-id="${a.id}" type="button">承認</button>
+            <button class="btn ghost" data-action="rejectApp" data-id="${a.id}" type="button">却下</button>
+          </div>
+        `
+      );
+    };
+
+    const approveApplication = (id) => {
+      const a = state.applications.find(x => x.id === id);
+      if (!a) return;
+      a.status = "APPROVED";
+      closeModal();
+      toast("ok", "承認しました", `${id} を APPROVED に更新`);
+    };
+  
+    const rejectApplication = (id) => {
+      const a = state.applications.find(x => x.id === id);
+      if (!a) return;
+      openModal(
+        "却下理由の入力",
+        `
+          <div class="field">
+            <label>理由（必須）</label>
+            <input id="rejReason" type="text" placeholder="例：口座番号が不正、本人確認未完了など" value="${safeText(a.rejectedReason || "")}">
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="confirmRejectApp" data-id="${a.id}" type="button">却下する</button>
+        `
+      );
+    };
+  
+    const addDemoApplication = () => {
+      const u = state.users[Math.floor(Math.random() * state.users.length)];
+      const brokers = state.brokers || [];
+      const broker = brokers.length > 0 ? brokers[Math.floor(Math.random() * brokers.length)] : { code: "EXNESS", name: "Exness" };
+      state.applications.unshift({
+        id: uid("A"),
+        date: nowISO(),
+        userId: u.id,
+        broker: broker.code,
+        accountNo: String(Math.floor(10000000 + Math.random()*89999999)),
+        status: "PENDING"
+      });
+      toast("ok", "デモ申請を追加", `ユーザー: ${u.id}`);
+    };
+  
+    const addDemoWithdrawal = () => {
+      const activeUsers = state.users.filter(x => (x.status || "ACTIVE") === "ACTIVE");
+      if (activeUsers.length === 0) {
+        toast("err", "追加不可", "アクティブなユーザーがいません");
+        return;
+      }
+      const u = activeUsers[Math.floor(Math.random() * activeUsers.length)];
+      state.withdrawals.unshift({
+        id: uid("W"),
+        date: nowISO(),
+        userId: u.id,
+        asset: state.settings.defaultAsset,
+        amount: Math.floor(100 + Math.random()*2000),
+        to: u.wallet,
+        status: "PENDING",
+        txHash: ""
+      });
+      toast("ok", "デモ出金を追加", `ユーザー: ${u.id}`);
+    };
+  
+    const setWithdrawalStatus = (id, newStatus) => {
+      const w = state.withdrawals.find(x => x.id === id);
+      if (!w) return;
+
+      // 緊急停止チェック
+      if (state.settings.emergencyStop?.withdrawal && ["APPROVED","PROCESSING","COMPLETED"].includes(newStatus)) {
+        toast("err", "緊急停止中", "出金処理は緊急停止中です");
+        return;
+      }
+
+      // 状態遷移チェック (BR-03): PENDING→APPROVED→PROCESSING→COMPLETED/FAILED, PENDING→CANCELLED
+      const allowed = {
+        PENDING: ["APPROVED", "CANCELLED"],
+        APPROVED: ["PROCESSING"],
+        PROCESSING: ["COMPLETED", "FAILED"],
+      };
+      if (allowed[w.status] && !allowed[w.status].includes(newStatus)) {
+        toast("err", "遷移不可", `${w.status} → ${newStatus} は許可されていません`);
+        return;
+      }
+
+      w.status = newStatus;
+      if (newStatus === "COMPLETED") {
+        if (!w.txHash) w.txHash = "0x" + Math.random().toString(16).slice(2).padEnd(64, "0").slice(0, 64);
+        const u = state.users.find(x => x.id === w.userId);
+        if (u) {
+          u.balance = ensureBalObj(u.balance);
+          const asset = w.asset || "KQ";
+          const prevBal = Number(u.balance[asset] || 0);
+          u.balance[asset] = Math.max(0, prevBal - w.amount);
+          state.ledger.push({
+            id: uid("L"),
+            date: new Date().toISOString().slice(0, 10),
+            userId: w.userId,
+            asset,
+            delta: -w.amount,
+            reason: "Withdrawal",
+            ref: `WITHDRAWAL#${w.id}`,
+          });
+        }
+      }
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "WITHDRAWAL_STATUS", message: `withdrawal=${w.id} status=${newStatus}`, ref: w.id });
+      const labels = { APPROVED: "承認", PROCESSING: "処理中", COMPLETED: "完了", FAILED: "失敗", CANCELLED: "キャンセル" };
+      toast(newStatus === "FAILED" ? "err" : "ok", "送金ステータス更新", `${id}: ${labels[newStatus] || newStatus}`);
+    };
+  
+    // note: CSV確定は applyCsvImport で実装（旧runScrape/applyScrapeToLedgerは廃止）
+  
+    const resetMock = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      state = createInitialState();
+      toast("ok", "リセット完了", "Mockデータを初期化しました");
+    };
+  
+    // ------------------------------
+    // Modal
+    // ------------------------------
+    const openModal = (title, bodyHTML, footerHTML) => {
+      $("#modalTitle").textContent = title;
+      $("#modalBody").innerHTML = bodyHTML || "";
+      $("#modalFooter").innerHTML = footerHTML || "";
+      $("#modal").classList.remove("is-hidden");
+    };
+    const closeModal = () => $("#modal").classList.add("is-hidden");
+
+    const openDrawer = (title, bodyHTML, footerHTML) => {
+      $("#drawerTitle").textContent = title;
+      $("#drawerBody").innerHTML = bodyHTML || "";
+      $("#drawerFooter").innerHTML = footerHTML || "";
+      $("#drawer").classList.remove("is-hidden");
+      $("#drawerOverlay").classList.remove("is-hidden");
+    };
+    const closeDrawer = () => {
+      $("#drawer").classList.add("is-hidden");
+      $("#drawerOverlay").classList.add("is-hidden");
+    };
+
+    const openBrokerModal = (broker = null) => {
+      const isEdit = !!broker;
+      const b = broker || {};
+      openModal(
+        isEdit ? "提携FX業者を編集" : "提携FX業者を追加",
+        `
+          <div class="form-grid">
+            <div class="field">
+              <label>コード（識別子）</label>
+              <input id="brokerCode" type="text" placeholder="例: XM, EXNESS" value="${safeText(b.code || "")}" ${isEdit ? "readonly" : ""}>
+            </div>
+            <div class="field">
+              <label>名称</label>
+              <input id="brokerName" type="text" placeholder="例: XM Trading" value="${safeText(b.name || "")}">
+            </div>
+            <div class="field">
+              <label>表示名</label>
+              <input id="brokerDisplayName" type="text" placeholder="例: XM" value="${safeText(b.displayName || b.name || "")}">
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label>アフィリエイトURL</label>
+              <input id="brokerAffLink" type="text" placeholder="https://..." value="${safeText(b.affiliateLink || "")}">
+            </div>
+            <div class="field">
+              <label>メンテナンスフラグ</label>
+              <select id="brokerMaintenance">
+                <option value="false" ${!b.maintenance ? "selected" : ""}>稼働中</option>
+                <option value="true" ${b.maintenance ? "selected" : ""}>メンテナンス中（付与停止）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>有効フラグ</label>
+              <select id="brokerActive">
+                <option value="true" ${b.active !== false ? "selected" : ""}>有効</option>
+                <option value="false" ${b.active === false ? "selected" : ""}>無効</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Reward Rate %</label>
+              <input id="brokerRewardRate" type="number" min="0" max="100" step="1" value="${b.rewardRate ?? 30}">
+            </div>
+            <div class="field">
+              <label>CSV Format</label>
+              <select id="brokerCsvFormat">
+                <option value="BIGBOSS" ${(b.csvFormat||"BIGBOSS")==="BIGBOSS"?"selected":""}>BIGBOSS</option>
+                <option value="XM" ${(b.csvFormat||"")==="XM"?"selected":""}>XM</option>
+                <option value="FXGT" ${(b.csvFormat||"")==="FXGT"?"selected":""}>FXGT</option>
+                <option value="EXNESS" ${(b.csvFormat||"")==="EXNESS"?"selected":""}>EXNESS</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Account Types</label>
+              <input id="brokerAccountTypes" type="text" placeholder="例: Standard" value="${safeText(b.accountTypes || "Standard")}">
+            </div>
+            <div class="field">
+              <label>IB Currency</label>
+              <select id="brokerIbCurrency">
+                <option value="USD" ${(b.ibCurrency||"USD")==="USD"?"selected":""}>USD</option>
+                <option value="JPY" ${(b.ibCurrency||"")==="JPY"?"selected":""}>JPY</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Fee Rate %</label>
+              <input id="brokerFeeRate" type="number" min="0" max="100" step="0.1" value="${b.feeRate ?? 0}">
+            </div>
+            <div class="field">
+              <label>Campaign Multiplier Override</label>
+              <input id="brokerCampaignMultiplier" type="number" min="0" step="0.1" value="${b.campaignMultiplier ?? 1.0}">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="saveBroker" data-id="${broker?.id || ""}" type="button">${isEdit ? "保存" : "追加"}</button>
+        `
+      );
+    };
+
+    const saveBroker = (id) => {
+      const code = ($("#brokerCode").value || "").trim().toUpperCase();
+      const name = ($("#brokerName").value || "").trim();
+      const displayName = ($("#brokerDisplayName").value || "").trim() || name;
+      const affiliateLink = ($("#brokerAffLink").value || "").trim();
+      const maintenance = $("#brokerMaintenance").value === "true";
+      const active = $("#brokerActive").value === "true";
+      const rewardRate = Number($("#brokerRewardRate")?.value ?? 30);
+      const csvFormat = ($("#brokerCsvFormat")?.value || "BIGBOSS");
+      const accountTypes = ($("#brokerAccountTypes")?.value || "Standard").trim();
+      const ibCurrency = ($("#brokerIbCurrency")?.value || "USD");
+      const feeRate = Number($("#brokerFeeRate")?.value ?? 0);
+      const campaignMultiplier = Number($("#brokerCampaignMultiplier")?.value ?? 1.0);
+      if (!code || !name) {
+        toast("err", "入力不正", "コードと名称は必須です");
+        return;
+      }
+      if (!Array.isArray(state.brokers)) state.brokers = [];
+      const settings = { displayName, affiliateLink, maintenance, active, rewardRate, csvFormat, accountTypes, ibCurrency, feeRate, campaignMultiplier };
+      if (id) {
+        const b = state.brokers.find(x => x.id === id);
+        if (b) {
+          b.name = name;
+          Object.assign(b, settings);
+          toast("ok", "保存しました", `${code} を更新`);
+        }
+      } else {
+        if (state.brokers.some(x => x.code === code)) {
+          toast("err", "重複", `コード ${code} は既に登録されています`);
+          return;
+        }
+        state.brokers.push({ id: uid("B"), code, name, ...settings });
+        toast("ok", "追加しました", `${code} ${name}`);
+      }
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "BROKER_EDIT", message: `broker=${code} maintenance=${maintenance}`, ref: id || "" });
+      closeModal();
+    };
+
+    // ------------------------------
+    // Manual edit (ops)
+    // ------------------------------
+    const openUserActions = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      const pendingWithdrawal = (state.withdrawalRequests || []).find(r => r.userId === userId && r.status === "PENDING");
+      const isBanned = (u.status || "ACTIVE") === "BANNED";
+      openModal(
+        `ユーザー操作: ${u.id}`,
+        `
+          <div class="kv-rows" style="margin-bottom:14px">
+            <div class="kv-row"><span class="kv-k">Wallet</span><span class="kv-v code">${safeText(u.wallet)}</span></div>
+            <div class="kv-row"><span class="kv-k">ランク</span><span class="kv-v">${u.rank}</span></div>
+            <div class="kv-row"><span class="kv-k">残高</span><span class="kv-v">${formatAssetBalancePills(u.balance)}</span></div>
+            <div class="kv-row"><span class="kv-k">状態</span><span class="kv-v">${pill(u.status || "ACTIVE")}</span></div>
+            ${pendingWithdrawal ? `<div class="kv-row"><span class="kv-k">退会申請</span><span class="kv-v"><span class="pill warn">PENDING</span></span></div>` : ""}
+          </div>
+          <p class="muted" style="font-size:.9rem">操作を選択してください</p>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <button class="btn ghost" data-action="editUser" data-id="${u.id}" type="button">編集</button>
+            ${!isBanned ? `<button class="btn ghost" data-action="banUser" data-id="${u.id}" type="button">強制退会(BAN)</button>` : ""}
+            ${isBanned ? `<button class="btn ghost" data-action="unbanUser" data-id="${u.id}" type="button">BAN解除</button>` : ""}
+            <button class="btn ghost" data-action="confiscateUserTokens" data-id="${u.id}" type="button">トークン没収</button>
+            ${pendingWithdrawal ? `<button class="btn" data-action="approveWithdrawalRequest" data-id="${pendingWithdrawal.id}" type="button">退会申請を承認</button>` : ""}
+          </div>
+        `
+      );
+    };
+
+    const banUser = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      openModal(
+        "強制退会(BAN)",
+        `
+          <div class="kv-rows" style="margin-bottom:14px">
+            <div class="kv-row"><span class="kv-k">ユーザー</span><span class="kv-v">${u.id}</span></div>
+            <div class="kv-row"><span class="kv-k">メール</span><span class="kv-v code">${safeText(u.email || "-")}</span></div>
+          </div>
+          <div class="notice err" style="margin-bottom:14px">
+            <span class="material-icons" aria-hidden="true">warning</span>
+            <div><div class="notice-body">この操作は取り消せません。ユーザーはプラットフォームにアクセスできなくなります。</div></div>
+          </div>
+          <div class="field">
+            <label>BAN理由（必須）</label>
+            <input id="banReason" type="text" placeholder="例: 不正利用の疑い">
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn danger" data-action="confirmBan" data-id="${u.id}" type="button">BANを実行</button>
+        `
+      );
+    };
+
+    const confirmBan = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      const reason = ($("#banReason")?.value || "").trim();
+      if (!reason) { toast("err", "理由が必要です", "BAN理由を入力してください"); return; }
+      u.status = "BANNED";
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "USER_BAN", message: `user=${u.id} BANNED reason=${reason}`, ref: u.id });
+      closeModal();
+      toast("warn", "強制退会しました", `${u.id} をBANしました`);
+    };
+
+    const unbanUser = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      u.status = "ACTIVE";
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "USER_UNBAN", message: `user=${u.id} UNBANNED`, ref: u.id });
+      closeModal();
+      toast("ok", "BAN解除しました", `${u.id} をACTIVEに戻しました`);
+    };
+
+    const confiscateUserTokens = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      u.balance = ensureBalObj(u.balance);
+      const hasBalance = Object.values(u.balance).some(v => Number(v || 0) > 0);
+      if (!hasBalance) { toast("neu", "没収不要", "残高は既に0です"); return; }
+      openModal(
+        "トークン没収",
+        `
+          <div class="kv-rows" style="margin-bottom:14px">
+            <div class="kv-row"><span class="kv-k">ユーザー</span><span class="kv-v">${u.id}</span></div>
+            <div class="kv-row"><span class="kv-k">現在の残高</span><span class="kv-v">${formatAssetBalancePills(u.balance)}</span></div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>没収対象アセット</label>
+              <select id="confiscateAsset">
+                <option value="ALL">全アセット</option>
+                ${Object.entries(u.balance).filter(([,v]) => Number(v||0) > 0).map(([k,v]) => `<option value="${k}">${k} (残高: ${money(v)})</option>`).join("")}
+              </select>
+            </div>
+            <div class="field">
+              <label>没収額（空=全額）</label>
+              <input id="confiscateAmount" type="number" step="any" min="0" placeholder="全額の場合は空欄">
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label>没収理由（必須）</label>
+              <input id="confiscateReason" type="text" placeholder="例: 利用規約違反">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn danger" data-action="confirmConfiscate" data-id="${u.id}" type="button">没収を実行</button>
+        `
+      );
+    };
+
+    const confirmConfiscate = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      const reason = ($("#confiscateReason")?.value || "").trim();
+      if (!reason) { toast("err", "理由が必要です", "没収理由を入力してください"); return; }
+      const asset = ($("#confiscateAsset")?.value || "ALL");
+      const amountInput = ($("#confiscateAmount")?.value || "").trim();
+      u.balance = ensureBalObj(u.balance);
+      const confiscated = [];
+      if (asset === "ALL") {
+        Object.entries(u.balance).forEach(([k, v]) => {
+          if (Number(v || 0) > 0) {
+            confiscated.push(`${k}: ${v}`);
+            state.ledger.push({ id: uid("L"), date: new Date().toISOString().slice(0,10), userId: u.id, asset: k, delta: -Number(v), type: "CONFISCATE", reason: `Confiscation: ${reason}`, ref: "ADMIN" });
+            u.balance[k] = 0;
+          }
+        });
+      } else {
+        const currentVal = Number(u.balance[asset] || 0);
+        const confAmount = amountInput ? Math.min(Number(amountInput), currentVal) : currentVal;
+        if (confAmount > 0) {
+          confiscated.push(`${asset}: ${confAmount}`);
+          state.ledger.push({ id: uid("L"), date: new Date().toISOString().slice(0,10), userId: u.id, asset, delta: -confAmount, type: "CONFISCATE", reason: `Confiscation: ${reason}`, ref: "ADMIN" });
+          u.balance[asset] = currentVal - confAmount;
+        }
+      }
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "TOKEN_CONFISCATION", message: `user=${u.id} confiscated=[${confiscated.join(", ")}] reason=${reason}`, ref: u.id });
+      closeModal();
+      toast("warn", "トークン没収しました", `${u.id}: ${confiscated.join(", ")}`);
+    };
+
+    const approveWithdrawalRequest = (requestId) => {
+      const req = (state.withdrawalRequests || []).find(x => x.id === requestId);
+      if (!req) return;
+      req.status = "APPROVED";
+      req.approvedAt = nowISO();
+      const u = state.users.find(x => x.id === req.userId);
+      if (u) u.status = "WITHDRAWN";
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "WITHDRAWAL_APPROVED", message: `user=${req.userId} withdrawal approved`, ref: req.id });
+      closeModal();
+      toast("ok", "退会申請を承認しました", `ユーザー ${req.userId} を退会処理しました`);
+    };
+
+    const addDemoWithdrawalRequest = () => {
+      const activeUsers = state.users.filter(u => (u.status || "ACTIVE") === "ACTIVE");
+      const alreadyPending = new Set((state.withdrawalRequests || []).filter(r => r.status === "PENDING").map(r => r.userId));
+      const candidates = activeUsers.filter(u => !alreadyPending.has(u.id));
+      if (candidates.length === 0) {
+        toast("neu", "追加不可", "退会申請可能なユーザーがいません");
+        return;
+      }
+      const u = candidates[Math.floor(Math.random() * candidates.length)];
+      if (!Array.isArray(state.withdrawalRequests)) state.withdrawalRequests = [];
+      state.withdrawalRequests.push({
+        id: uid("WR"),
+        userId: u.id,
+        requestedAt: nowISO(),
+        status: "PENDING",
+      });
+      toast("ok", "デモ退会申請を追加", `ユーザー ${u.id} の退会申請`);
+    };
+
+    const openUserEdit = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      openModal(
+        `ユーザー編集: ${u.id}`,
+        `
+          <div class="form-grid">
+            <div class="field">
+              <label>メール</label>
+              <input id="editUserEmail" type="email" value="${safeText(u.email || "")}" placeholder="user@example.com">
+            </div>
+            <div class="field">
+              <label>Wallet</label>
+              <input id="editUserWallet" type="text" value="${safeText(u.wallet)}">
+            </div>
+            <div class="field">
+              <label>ランク</label>
+              <select id="editUserRank">
+                ${Object.keys(state.ranks).map(k => `<option value="${k}" ${u.rank===k?"selected":""}>${state.ranks[k].name} (x${state.ranks[k].multi})</option>`).join("")}
+              </select>
+            </div>
+            <div class="field">
+              <label>KYCステータス</label>
+              <select id="editUserKyc">
+                <option value="NOT_SUBMITTED" ${(u.kycStatus||"NOT_SUBMITTED")==="NOT_SUBMITTED"?"selected":""}>未提出</option>
+                <option value="PENDING" ${u.kycStatus==="PENDING"?"selected":""}>審査中</option>
+                <option value="APPROVED" ${u.kycStatus==="APPROVED"?"selected":""}>承認済み</option>
+                <option value="REJECTED" ${u.kycStatus==="REJECTED"?"selected":""}>却下</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label>残高（アセット別）</label>
+              <div id="editUserBalanceFields" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px">
+                ${Object.entries(ensureBalObj(u.balance)).map(([asset, val]) => `
+                  <div style="display:flex; align-items:center; gap:4px">
+                    <span class="pill neu" style="font-size:.78rem; padding:4px 8px">${asset}</span>
+                    <input class="edit-bal-input" data-asset="${asset}" type="number" step="any" value="${val}" style="width:100px; padding:6px 8px; border-radius:8px; border:1px solid #D1D5DB; font-weight:700; text-align:right">
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+          <div class="notice subtle" style="margin-top:12px">
+            <span class="material-icons" aria-hidden="true">edit</span>
+            <div>
+              <div class="notice-title">運用メモ</div>
+              <div class="notice-body">残高変更は差分を台帳に追記します。ランク/KYC変更は監査ログに記録されます。</div>
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="saveUserEdit" data-id="${u.id}" type="button">保存</button>
+        `
+      );
+    };
+
+    const saveUserEdit = (userId) => {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      const email = ($("#editUserEmail").value || "").trim();
+      const wallet = ($("#editUserWallet").value || "").trim();
+      const rank = $("#editUserRank").value;
+      const kycStatus = $("#editUserKyc").value;
+      u.email = email;
+      u.wallet = wallet;
+      u.rank = rank;
+      u.kycStatus = kycStatus;
+
+      // Multi-asset balance update
+      u.balance = ensureBalObj(u.balance);
+      const balInputs = $$("#editUserBalanceFields .edit-bal-input");
+      balInputs.forEach(inp => {
+        const asset = inp.dataset.asset;
+        const newVal = Number(inp.value);
+        if (!Number.isFinite(newVal)) return;
+        const prevVal = Number(u.balance[asset] || 0);
+        const diff = newVal - prevVal;
+        u.balance[asset] = newVal;
+        if (diff !== 0) {
+          state.ledger.push({
+            id: uid("L"),
+            date: new Date().toISOString().slice(0,10),
+            userId: u.id,
+            asset,
+            delta: diff,
+            reason: "Manual Adjustment",
+            ref: "ADMIN",
+          });
+        }
+      });
+
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({
+        id: uid("LOG"),
+        at: nowISO(),
+        type: "USER_EDIT",
+        message: `user=${u.id} rank=${u.rank} balance=${u.balance}`,
+        ref: u.id,
+      });
+
+      closeModal();
+      toast("ok", "保存しました", `ユーザー ${u.id} を更新`);
+    };
+
+    const openLedgerEdit = (ledgerId) => {
+      const l = state.ledger.find(x => x.id === ledgerId);
+      if (!l) return;
+      openModal(
+        `台帳編集: ${l.id}`,
+        `
+          <div class="form-grid">
+            <div class="field">
+              <label>増減（delta）</label>
+              <input id="editLedgerDelta" type="number" step="1" value="${Number(l.delta || 0)}">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="saveLedgerEdit" data-id="${l.id}" type="button">保存</button>
+        `
+      );
+    };
+
+    const saveLedgerEdit = (ledgerId) => {
+      const l = state.ledger.find(x => x.id === ledgerId);
+      if (!l) return;
+      const newDelta = Number($("#editLedgerDelta").value);
+      if (!Number.isFinite(newDelta)) {
+        toast("err", "入力不正", "delta が数値ではありません");
+        return;
+      }
+      const prevDelta = Number(l.delta || 0);
+      l.delta = Math.floor(newDelta);
+
+      const diff = l.delta - prevDelta;
+      if (diff !== 0) {
+        const u = state.users.find(x => x.id === l.userId);
+        if (u) {
+          u.balance = ensureBalObj(u.balance);
+          const asset = l.asset || "KQ";
+          u.balance[asset] = (u.balance[asset] || 0) + diff;
+        }
+      }
+
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({
+        id: uid("LOG"),
+        at: nowISO(),
+        type: "LEDGER_EDIT",
+        message: `ledger=${l.id} delta=${prevDelta}=>${l.delta}`,
+        ref: l.id,
+      });
+
+      closeModal();
+      toast("ok", "保存しました", `台帳 ${l.id} を更新`);
+    };
+
+    const openWithdrawalActions = (withdrawalId) => {
+      const w = state.withdrawals.find(x => x.id === withdrawalId);
+      if (!w) return;
+      const u = state.users.find(x => x.id === w.userId);
+
+      // 状態に応じたアクションボタン
+      let actionButtons = `<button class="btn ghost" data-action="editWithdrawal" data-id="${w.id}" type="button">編集</button>`;
+      if (w.status === "PENDING") {
+        actionButtons += `<button class="btn" data-action="approveW" data-id="${w.id}" type="button">承認</button>`;
+      } else if (w.status === "APPROVED") {
+        actionButtons += `<button class="btn" data-action="processW" data-id="${w.id}" type="button">送金処理開始</button>`;
+      } else if (w.status === "PROCESSING") {
+        actionButtons += `<button class="btn" data-action="completeW" data-id="${w.id}" type="button">送金完了</button>`;
+        actionButtons += `<button class="btn ghost" data-action="failW" data-id="${w.id}" type="button">送金失敗</button>`;
+      }
+
+      openModal(
+        `出金操作: ${w.id}`,
+        `
+          <div class="kv-rows" style="margin-bottom:14px">
+            <div class="kv-row"><span class="kv-k">ユーザーID</span><span class="kv-v">${u?.id || w.userId}</span></div>
+            <div class="kv-row"><span class="kv-k">メール</span><span class="kv-v code">${safeText(u?.email || "-")}</span></div>
+            <div class="kv-row"><span class="kv-k">KYC</span><span class="kv-v">${pillKycStatus(u?.kycStatus)}</span></div>
+            <div class="kv-row"><span class="kv-k">ウォレットアドレス</span><span class="kv-v code">${safeText(w.to || u?.wallet || "-")}</span></div>
+            <div class="kv-row"><span class="kv-k">保有残高</span><span class="kv-v">${formatAssetBalancePills(u?.balance)}</span></div>
+            <div class="kv-row"><span class="kv-k">出金申請額</span><span class="kv-v"><b>${money(w.amount)}</b> ${w.asset}</span></div>
+            <div class="kv-row"><span class="kv-k">送金ステータス</span><span class="kv-v">${pillWithdrawalStatus(w.status)}</span></div>
+            ${w.txHash ? `<div class="kv-row"><span class="kv-k">TxHash</span><span class="kv-v code" style="font-size:.85rem; word-break:break-all">${safeText(w.txHash)}</span></div>` : ""}
+          </div>
+          <p class="muted" style="font-size:.9rem">状態遷移: PENDING → 承認 → 処理中 → 完了/失敗</p>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">閉じる</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap">
+            ${actionButtons}
+          </div>
+        `
+      );
+    };
+
+    const openWithdrawalEdit = (withdrawalId) => {
+      const w = state.withdrawals.find(x => x.id === withdrawalId);
+      if (!w) return;
+      openModal(
+        `出金申請 編集: ${w.id}`,
+        `
+          <div class="form-grid">
+            <div class="field">
+              <label>アセット</label>
+              <input id="editWAsset" type="text" value="${safeText(w.asset)}">
+            </div>
+            <div class="field">
+              <label>数量</label>
+              <input id="editWAmount" type="number" step="1" min="0" value="${Number(w.amount || 0)}">
+            </div>
+            <div class="field">
+              <label>送付先</label>
+              <input id="editWTo" type="text" value="${safeText(w.to)}">
+            </div>
+            <div class="field">
+              <label>送金ステータス</label>
+              <select id="editWStatus">
+                <option value="PENDING" ${w.status==="PENDING"?"selected":""}>未処理</option>
+                <option value="PROCESSING" ${w.status==="PROCESSING"?"selected":""}>処理中</option>
+                <option value="COMPLETED" ${w.status==="COMPLETED"?"selected":""}>完了</option>
+                <option value="FAILED" ${w.status==="FAILED"?"selected":""}>失敗</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <label>TxHash（任意）</label>
+              <input id="editWTxHash" type="text" value="${safeText(w.txHash || "")}">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="saveWithdrawalEdit" data-id="${w.id}" type="button">保存</button>
+        `
+      );
+    };
+
+    const saveWithdrawalEdit = (withdrawalId) => {
+      const w = state.withdrawals.find(x => x.id === withdrawalId);
+      if (!w) return;
+      const amount = Number($("#editWAmount").value);
+      if (!Number.isFinite(amount) || amount < 0) {
+        toast("err", "入力不正", "数量が不正です");
+        return;
+      }
+      w.asset = ($("#editWAsset").value || "").trim() || w.asset;
+      w.amount = Math.floor(amount);
+      w.to = ($("#editWTo").value || "").trim();
+      w.status = $("#editWStatus").value;
+      w.txHash = ($("#editWTxHash").value || "").trim();
+
+      if (w.status === "COMPLETED" && !w.txHash) {
+        w.txHash = "0x" + Math.random().toString(16).slice(2).padEnd(64, "0").slice(0, 64);
+      }
+
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({
+        id: uid("LOG"),
+        at: nowISO(),
+        type: "WITHDRAWAL_EDIT",
+        message: `withdrawal=${w.id} status=${w.status}`,
+        ref: w.id,
+      });
+
+      closeModal();
+      toast("ok", "保存しました", `出金 ${w.id} を更新`);
+    };
+  
+    const openDeltaAdjustment = (userId, asset) => {
+      const u = state.users.find(x => x.id === userId);
+      openModal(
+        "デルタ調整（追記型）",
+        `
+          <div class="notice subtle" style="margin-bottom:14px">
+            <span class="material-icons" aria-hidden="true">info</span>
+            <div>
+              <div class="notice-body">台帳は追記型です。この操作は新しいエントリを追加します。既存エントリは変更されません。</div>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>ユーザー</label>
+              <input id="deltaUserId" type="text" value="${userId}" readonly>
+            </div>
+            <div class="field">
+              <label>アセット</label>
+              <select id="deltaAsset">
+                ${["KQ","BTC","ETH","USDT","XRP"].map(a => `<option value="${a}" ${a===asset?"selected":""}>${a}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field">
+              <label>調整額（正=加算, 負=減算）</label>
+              <input id="deltaAmount" type="number" step="1" value="0" placeholder="例: -500">
+            </div>
+            <div class="field" style="grid-column:1/-1">
+              <label>理由（必須）</label>
+              <input id="deltaReason" type="text" placeholder="例: 計算誤差の修正">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="applyDeltaAdjustment" type="button">適用</button>
+        `
+      );
+    };
+
+    const applyDeltaAdjustment = () => {
+      const userId = ($("#deltaUserId")?.value || "").trim();
+      const asset = ($("#deltaAsset")?.value || "").trim();
+      const amount = Number($("#deltaAmount")?.value);
+      const reason = ($("#deltaReason")?.value || "").trim();
+      if (!userId || !asset) { toast("err", "入力不正", "ユーザーとアセットは必須です"); return; }
+      if (!Number.isFinite(amount) || amount === 0) { toast("err", "入力不正", "調整額は0以外の数値を入力してください"); return; }
+      if (!reason) { toast("err", "理由が必須です", "調整理由を入力してください"); return; }
+      const u = state.users.find(x => x.id === userId);
+      if (u) {
+        u.balance = ensureBalObj(u.balance);
+        u.balance[asset] = (u.balance[asset] || 0) + amount;
+      }
+      state.ledger.push({
+        id: uid("L"),
+        date: new Date().toISOString().slice(0,10),
+        userId,
+        asset,
+        delta: Math.floor(amount),
+        type: "ADJUSTMENT",
+        reason,
+        ref: "ADMIN_DELTA",
+      });
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "DELTA_ADJUSTMENT", message: `user=${userId} asset=${asset} delta=${amount} reason=${reason}`, ref: "" });
+      closeModal();
+      toast("ok", "デルタ調整を適用", `${userId} の ${asset} に ${amount > 0 ? "+" : ""}${amount} を追記`);
+    };
+
+    const exportLedgerCsv = () => {
+      const header = "日付,ユーザー,アセット,種別,増減,理由,参照\n";
+      const body = state.ledger.map(l =>
+        `${l.date},${l.userId},${l.asset},${l.type || "CREDIT"},${l.delta},"${(l.reason||"").replace(/"/g,'""')}",${l.ref}`
+      ).join("\n");
+      downloadTextFile("kq_ledger_export.csv", header + body, "text/csv;charset=utf-8");
+      toast("ok", "CSV出力完了", `${state.ledger.length}件をエクスポート`);
+    };
+
+    const openCampaignModal = () => {
+      openModal(
+        "キャンペーン追加",
+        `
+          <div class="form-grid">
+            <div class="field" style="grid-column:1/-1">
+              <label>名称</label>
+              <input id="campName" type="text" placeholder="例: 春キャンペーン">
+            </div>
+            <div class="field">
+              <label>タイプ</label>
+              <select id="campType">
+                <option value="PERIOD">期間限定</option>
+                <option value="PER_USER">個別</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>倍率</label>
+              <input id="campMultiplier" type="number" step="0.1" min="1" value="1.5">
+            </div>
+            <div class="field">
+              <label>開始日</label>
+              <input id="campStart" type="date">
+            </div>
+            <div class="field">
+              <label>終了日</label>
+              <input id="campEnd" type="date">
+            </div>
+          </div>
+        `,
+        `
+          <button class="btn ghost" data-action="closeModal" type="button">キャンセル</button>
+          <button class="btn" data-action="saveCampaign" type="button">追加</button>
+        `
+      );
+    };
+
+    const saveCampaign = () => {
+      const name = ($("#campName")?.value || "").trim();
+      const type = ($("#campType")?.value || "PERIOD");
+      const multiplier = Number($("#campMultiplier")?.value || 1.5);
+      if (!name) { toast("err", "入力不正", "名称は必須です"); return; }
+      if (!Array.isArray(state.campaigns)) state.campaigns = [];
+      const camp = { id: uid("CMP"), name, type, multiplier, status: "ACTIVE" };
+      if (type === "PERIOD") {
+        camp.startDate = ($("#campStart")?.value || "");
+        camp.endDate = ($("#campEnd")?.value || "");
+      }
+      state.campaigns.push(camp);
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "CAMPAIGN_ADD", message: `campaign=${name} multiplier=${multiplier}`, ref: camp.id });
+      closeModal();
+      toast("ok", "キャンペーン追加", `${name} を追加しました`);
+    };
+
+    const saveSettings = () => {
+      const asset = $("#setAsset").value;
+      const rewardRate = Number($("#setRewardRate")?.value ?? state.settings.rewardRate);
+      state.settings.defaultAsset = asset;
+      if (Number.isFinite(rewardRate) && rewardRate >= 0 && rewardRate <= 100) {
+        state.settings.rewardRate = rewardRate;
+      }
+      if (!Array.isArray(state.adminLogs)) state.adminLogs = [];
+      state.adminLogs.push({ id: uid("LOG"), at: nowISO(), type: "SETTINGS_CHANGE", message: `defaultAsset=${asset} rewardRate=${rewardRate}%`, ref: "" });
+      toast("ok", "保存しました", "設定を更新しました");
+    };
+  
+    // ------------------------------
+    // Theme
+    // ------------------------------
+    const applyTheme = (theme) => {
+      const app = $(".app");
+      app.dataset.theme = theme;
+      // このCSSはdark前提だけど、light拡張したいならここで変数差し替え方式にできる
+      const iconEl = $("#btnToggleTheme")?.querySelector(".material-icons");
+      if (iconEl) iconEl.textContent = theme === "dark" ? "dark_mode" : "light_mode";
+    };
+  
+    const toggleTheme = () => {
+      state.meta.theme = state.meta.theme === "dark" ? "light" : "dark";
+      toast("ok", "テーマ切替", state.meta.theme.toUpperCase());
+    };
+  
+    // ------------------------------
+    // Wire events (event delegation)
+    // ------------------------------
+    document.addEventListener("click", (e) => {
+      const nav = e.target.closest(".nav-item");
+      if (nav?.dataset?.view) {
+        setView(nav.dataset.view);
+        renderAll();
+        return;
+      }
+  
+      const tabBtn = e.target.closest(".tab-btn");
+      if (tabBtn?.dataset?.tab) {
+        const tabBar = tabBtn.closest(".tab-bar");
+        if (tabBar) {
+          tabBar.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("is-active"));
+          tabBtn.classList.add("is-active");
+          const parent = tabBar.closest(".panel-b");
+          if (parent) {
+            parent.querySelectorAll(".tab-panel").forEach(p => p.classList.add("is-hidden"));
+            const target = parent.querySelector(`#tabPanel-${tabBtn.dataset.tab}`);
+            if (target) target.classList.remove("is-hidden");
+          }
+        }
+        return;
+      }
+
+      const actionBtn = e.target.closest("[data-action]");
+      if (!actionBtn) return;
+
+      const action = actionBtn.dataset.action;
+      const id = actionBtn.dataset.id;
+
+      switch(action){
+        case "openApprovalActions": openApprovalActions(id); break;
+        case "approveApp": approveApplication(id); break;
+        case "rejectApp": closeModal(); rejectApplication(id); break;
+        case "confirmRejectApp": {
+          const a = state.applications.find(x => x.id === id);
+          const reason = ($("#rejReason")?.value || "").trim();
+          if (!reason) {
+            toast("err", "理由が必要です", "却下理由を入力してください");
+            return;
+          }
+          if (!a) return;
+          a.status = "REJECTED";
+          a.rejectedReason = reason;
+          a.rejectedAt = nowISO();
+          closeModal();
+          toast("warn", "却下しました", `${id} を REJECTED に更新`);
+          break;
+        }
+        case "addDemoApplication": addDemoApplication(); break;
+        case "addDemoWithdrawal": addDemoWithdrawal(); break;
+        case "openWithdrawalActions": openWithdrawalActions(id); break;
+        case "approveW": setWithdrawalStatus(id, "APPROVED"); closeModal(); break;
+        case "processW": setWithdrawalStatus(id, "PROCESSING"); closeModal(); break;
+        case "completeW": setWithdrawalStatus(id, "COMPLETED"); closeModal(); break;
+        case "failW": setWithdrawalStatus(id, "FAILED"); closeModal(); break;
+        case "openUserActions": openUserActions(id); break;
+        case "editUser": openUserEdit(id); break;
+        case "saveUserEdit": saveUserEdit(id); break;
+        case "banUser": banUser(id); break;
+        case "confiscateUserTokens": confiscateUserTokens(id); break;
+        case "approveWithdrawalRequest": approveWithdrawalRequest(id); break;
+        case "addDemoWithdrawalRequest": addDemoWithdrawalRequest(); break;
+        case "editLedger": openLedgerEdit(id); break;
+        case "saveLedgerEdit": saveLedgerEdit(id); break;
+        case "editWithdrawal": openWithdrawalEdit(id); break;
+        case "saveWithdrawalEdit": saveWithdrawalEdit(id); break;
+        case "saveSettings": saveSettings(); break;
+        case "resetMock": resetMock(); break;
+        case "addBroker": openBrokerModal(); break;
+        case "editBroker": {
+          const b = (state.brokers || []).find(x => x.id === id);
+          if (b) openBrokerModal(b);
+          break;
+        }
+        case "saveBroker": saveBroker(id); break;
+        case "addAnnouncement": openAnnouncementModal(); break;
+        case "editAnnouncement": openAnnouncementModal(id); break;
+        case "saveAnnouncement": saveAnnouncement(id); break;
+        case "saveDistributionRatios": saveDistributionRatios(); break;
+        case "addDistributionAsset": addDistributionAsset(); break;
+        case "removeDistributionAsset": removeDistributionAsset(Number(actionBtn.dataset.idx)); break;
+        case "applyCsvImport": applyCsvImport(); break;
+        case "downloadCsvTemplate": {
+          const csv = buildCanonicalTemplateCsv();
+          downloadTextFile("kq_import_template.csv", csv, "text/csv;charset=utf-8");
+          break;
+        }
+        case "closeModal": closeModal(); break;
+        case "closeDrawer": closeDrawer(); break;
+        case "confirmBan": confirmBan(id); break;
+        case "unbanUser": unbanUser(id); break;
+        case "confirmConfiscate": confirmConfiscate(id); break;
+        case "openDeltaAdjustment": openDeltaAdjustment(actionBtn.dataset.id, actionBtn.dataset.asset); break;
+        case "applyDeltaAdjustment": applyDeltaAdjustment(); break;
+        case "exportLedgerCsv": exportLedgerCsv(); break;
+        case "ledgerPrevPage": ledgerPage--; renderLedger(); break;
+        case "ledgerNextPage": ledgerPage++; renderLedger(); break;
+        case "addCampaign": openCampaignModal(); break;
+        case "saveCampaign": saveCampaign(); break;
+        case "saveRankMaster": saveRankMaster(); break;
+        case "saveReferenceRates": saveReferenceRates(); break;
+        case "saveAnnouncementDraft": {
+          const annStatusEl = $("#annStatus");
+          if (annStatusEl) annStatusEl.value = "DRAFT";
+          saveAnnouncement(id);
+          break;
+        }
+        case "saveAnnouncementScheduled": {
+          const annStatusEl2 = $("#annStatus");
+          if (annStatusEl2) annStatusEl2.value = "SCHEDULED";
+          saveAnnouncement(id);
+          break;
+        }
+        case "saveAnnouncementPublish": {
+          const annStatusEl3 = $("#annStatus");
+          if (annStatusEl3) annStatusEl3.value = "PUBLISHED";
+          saveAnnouncement(id);
+          break;
+        }
+        case "deleteAnnouncement": {
+          if (!Array.isArray(state.announcements)) break;
+          const idx = state.announcements.findIndex(x => x.id === id);
+          if (idx >= 0) {
+            state.announcements.splice(idx, 1);
+            closeModal();
+            toast("ok", "削除しました", "お知らせを削除しました");
+          }
+          break;
+        }
+        default: break;
+      }
+  
+      renderAll();
+    });
+  
+    $("#filterAStatus").addEventListener("change", renderAll);
+    $("#filterWStatus").addEventListener("change", renderAll);
+    $("#filterAnnStatus").addEventListener("change", renderAll);
+
+    ["filterLedgerUser","filterLedgerDateFrom","filterLedgerDateTo","filterLedgerAsset","filterLedgerType"].forEach(id => {
+      const el = $(`#${id}`);
+      if (el) el.addEventListener(el.tagName === "INPUT" ? "input" : "change", () => { ledgerPage = 0; renderAll(); });
+    });
+
+    const userSearchEl = $("#filterUserSearch");
+    if (userSearchEl) userSearchEl.addEventListener("input", renderAll);
+
+    const csvFileEl = $("#csvFile");
+    const csvDropzone = $("#csvDropzone");
+    const btnCsvBrowse = $("#btnCsvBrowse");
+
+    if (csvFileEl) {
+      csvFileEl.addEventListener("change", (e) => handleCsvFiles(e.target.files));
+    }
+    if (btnCsvBrowse) {
+      btnCsvBrowse.addEventListener("click", (e) => {
+        e.stopPropagation();
+        csvFileEl?.click();
+      });
+    }
+    if (csvDropzone) {
+      csvDropzone.addEventListener("click", (e) => {
+        if (e.target.closest("#btnCsvBrowse")) return;
+        csvFileEl?.click();
+      });
+      csvDropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        csvDropzone.classList.add("is-dragover");
+      });
+      csvDropzone.addEventListener("dragleave", () => {
+        csvDropzone.classList.remove("is-dragover");
+      });
+      csvDropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        csvDropzone.classList.remove("is-dragover");
+        if (e.dataTransfer?.files?.length) handleCsvFiles(e.dataTransfer.files);
+      });
+    }
+  
+    $("#btnToggleSidebar").addEventListener("click", openSidebar);
+    $("#overlay").addEventListener("click", closeSidebar);
+
+    const drawerOverlayEl = $("#drawerOverlay");
+    if (drawerOverlayEl) drawerOverlayEl.addEventListener("click", closeDrawer);
+
+    $("#btnAccountToggle").addEventListener("click", (e) => {
+      e.stopPropagation();
+      const slide = $("#accountSlide");
+      if (slide) slide.classList.toggle("is-open");
+    });
+    $("#btnLogout").addEventListener("click", () => {
+      adminLoggedIn = false;
+      updateLoginUI();
+      const overlay = $("#loginOverlay");
+      if (overlay) overlay.classList.remove("is-hidden");
+      toast("ok", "ログアウトしました", "");
+    });
+
+    const btnLoginSubmit = $("#btnLoginSubmit");
+    if (btnLoginSubmit) {
+      btnLoginSubmit.addEventListener("click", () => {
+        adminLoggedIn = true;
+        const overlay = $("#loginOverlay");
+        if (overlay) overlay.classList.add("is-hidden");
+        updateLoginUI();
+        toast("ok", "ログインしました", "管理者としてログイン中");
+      });
+    }
+
+    updateLoginUI();
+
+    // ESC close modal/drawer
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeModal();
+        closeDrawer();
+        closeSidebar();
+      }
+    });
+  
+    // ------------------------------
+    // Live KQ Rate (mock API sync)
+    // ------------------------------
+    const KQ_RATE_BASE = 120.0;
+    let liveKqRate = KQ_RATE_BASE;
+    let prevKqRate = KQ_RATE_BASE;
+    const rateHistory = [];
+
+    const renderRateChart = () => {
+      if (typeof Chart === "undefined") return;
+      const dash = $("#view-dashboard");
+      if (dash?.classList.contains("is-hidden")) return;
+      if (rateHistory.length < 2) return;
+
+      const labels = rateHistory.map(r => r.time);
+      const data = rateHistory.map(r => r.rate);
+      const brandColor = getComputedStyle(document.documentElement).getPropertyValue("--brand") || "#C62828";
+      const lineColor = brandColor.trim();
+      const gridColor = getComputedStyle(document.documentElement).getPropertyValue("--line") || "#E5E7EB";
+
+      const destroyChart = (id) => {
+        const c = window[`_chart_${id}`];
+        if (c) { c.destroy(); window[`_chart_${id}`] = null; }
+      };
+
+      destroyChart("Rate");
+      const ctx = document.getElementById("chartRate");
+      if (!ctx) return;
+      window._chart_Rate = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [{
+            label: "KQレート (JPY)",
+            data,
+            borderColor: lineColor,
+            backgroundColor: lineColor + "15",
+            fill: true,
+            tension: 0.3,
+            pointRadius: 0,
+            borderWidth: 2,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 300 },
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { display: false },
+            y: { grid: { color: gridColor }, ticks: { callback: v => `¥${v}` } },
+          },
+        },
+      });
+    };
+
+    const simulateKqRate = () => {
+      prevKqRate = liveKqRate;
+      const drift = (Math.random() - 0.5) * 2;
+      liveKqRate = Math.max(KQ_RATE_BASE * 0.90, Math.min(KQ_RATE_BASE * 1.15, liveKqRate + drift));
+      liveKqRate = Math.round(liveKqRate * 100) / 100;
+    };
+
+    const updateLiveRateUI = () => {
+      simulateKqRate();
+      const diff = liveKqRate - prevKqRate;
+      const diffSign = diff >= 0 ? "+" : "";
+      const diffClass = diff >= 0 ? "ok-text" : "err-text";
+
+      const rateEl = $("#kpiKqRate");
+      if (rateEl) {
+        rateEl.textContent = `¥${liveKqRate.toFixed(2)}`;
+        rateEl.classList.add("rate-pulse");
+        setTimeout(() => rateEl.classList.remove("rate-pulse"), 600);
+      }
+      const timeEl = $("#kpiKqRateTime");
+      if (timeEl) {
+        timeEl.innerHTML = `<span class="${diffClass}">${diffSign}${diff.toFixed(2)}</span> | ${new Date().toLocaleTimeString()}`;
+      }
+
+      const scraperRateEl = $("#scraperLiveRate");
+      if (scraperRateEl) {
+        scraperRateEl.textContent = `¥${liveKqRate.toFixed(2)}`;
+      }
+
+      rateHistory.push({ time: new Date().toLocaleTimeString(), rate: liveKqRate });
+      if (rateHistory.length > 60) rateHistory.shift();
+      renderRateChart();
+    };
+
+    // boot
+    setView("dashboard");
+    renderAll();
+
+    updateLiveRateUI();
+    setInterval(updateLiveRateUI, 3000);
+  })();
+  </script>
+</body>
+</html>

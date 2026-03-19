@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KING and QUEEN - ロイヤリティ・トークンプラットフォーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ===== Custom Properties ===== */
+    :root {
+      --brand: #CC151A;
+      --brand-dark: #A01115;
+      --black: #1A1A1A;
+      --white: #FFFFFF;
+      --gray-bg: #F5F5F5;
+      --gray-text: #666666;
+      --gray-border: #E0E0E0;
+      --font-ja: 'Noto Sans JP', sans-serif;
+      --font-en: 'Montserrat', sans-serif;
+      --max-w: 740px;
+    }
+
+    /* ===== Reset ===== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-ja);
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+    }
+
+    /* ===== Utility ===== */
+    .inner {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .header .inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 50px;
+      padding: 0 10px;
+    }
+
+    .header-logo img {
+      height: 31px;
+      width: 140px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 32px;
+      border-radius: 16px;
+      border: 2px solid var(--brand);
+      color: var(--brand);
+      font-size: 9px;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: var(--brand);
+      color: var(--white);
+    }
+
+    .btn-fill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 32px;
+      border-radius: 16px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 9px;
+      font-weight: 700;
+      border: none;
+      transition: background 0.2s;
+    }
+
+    .btn-fill:hover {
+      background: var(--brand-dark);
+    }
+
+    /* ===== Hero ===== */
+    .hero {
+      position: relative;
+      background: var(--black);
+      overflow: hidden;
+      padding: 120px 0px 100px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image: url('assets/hero_bg.png');
+      background-position: center 72%;
+      background-repeat: no-repeat;
+      background-size: auto 155%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .hero-text-img {
+      width: 100%;
+      display: block;
+      transform: translateY(-90px) scaleY(2.8);
+      transform-origin: center top;
+      margin-bottom: 80px;
+    }
+
+    .hero-badge-wrap {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 2;
+    }
+
+    .hero-badge-wrap img {
+      width: 130px;
+      height: auto;
+    }
+
+    /* ===== About ===== */
+    .about {
+      padding: 80px 20px;
+    }
+
+    .about .inner {
+      text-align: center;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 3px;
+      font-size: 16.5px;
+      font-weight: 900;
+      margin-bottom: 40px;
+    }
+
+    .section-title .logo-inline img {
+      height: 44px;
+      width: auto;
+      vertical-align: bottom;
+    }
+
+    .about-cards {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+
+    .about-cards img {
+      height: 300px;
+      width: auto;
+    }
+
+    @media (max-width: 600px) {
+      .about-cards img {
+        height: 200px;
+      }
+    }
+
+    .about-text {
+      text-align: left;
+      font-size: 10.5px;
+      line-height: 2;
+      color: var(--black);
+      margin-bottom: 36px;
+      font-weight: 500;
+    }
+
+    .about-text p + p {
+      margin-top: 16px;
+    }
+
+    .about-text .highlight {
+      color: var(--brand);
+      font-weight: 900;
+    }
+
+    .btn-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 36px;
+      border-radius: 25px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      transition: background 0.2s;
+      width: 240px;
+      height: 50px;
+      justify-content: center;
+    }
+
+    .btn-cta img {
+      width: 20px;
+      height: 9px;
+    }
+
+    .btn-cta:hover {
+      background: var(--brand-dark);
+    }
+
+    /* ===== Steps ===== */
+    .steps {
+      background: #F5F7FA;
+      padding: 80px 20px 60px;
+    }
+
+    .steps .section-title {
+      margin-bottom: 48px;
+    }
+
+    .steps-grid {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .steps-connector {
+      display: flex;
+      align-items: center;
+      padding-top: 8px;
+      font-size: 24px;
+      color: #CCC;
+      letter-spacing: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .steps-grid {
+        flex-direction: column;
+        align-items: center;
+      }
+      .steps-connector {
+        transform: rotate(90deg);
+      }
+    }
+
+    .step-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      width: 300px;
+      max-width: 100%;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 40px;
+      background: url('assets/flow_num_bg.svg') center center / contain no-repeat;
+      color: var(--black);
+      font-family: var(--font-en);
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .step-icon {
+      width: 140px;
+      height: 120px;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .step-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .step-card p {
+      font-size: 13px;
+      color: var(--gray-text);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .btn-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 24px;
+      border-radius: 20px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 9.8px;
+      font-weight: 700;
+      transition: background 0.2s;
+      width: 180px;
+      height: 40px;
+      justify-content: center;
+    }
+
+    .btn-step img {
+      width: 17px;
+      height: 7px;
+    }
+
+    .btn-step:hover {
+      background: var(--brand-dark);
+    }
+
+    /* ===== FAQ ===== */
+    .faq {
+      padding: 80px 20px;
+    }
+
+    .faq .section-title {
+      margin-bottom: 40px;
+    }
+
+    .faq-list {
+      list-style: none;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--gray-border);
+    }
+
+    .faq-item:first-child {
+      border-top: 1px solid var(--gray-border);
+    }
+
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: left;
+      color: var(--black);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover {
+      color: var(--brand);
+    }
+
+    .faq-q-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+
+    .faq-question i {
+      font-size: 14px;
+      color: var(--gray-text);
+      transition: transform 0.3s;
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+
+    .faq-item.is-open .faq-question i {
+      transform: rotate(180deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .faq-answer-inner {
+      padding: 0 0 20px;
+      font-size: 14px;
+      line-height: 2;
+      color: var(--gray-text);
+    }
+
+    .faq-item.is-open .faq-answer {
+      max-height: 300px;
+    }
+
+    /* ===== Partners ===== */
+    .partners {
+      padding: 30px 20px;
+      background: var(--white);
+      border-top: 1px solid var(--gray-border);
+    }
+
+    .partners-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      flex-wrap: wrap;
+    }
+
+    .partner-logo {
+      font-family: var(--font-en);
+      font-weight: 500;
+      font-size: 18px;
+      color: #999;
+      letter-spacing: 0.02em;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .partner-logo:hover {
+      opacity: 1;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 48px 20px 32px;
+    }
+
+    .footer .inner {
+      text-align: left;
+    }
+
+    .footer-logo {
+      margin-bottom: 32px;
+    }
+
+    .footer-logo img {
+      height: 35px;
+      width: 160px;
+    }
+
+    .footer-nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 32px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: #AAAAAA;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-social a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      transition: opacity 0.2s;
+    }
+
+    .footer-social a img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .footer-social a:hover {
+      opacity: 0.8;
+    }
+
+    .footer-copy {
+      font-size: 10px;
+      color: #666;
+      font-family: var(--font-en);
+      text-align: center;
+    }
+
+    /* ===== Auth Modal ===== */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-overlay.is-open {
+      display: flex;
+    }
+
+    .auth-modal {
+      background: var(--white);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px 32px 32px;
+      position: relative;
+      animation: authFadeIn 0.25s ease;
+    }
+
+    @keyframes authFadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #999;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .auth-close:hover {
+      background: var(--gray-bg);
+      color: var(--black);
+    }
+
+    .auth-modal-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-modal-logo img {
+      height: 31px;
+      width: 140px;
+    }
+
+    .auth-modal-logo p {
+      color: #888;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--gray-border);
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 14px;
+      color: #999;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .auth-tab.active {
+      color: var(--brand);
+      border-bottom-color: var(--brand);
+    }
+
+    .auth-field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #666;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+
+    .auth-field-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .auth-input {
+      width: 100%;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: var(--font-ja);
+      background: #FAFAFA;
+      color: var(--black);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: var(--brand);
+    }
+
+    .auth-input::placeholder {
+      color: #bbb;
+    }
+
+    .auth-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--brand);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background 0.2s;
+    }
+
+    .auth-submit:hover {
+      background: var(--brand-dark);
+    }
+
+    .auth-check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+
+    .auth-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .auth-checkbox.checked {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: var(--white);
+    }
+
+    .auth-check-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .auth-check-text a {
+      color: var(--brand);
+      font-weight: 700;
+    }
+
+    .auth-link-row {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brand);
+      cursor: pointer;
+    }
+
+    .auth-link-row:hover {
+      text-decoration: underline;
+    }
+
+    /* Auth screens (login, signup, forgot, reset-sent) */
+    .auth-screen {
+      display: none;
+    }
+
+    .auth-screen.active {
+      display: block;
+    }
+
+    .auth-sent-icon {
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+
+    .auth-sent-icon i {
+      font-size: 48px;
+      color: var(--brand);
+    }
+
+    .auth-sent-title {
+      text-align: center;
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--black);
+      margin-top: 16px;
+    }
+
+    .auth-sent-desc {
+      text-align: center;
+      font-size: 13px;
+      color: #888;
+      font-weight: 700;
+      margin-top: 10px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="inner">
+      <div class="header-logo"><img src="assets/logo.svg" alt="KING and QUEEN"></div>
+      <div class="header-actions">
+        <a href="#" class="btn-outline">ログイン</a>
+        <a href="#" class="btn-fill">新規登録</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <img src="assets/hero_text.svg" alt="まだトークン獲得無しでFXやってるの？" class="hero-text-img">
+    </div>
+    <div class="hero-badge-wrap">
+      <img src="assets/soc_badge.png" alt="SOC Type2認証サービス">
+    </div>
+  </section>
+
+  <!-- ===== About ===== -->
+  <section class="about">
+    <div class="inner">
+      <h2 class="section-title">
+        <span class="logo-inline"><img src="assets/logo.svg" alt="KING and QUEEN"></span>って、なに？
+      </h2>
+
+      <div class="about-cards">
+        <img src="assets/about_king.svg" alt="KING">
+        <img src="assets/about_queen.svg" alt="QUEEN">
+      </div>
+
+      <div class="about-text">
+        <p>キング＆クイーンとは、海外FX口座と連携し、<span class="highlight">トレードごとに自動でトークン（暗号資産）がエアドロップされる</span>画期的なサービスです。</p>
+        <p>「キング＆クイーントークン」は、トークンの売却が可能なだけでなく、さまざまなサービスで活用できるユーティリティも備えています。</p>
+        <p>海外FXでは、トレードごとにブローカーに手数料を支払いますが、その一部がキャッシュバックされる仕組みがあります。このサービスでは、その<span class="highlight">キャッシュバック分をトークンとしてトレーダーに還元</span>します。トークン価格が上昇すれば、キャッシュバック率が数百％から数万％にまで上がる可能性もあり、従来のFXトレードを超える大きな利益を手にするチャンスです。</p>
+        <p>このサービスを利用することで、トレードコストを大幅に削減できるだけでなく、暗号資産市場の成長によるさらなる利益獲得も期待できます。さらに、「キング＆クイーントークン」は、今後レンディングサービスとの連携や、各種決済への対応も予定しています。海外FX以外にもオンラインカジノやアダルトコンテンツなどオンラインサービスの利用時にもキング＆クイーントークンがエアドロップされるようになります。</p>
+      </div>
+
+      <a href="#" class="btn-cta">登録申請はこちら <img src="assets/ico_more.svg" alt="→"></a>
+    </div>
+  </section>
+
+  <!-- ===== Steps ===== -->
+  <section class="steps">
+    <div class="inner">
+      <h2 class="section-title">サービス開始までの流れ</h2>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">
+            <img src="assets/flow_step1.svg" alt="会員登録">
+          </div>
+          <h3>King and Queen会員登録</h3>
+          <p>King and Queenにて<br>ユーザー登録します</p>
+          <a href="#" class="btn-step">新規登録はこちら <img src="assets/ico_more.svg" alt="→"></a>
+        </div>
+
+        <div class="steps-connector">...</div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">
+            <img src="assets/flow_step2.svg" alt="口座開設">
+          </div>
+          <h3>海外FX口座開設</h3>
+          <p>マイページにログイン後<br>当サイトのIBリンク経由で海外FX口座開設</p>
+          <a href="#" class="btn-step">ログインはこちら <img src="assets/ico_more.svg" alt="→"></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section class="faq">
+    <div class="inner">
+      <h2 class="section-title">よくある質問</h2>
+
+      <ul class="faq-list">
+        <li class="faq-item is-open">
+          <button class="faq-question">
+            <span class="faq-q-label">Q</span>
+            キング＆クイーンとはなんですか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">海外FXやオンラインカジノなどオンラインサービスと提携し、サービス利用ごとにトークンがエアドロップされるサービスです。</div>
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question">
+            <span class="faq-q-label">Q</span>
+            キング＆クイーントークンってなんですか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">キング＆クイーントークンは、KING and QUEENプラットフォームで付与される独自のデジタルトークンです。取引量に応じて付与され、将来的に様々な特典やサービスと交換することができます。</div>
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question">
+            <span class="faq-q-label">Q</span>
+            トークンはいつどのようにもらえる？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">トークンは対象のオンラインサービスを利用した後、利用量に応じて自動的にエアドロップされます。</div>
+          </div>
+        </li>
+        <li class="faq-item">
+          <button class="faq-question">
+            <span class="faq-q-label">Q</span>
+            口座登録するIZAKA-YAってなんですか？
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">IZAKA-YAは、KING and QUEENと提携しているFXブローカーです。こちらで口座を開設していただくことでトークン付与の対象となります。</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== Partners ===== -->
+  <section class="partners">
+    <div class="inner">
+      <div class="partners-logos">
+        <div class="partner-logo">exness</div>
+        <div class="partner-logo">Fireblocks</div>
+        <div class="partner-logo">IZAKA-YA</div>
+        <div class="partner-logo">H&amp;W Sisters</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="inner">
+      <div class="footer-logo"><img src="assets/logo_white.svg" alt="KING and QUEEN"></div>
+
+      <div class="footer-nav-row">
+        <div class="footer-links">
+          <a href="#">会社概要</a>
+          <a href="#">お問い合わせフォーム</a>
+          <a href="#">プライバシーポリシー</a>
+          <a href="#">利用規約</a>
+        </div>
+
+        <div class="footer-social">
+          <a href="#" aria-label="X"><img src="assets/ico_sns_x.svg" alt="X"></a>
+          <a href="#" aria-label="Telegram"><img src="assets/ico_sns_telegram.svg" alt="Telegram"></a>
+          <a href="#" aria-label="Youtube"><img src="assets/ico_sns_youtube.svg" alt="Youtube"></a>
+        </div>
+      </div>
+
+      <div class="footer-copy">&copy; KING and QUEEN. All rights reserved</div>
+    </div>
+  </footer>
+
+  <!-- ===== Auth Modal ===== -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="authClose"><i class="fas fa-times"></i></button>
+
+      <div class="auth-modal-logo">
+        <img src="assets/logo.svg" alt="KING and QUEEN">
+        <p id="authSubtitle">アカウントにサインイン</p>
+      </div>
+
+      <!-- Login Screen -->
+      <div class="auth-screen active" id="screenLogin">
+        <div class="auth-tabs">
+          <div class="auth-tab active" data-target="login">ログイン</div>
+          <div class="auth-tab" data-target="signup">アカウントを作成</div>
+        </div>
+        <div class="auth-field-label">メールアドレス</div>
+        <input class="auth-input" type="email" placeholder="mail@example.com">
+        <div class="auth-field-label">パスワード</div>
+        <input class="auth-input" type="password" placeholder="••••••••">
+        <button class="auth-submit" id="doLogin">ログイン</button>
+        <div class="auth-link-row" id="goForgot">パスワードをお忘れの方</div>
+      </div>
+
+      <!-- Signup Screen -->
+      <div class="auth-screen" id="screenSignup">
+        <div class="auth-tabs">
+          <div class="auth-tab" data-target="login">ログイン</div>
+          <div class="auth-tab active" data-target="signup">アカウントを作成</div>
+        </div>
+        <div class="auth-field-label">メールアドレス</div>
+        <input class="auth-input" type="email" placeholder="mail@example.com">
+        <div class="auth-field-label">パスワード</div>
+        <input class="auth-input" type="password" placeholder="••••••••">
+        <div class="auth-field-label">パスワード（確認）</div>
+        <input class="auth-input" type="password" placeholder="••••••••">
+        <div class="auth-check-row" id="authAgree">
+          <div class="auth-checkbox" id="authCheckbox"></div>
+          <span class="auth-check-text"><a href="#">利用規約</a>・<a href="#">プライバシーポリシー</a>に同意する</span>
+        </div>
+        <button class="auth-submit" id="doSignup">アカウントを作成</button>
+        <div class="auth-link-row" id="goLoginFromSignup">既にアカウントをお持ちの方はこちら</div>
+      </div>
+
+      <!-- Forgot Password Screen -->
+      <div class="auth-screen" id="screenForgot">
+        <div class="auth-field-label">登録メールアドレス</div>
+        <input class="auth-input" type="email" placeholder="mail@example.com">
+        <button class="auth-submit" id="sendReset">リセットメールを送信</button>
+        <div class="auth-link-row" id="goLoginFromForgot">ログインに戻る</div>
+      </div>
+
+      <!-- Reset Sent Screen -->
+      <div class="auth-screen" id="screenResetSent">
+        <div class="auth-sent-icon"><i class="fas fa-envelope-open-text"></i></div>
+        <div class="auth-sent-title">リセットメールを送信しました</div>
+        <div class="auth-sent-desc">メールをご確認ください。<br>メール内のリンクからパスワードを再設定してください。</div>
+        <button class="auth-submit" id="goLoginFromReset">ログインへ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Scripts ===== -->
+  <script>
+    /* --- FAQ Accordion --- */
+    document.querySelectorAll('.faq-question').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('.faq-item');
+        var isOpen = item.classList.contains('is-open');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(function (el) {
+          el.classList.remove('is-open');
+        });
+
+        // Toggle current
+        if (!isOpen) {
+          item.classList.add('is-open');
+        }
+      });
+    });
+
+    /* --- Auth Modal Navigation --- */
+    (function () {
+      var overlay = document.getElementById('authOverlay');
+      var subtitle = document.getElementById('authSubtitle');
+      var screens = {
+        login: document.getElementById('screenLogin'),
+        signup: document.getElementById('screenSignup'),
+        forgot: document.getElementById('screenForgot'),
+        resetSent: document.getElementById('screenResetSent')
+      };
+
+      var subtitles = {
+        login: 'アカウントにサインイン',
+        signup: '新規アカウント作成',
+        forgot: 'パスワードをお忘れの方',
+        resetSent: 'パスワードをお忘れの方'
+      };
+
+      function showScreen(name) {
+        Object.keys(screens).forEach(function (k) {
+          screens[k].classList.toggle('active', k === name);
+        });
+        subtitle.textContent = subtitles[name];
+      }
+
+      function openAuth(name) {
+        showScreen(name);
+        overlay.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeAuth() {
+        overlay.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      // Header buttons
+      document.querySelector('.header-actions .btn-outline').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('login');
+      });
+      document.querySelector('.header-actions .btn-fill').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('signup');
+      });
+
+      // CTA buttons in body
+      document.querySelector('.about .btn-cta').addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('signup');
+      });
+
+      // Steps buttons
+      var stepBtns = document.querySelectorAll('.btn-step');
+      stepBtns[0].addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('signup');
+      });
+      stepBtns[1].addEventListener('click', function (e) {
+        e.preventDefault();
+        openAuth('login');
+      });
+
+      // Close
+      document.getElementById('authClose').addEventListener('click', closeAuth);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeAuth();
+      });
+
+      // Tab switching
+      document.querySelectorAll('.auth-tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          showScreen(tab.dataset.target);
+        });
+      });
+
+      // Links
+      document.getElementById('goForgot').addEventListener('click', function () {
+        showScreen('forgot');
+      });
+      document.getElementById('goLoginFromSignup').addEventListener('click', function () {
+        showScreen('login');
+      });
+      document.getElementById('goLoginFromForgot').addEventListener('click', function () {
+        showScreen('login');
+      });
+      document.getElementById('sendReset').addEventListener('click', function () {
+        showScreen('resetSent');
+      });
+      document.getElementById('goLoginFromReset').addEventListener('click', function () {
+        showScreen('login');
+      });
+
+      // Checkbox toggle
+      document.getElementById('authAgree').addEventListener('click', function () {
+        var cb = document.getElementById('authCheckbox');
+        cb.classList.toggle('checked');
+        if (cb.classList.contains('checked')) {
+          cb.innerHTML = '<i class="fas fa-check" style="font-size:12px"></i>';
+        } else {
+          cb.innerHTML = '';
+        }
+      });
+
+      // Login / Signup → navigate to user app
+      document.getElementById('doLogin').addEventListener('click', function () {
+        window.location.href = '../ja/index.html';
+      });
+      document.getElementById('doSignup').addEventListener('click', function () {
+        window.location.href = '../ja/index.html';
+      });
+
+      // ESC key
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAuth();
+      });
+    })();
+
+  </script>
+</body>
+</html>
