@@ -1,10 +1,12 @@
-import UserApp from "../../src/components/user/UserApp";
+'use client';
 
-export const metadata = {
-  title: "Kings and Queens | User App",
-  description: "Mobile-first user experience for Kings and Queens.",
-};
+import UserApp from "../../src/components/user/UserApp";
+import ProtectedRoute from "../../src/components/auth/ProtectedRoute";
 
 export default function UserPage() {
-  return <UserApp />;
+  return (
+    <ProtectedRoute>
+      <UserApp />
+    </ProtectedRoute>
+  );
 }

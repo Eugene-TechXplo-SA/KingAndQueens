@@ -1,14 +1,14 @@
-import "../src/index.css";
+'use client';
 
-export const metadata = {
-  title: "Kings and Queens",
-  description: "Admin Console",
-};
+import "../src/index.css";
+import { AuthProvider } from "../src/contexts/AuthContext";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <title>Kings and Queens</title>
+        <meta name="description" content="Admin Console" />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -18,7 +18,9 @@ export default function RootLayout({ children }) {
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

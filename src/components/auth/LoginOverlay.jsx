@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import LoginForm from "./LoginForm";
-import { loginWithEmail, persistAuthSession } from "../../lib/authApi";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginOverlay() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@kingandqueen.io");
-  const [password, setPassword] = useState("admin1234");
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,14 +30,8 @@ export default function LoginOverlay() {
     setErrorMessage("");
 
     try {
-      const payload = await loginWithEmail(trimmedEmail, password);
-      persistAuthSession(payload);
-      try {
-        localStorage.setItem("kq_admin_logged_in", "true");
-      } catch {
-        // Ignore storage errors in strict browser privacy modes.
-      }
-      router.push("/user");
+      await signIn(trimmedEmail, password);
+      router.push("/dashboard");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "ログインに失敗しました";
